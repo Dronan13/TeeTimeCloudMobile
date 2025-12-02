@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { AppTabParamList, CoursesStackParamList, ProfileStackParamList } from '@/types';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Import screens
 import HomeScreen from '@/screens/HomeScreen';
@@ -27,6 +28,7 @@ const ProfileStack = createStackNavigator<ProfileStackParamList>();
 
 function CoursesStackNavigator() {
   const { isDark } = useTheme();
+  const { t } = useLanguage();
 
   return (
     <CoursesStack.Navigator
@@ -43,22 +45,22 @@ function CoursesStackNavigator() {
       <CoursesStack.Screen
         name="CoursesList"
         component={CoursesScreen}
-        options={{ title: 'Golf Courses' }}
+        options={{ title: t('courses.title') }}
       />
       <CoursesStack.Screen
         name="CourseDetail"
         component={CourseDetailScreen}
-        options={{ title: 'Course Details' }}
+        options={{ title: t('courses.details.title') }}
       />
       <CoursesStack.Screen
         name="CourseTeeTimesScreen"
         component={CourseTeeTimesScreen}
-        options={{ title: 'Available Tee Times' }}
+        options={{ title: t('courses.teeTimes.title') }}
       />
       <CoursesStack.Screen
         name="ReservationScreen"
         component={ReservationScreen}
-        options={{ title: 'Book Tee Time' }}
+        options={{ title: t('reservation.title') }}
       />
     </CoursesStack.Navigator>
   );
@@ -66,6 +68,7 @@ function CoursesStackNavigator() {
 
 function ProfileStackNavigator() {
   const { isDark } = useTheme();
+  const { t } = useLanguage();
 
   return (
     <ProfileStack.Navigator
@@ -82,27 +85,27 @@ function ProfileStackNavigator() {
       <ProfileStack.Screen
         name="ProfileMain"
         component={ProfileScreen}
-        options={{ title: 'My Profile' }}
+        options={{ title: t('profile.title') }}
       />
       <ProfileStack.Screen
         name="ProfileEdit"
         component={ProfileEditScreen}
-        options={{ title: 'Edit Profile' }}
+        options={{ title: t('profile.edit.title') }}
       />
       <ProfileStack.Screen
         name="UpdatePassword"
         component={UpdatePasswordScreen}
-        options={{ title: 'Update Password' }}
+        options={{ title: t('auth.updatePassword.title') }}
       />
       <ProfileStack.Screen
         name="Support"
         component={SupportScreen}
-        options={{ title: 'Support' }}
+        options={{ title: t('profile.support.title') }}
       />
       <ProfileStack.Screen
         name="TermsOfUse"
         component={TermsOfUseScreen}
-        options={{ title: 'Terms of Use' }}
+        options={{ title: t('profile.termsOfUse.title') }}
       />
     </ProfileStack.Navigator>
   );
@@ -110,6 +113,7 @@ function ProfileStackNavigator() {
 
 export default function AppTabs() {
   const { isDark } = useTheme();
+  const { t } = useLanguage();
 
   return (
     <Tab.Navigator
@@ -137,7 +141,7 @@ export default function AppTabs() {
         component={HomeScreen}
         options={{
           tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 24 }}>🏠</Text>,
-          title: 'Home',
+          title: t('navigation.home'),
         }}
       />
       <Tab.Screen
@@ -145,7 +149,7 @@ export default function AppTabs() {
         component={CoursesStackNavigator}
         options={{
           tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 24 }}>⛳</Text>,
-          title: 'Courses',
+          title: t('navigation.courses'),
           headerShown: false,
         }}
       />
@@ -154,7 +158,7 @@ export default function AppTabs() {
         component={TeeTimesScreen}
         options={{
           tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 24 }}>📅</Text>,
-          title: 'My Tee Times',
+          title: t('teeTimes.title'),
         }}
       />
       <Tab.Screen
@@ -162,7 +166,7 @@ export default function AppTabs() {
         component={NotificationsScreen}
         options={{
           tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 24 }}>🔔</Text>,
-          title: 'Notifications',
+          title: t('navigation.notifications'),
         }}
       />
       <Tab.Screen
@@ -170,7 +174,7 @@ export default function AppTabs() {
         component={ProfileStackNavigator}
         options={{
           tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 24 }}>👤</Text>,
-          title: 'Profile',
+          title: t('navigation.profile'),
           headerShown: false,
         }}
       />

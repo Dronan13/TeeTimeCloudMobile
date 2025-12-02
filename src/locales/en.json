@@ -1,0 +1,296 @@
+{
+  "app": {
+    "name": "TeeTime Cloud",
+    "version": "TeeTime Cloud v1.0.0"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "back": "Back",
+    "next": "Next",
+    "done": "Done",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "viewAll": "View All →",
+    "viewDetails": "View Details",
+    "retry": "Retry",
+    "refresh": "Refresh"
+  },
+  "navigation": {
+    "home": "Home",
+    "courses": "Courses",
+    "teeTimes": "Tee Times",
+    "notifications": "Notifications",
+    "profile": "Profile"
+  },
+  "landing": {
+    "logo": "⛳ TeeTime Cloud",
+    "tagline": "Your Perfect Round Awaits",
+    "features": {
+      "bookTeeTimes": {
+        "title": "Book Tee Times",
+        "description": "Reserve your spot at top golf courses with ease"
+      },
+      "findCourses": {
+        "title": "Find Courses",
+        "description": "Discover and explore golf courses near you"
+      },
+      "manageBookings": {
+        "title": "Manage Bookings",
+        "description": "View and manage all your tee times in one place"
+      }
+    },
+    "getStarted": "Get Started",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign In"
+  },
+  "auth": {
+    "signIn": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to continue",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Enter your email",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "forgotPassword": "Forgot Password?",
+      "signInButton": "Sign In",
+      "errorAllFields": "Please fill in all fields",
+      "errorInvalidCredentials": "Invalid credentials",
+      "errorSignInFailed": "Sign In Failed"
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "subtitle": "Enter your email to reset your password",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Enter your email",
+      "sendResetLink": "Send Reset Link",
+      "successTitle": "Check Your Email",
+      "successMessage": "We've sent you a password reset link",
+      "errorAllFields": "Please enter your email",
+      "backToSignIn": "Back to Sign In"
+    },
+    "updatePassword": {
+      "title": "Update Password",
+      "subtitle": "Enter your new password",
+      "newPasswordLabel": "New Password",
+      "newPasswordPlaceholder": "Enter new password",
+      "confirmPasswordLabel": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm new password",
+      "updateButton": "Update Password",
+      "successTitle": "Password Updated",
+      "successMessage": "Your password has been updated successfully",
+      "errorAllFields": "Please fill in all fields",
+      "errorPasswordMismatch": "Passwords do not match",
+      "errorPasswordLength": "Password must be at least 6 characters"
+    },
+    "signOut": {
+      "title": "Sign Out",
+      "message": "Are you sure you want to sign out?",
+      "signOut": "Sign Out",
+      "cancel": "Cancel",
+      "errorFailed": "Failed to sign out. Please try again."
+    }
+  },
+  "home": {
+    "nextTeeTime": "Next Tee Time",
+    "quickActions": "Quick Actions",
+    "upcomingEvents": "Upcoming Events",
+    "recentNotifications": "Recent Notifications",
+    "bookTeeTime": "Book Tee Time",
+    "nearbyCourses": "Nearby Courses",
+    "myTeeTimes": "My Tee Times",
+    "inbox": "Inbox",
+    "weather": {
+      "temperature": "Temperature",
+      "wind": "Wind",
+      "humidity": "Humidity",
+      "condition": "Condition"
+    },
+    "profile": {
+      "handicap": "Handicap",
+      "viewProfile": "View Profile →"
+    },
+    "teeTimeCard": {
+      "holes": "Holes"
+    }
+  },
+  "courses": {
+    "title": "Courses",
+    "searchPlaceholder": "Search courses...",
+    "noCourses": "No courses found",
+    "errorLoading": "Failed to load courses",
+    "errorUnexpected": "An unexpected error occurred",
+    "details": {
+      "title": "Course Details",
+      "about": "About",
+      "specifications": "Specifications",
+      "holes": "Holes",
+      "par": "Par",
+      "length": "Length",
+      "yards": "yards",
+      "rating": "Rating",
+      "slope": "Slope",
+      "bookTeeTime": "Book Tee Time",
+      "facilities": "Facilities",
+      "contact": "Contact",
+      "phone": "Phone",
+      "email": "Email",
+      "website": "Website",
+      "hours": "Hours"
+    },
+    "teeTimes": {
+      "title": "Available Tee Times",
+      "selectDate": "Select Date",
+      "noTimes": "No tee times available for this date",
+      "available": "Available",
+      "booked": "Booked",
+      "book": "Book"
+    }
+  },
+  "teeTimes": {
+    "title": "My Tee Times",
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "noUpcoming": "No upcoming tee times",
+    "noPast": "No past tee times",
+    "cancel": "Cancel Reservation",
+    "cancelConfirm": "Are you sure you want to cancel this reservation?",
+    "cancelSuccess": "Reservation cancelled successfully",
+    "cancelError": "Failed to cancel reservation",
+    "bookNew": "Book New Tee Time",
+    "details": {
+      "date": "Date",
+      "time": "Time",
+      "course": "Course",
+      "holes": "Holes",
+      "players": "Players",
+      "status": "Status",
+      "bookingNumber": "Booking Number"
+    },
+    "status": {
+      "confirmed": "CONFIRMED",
+      "pending": "PENDING",
+      "cancelled": "CANCELLED",
+      "completed": "COMPLETED"
+    }
+  },
+  "reservation": {
+    "title": "Book Tee Time",
+    "selectPlayers": "Select Number of Players",
+    "player": "Player",
+    "players": "Players",
+    "selectDate": "Select Date",
+    "selectTime": "Select Time",
+    "specialRequests": "Special Requests",
+    "specialRequestsPlaceholder": "Any special requests or notes?",
+    "confirmBooking": "Confirm Booking",
+    "summary": "Booking Summary",
+    "course": "Course",
+    "date": "Date",
+    "time": "Time",
+    "holes": "Holes",
+    "totalCost": "Total Cost",
+    "bookNow": "Book Now",
+    "successTitle": "Booking Confirmed!",
+    "successMessage": "Your tee time has been booked successfully",
+    "errorTitle": "Booking Failed",
+    "errorMessage": "Failed to book tee time. Please try again.",
+    "errorAllFields": "Please fill in all required fields"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark All Read",
+    "noNotifications": "No notifications",
+    "unread": "Unread",
+    "all": "All",
+    "types": {
+      "booking": "Booking",
+      "reminder": "Reminder",
+      "announcement": "Announcement",
+      "promotion": "Promotion"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "editProfile": "Edit Profile",
+    "updateProfileInfo": "Update your personal information",
+    "updatePassword": "Update Password",
+    "changePassword": "Change your account password",
+    "support": "Support",
+    "getHelp": "Get help and contact us",
+    "termsOfUse": "Terms of Use",
+    "readTerms": "Read our terms and conditions",
+    "signOut": "Sign Out",
+    "edit": {
+      "title": "Edit Profile",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "Enter first name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Enter last name",
+      "phone": "Phone Number",
+      "phonePlaceholder": "Enter phone number",
+      "handicap": "Handicap Index",
+      "handicapPlaceholder": "Enter handicap",
+      "homeCourse": "Home Course",
+      "selectHomeCourse": "Select your home course",
+      "changePhoto": "Change Photo",
+      "saveChanges": "Save Changes",
+      "successTitle": "Profile Updated",
+      "successMessage": "Your profile has been updated successfully",
+      "errorTitle": "Update Failed",
+      "errorMessage": "Failed to update profile. Please try again."
+    },
+    "support": {
+      "title": "Support",
+      "subtitle": "Get help and contact us",
+      "contactEmail": "Email Support",
+      "contactPhone": "Phone Support",
+      "faq": "Frequently Asked Questions",
+      "sendMessage": "Send Message",
+      "subject": "Subject",
+      "subjectPlaceholder": "What can we help you with?",
+      "message": "Message",
+      "messagePlaceholder": "Describe your issue or question...",
+      "send": "Send",
+      "successTitle": "Message Sent",
+      "successMessage": "We'll get back to you soon",
+      "errorAllFields": "Please fill in all fields"
+    },
+    "termsOfUse": {
+      "title": "Terms of Use",
+      "lastUpdated": "Last Updated",
+      "accept": "Accept Terms",
+      "decline": "Decline"
+    }
+  },
+  "theme": {
+    "title": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "language": {
+    "title": "Language",
+    "english": "English",
+    "spanish": "Spanish",
+    "selectLanguage": "Select Language"
+  },
+  "errors": {
+    "network": "Network error. Please check your connection.",
+    "server": "Server error. Please try again later.",
+    "unauthorized": "Unauthorized. Please sign in again.",
+    "notFound": "Resource not found.",
+    "unknown": "An unknown error occurred.",
+    "timeout": "Request timeout. Please try again."
+  }
+}

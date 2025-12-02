@@ -3,19 +3,18 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-export default function ThemeToggle() {
-  const { theme, setTheme, isDark } = useTheme();
-  const { t } = useLanguage();
+export default function LanguageSelector() {
+  const { isDark } = useTheme();
+  const { language, setLanguage, t } = useLanguage();
 
-  const options: Array<{ value: 'light' | 'dark' | 'system'; label: string; icon: string }> = [
-    { value: 'light', label: t('theme.light'), icon: '☀️' },
-    { value: 'dark', label: t('theme.dark'), icon: '🌙' },
-    { value: 'system', label: t('theme.system'), icon: '⚙️' },
+  const options: Array<{ value: 'en' | 'es'; label: string; icon: string }> = [
+    { value: 'en', label: t('language.english'), icon: '🇺🇸' },
+    { value: 'es', label: t('language.spanish'), icon: '🇪🇸' },
   ];
 
   return (
     <View style={[styles.container, isDark && styles.containerDark]}>
-      <Text style={[styles.title, isDark && styles.titleDark]}>{t('theme.title')}</Text>
+      <Text style={[styles.title, isDark && styles.titleDark]}>{t('language.title')}</Text>
       <View style={styles.optionsContainer}>
         {options.map((option) => (
           <TouchableOpacity
@@ -23,17 +22,17 @@ export default function ThemeToggle() {
             style={[
               styles.option,
               isDark && styles.optionDark,
-              theme === option.value && styles.optionActive,
-              theme === option.value && isDark && styles.optionActiveDark,
+              language === option.value && styles.optionActive,
+              language === option.value && isDark && styles.optionActiveDark,
             ]}
-            onPress={() => setTheme(option.value)}
+            onPress={() => setLanguage(option.value)}
           >
             <Text style={styles.icon}>{option.icon}</Text>
             <Text
               style={[
                 styles.label,
                 isDark && styles.labelDark,
-                theme === option.value && styles.labelActive,
+                language === option.value && styles.labelActive,
               ]}
             >
               {option.label}

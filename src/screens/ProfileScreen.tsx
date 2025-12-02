@@ -13,11 +13,14 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { ProfileStackParamList } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import ThemeToggle from '@/components/ThemeToggle';
+import LanguageSelector from '@/components/LanguageSelector';
 
 export default function ProfileScreen() {
   const { user, profile, signOut } = useAuth();
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const navigation = useNavigation<StackNavigationProp<ProfileStackParamList>>();
 
   const handleEditProfile = () => {
@@ -37,19 +40,19 @@ export default function ProfileScreen() {
   };
 
   const handleSignOut = async () => {
-    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+    Alert.alert(t('auth.signOut.title'), t('auth.signOut.message'), [
       {
-        text: 'Cancel',
+        text: t('auth.signOut.cancel'),
         style: 'cancel',
       },
       {
-        text: 'Sign Out',
+        text: t('auth.signOut.signOut'),
         style: 'destructive',
         onPress: async () => {
           try {
             await signOut();
           } catch (error) {
-            Alert.alert('Error', 'Failed to sign out. Please try again.');
+            Alert.alert(t('common.error'), t('auth.signOut.errorFailed'));
           }
         },
       },
@@ -95,8 +98,9 @@ export default function ProfileScreen() {
         <Text style={[styles.profileEmail, isDark && styles.profileEmailDark]}>{user?.email}</Text>
       </View>
 
-      {/* Theme Toggle */}
+      {/* Language & Theme Settings */}
       <View style={[styles.themeSection, isDark && styles.themeSectionDark]}>
+        <LanguageSelector />
         <ThemeToggle />
       </View>
 
@@ -112,8 +116,8 @@ export default function ProfileScreen() {
             <Text style={styles.menuIcon}>✏️</Text>
           </View>
           <View style={styles.menuTextContainer}>
-            <Text style={[styles.menuTitle, isDark && styles.menuTitleDark]}>Edit Profile</Text>
-            <Text style={[styles.menuSubtitle, isDark && styles.menuSubtitleDark]}>Update your personal information</Text>
+            <Text style={[styles.menuTitle, isDark && styles.menuTitleDark]}>{t('profile.editProfile')}</Text>
+            <Text style={[styles.menuSubtitle, isDark && styles.menuSubtitleDark]}>{t('profile.updateProfileInfo')}</Text>
           </View>
           <Text style={[styles.menuArrow, isDark && styles.menuArrowDark]}>›</Text>
         </TouchableOpacity>
@@ -128,8 +132,8 @@ export default function ProfileScreen() {
             <Text style={styles.menuIcon}>🔒</Text>
           </View>
           <View style={styles.menuTextContainer}>
-            <Text style={[styles.menuTitle, isDark && styles.menuTitleDark]}>Update Password</Text>
-            <Text style={[styles.menuSubtitle, isDark && styles.menuSubtitleDark]}>Change your account password</Text>
+            <Text style={[styles.menuTitle, isDark && styles.menuTitleDark]}>{t('profile.updatePassword')}</Text>
+            <Text style={[styles.menuSubtitle, isDark && styles.menuSubtitleDark]}>{t('profile.changePassword')}</Text>
           </View>
           <Text style={[styles.menuArrow, isDark && styles.menuArrowDark]}>›</Text>
         </TouchableOpacity>
@@ -144,8 +148,8 @@ export default function ProfileScreen() {
             <Text style={styles.menuIcon}>💬</Text>
           </View>
           <View style={styles.menuTextContainer}>
-            <Text style={[styles.menuTitle, isDark && styles.menuTitleDark]}>Support</Text>
-            <Text style={[styles.menuSubtitle, isDark && styles.menuSubtitleDark]}>Get help and contact us</Text>
+            <Text style={[styles.menuTitle, isDark && styles.menuTitleDark]}>{t('profile.support')}</Text>
+            <Text style={[styles.menuSubtitle, isDark && styles.menuSubtitleDark]}>{t('profile.getHelp')}</Text>
           </View>
           <Text style={[styles.menuArrow, isDark && styles.menuArrowDark]}>›</Text>
         </TouchableOpacity>
@@ -160,8 +164,8 @@ export default function ProfileScreen() {
             <Text style={styles.menuIcon}>📄</Text>
           </View>
           <View style={styles.menuTextContainer}>
-            <Text style={[styles.menuTitle, isDark && styles.menuTitleDark]}>Terms of Use</Text>
-            <Text style={[styles.menuSubtitle, isDark && styles.menuSubtitleDark]}>Read our terms and conditions</Text>
+            <Text style={[styles.menuTitle, isDark && styles.menuTitleDark]}>{t('profile.termsOfUse')}</Text>
+            <Text style={[styles.menuSubtitle, isDark && styles.menuSubtitleDark]}>{t('profile.readTerms')}</Text>
           </View>
           <Text style={[styles.menuArrow, isDark && styles.menuArrowDark]}>›</Text>
         </TouchableOpacity>
@@ -175,13 +179,13 @@ export default function ProfileScreen() {
           activeOpacity={0.8}
         >
           <Text style={styles.signOutIcon}>🚪</Text>
-          <Text style={styles.signOutText}>Sign Out</Text>
+          <Text style={styles.signOutText}>{t('profile.signOut')}</Text>
         </TouchableOpacity>
       </View>
 
       {/* App Version */}
       <View style={styles.versionContainer}>
-        <Text style={[styles.versionText, isDark && styles.versionTextDark]}>TeeTime Cloud v1.0.0</Text>
+        <Text style={[styles.versionText, isDark && styles.versionTextDark]}>{t('app.version')}</Text>
       </View>
 
       {/* Bottom Spacing */}

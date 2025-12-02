@@ -13,6 +13,7 @@ import {
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { RootStackParamList } from '@/types';
 
 type SignInScreenProps = {
@@ -25,10 +26,11 @@ export default function SignInScreen({ navigation }: SignInScreenProps) {
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
   const { isDark } = useTheme();
+  const { t } = useLanguage();
 
   const handleSignIn = async () => {
     if (!email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+      Alert.alert(t('common.error'), t('auth.signIn.errorAllFields'));
       return;
     }
 
@@ -36,7 +38,7 @@ export default function SignInScreen({ navigation }: SignInScreenProps) {
     try {
       await signIn(email, password);
     } catch (error: any) {
-      Alert.alert('Sign In Failed', error.message || 'Invalid credentials');
+      Alert.alert(t('auth.signIn.errorSignInFailed'), error.message || t('auth.signIn.errorInvalidCredentials'));
     } finally {
       setLoading(false);
     }
@@ -48,15 +50,15 @@ export default function SignInScreen({ navigation }: SignInScreenProps) {
       style={[styles.container, isDark && styles.containerDark]}
     >
       <View style={[styles.content, isDark && styles.contentDark]}>
-        <Text style={[styles.title, isDark && styles.titleDark]}>Welcome Back</Text>
-        <Text style={[styles.subtitle, isDark && styles.subtitleDark]}>Sign in to continue</Text>
+        <Text style={[styles.title, isDark && styles.titleDark]}>{t('auth.signIn.title')}</Text>
+        <Text style={[styles.subtitle, isDark && styles.subtitleDark]}>{t('auth.signIn.subtitle')}</Text>
 
         <View style={styles.form}>
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>Email</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>{t('auth.signIn.emailLabel')}</Text>
             <TextInput
               style={[styles.input, isDark && styles.inputDark]}
-              placeholder="Enter your email"
+              placeholder={t('auth.signIn.emailPlaceholder')}
               placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
               value={email}
               onChangeText={setEmail}
@@ -67,10 +69,10 @@ export default function SignInScreen({ navigation }: SignInScreenProps) {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>Password</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>{t('auth.signIn.passwordLabel')}</Text>
             <TextInput
               style={[styles.input, isDark && styles.inputDark]}
-              placeholder="Enter your password"
+              placeholder={t('auth.signIn.passwordPlaceholder')}
               placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
               value={password}
               onChangeText={setPassword}
@@ -82,7 +84,7 @@ export default function SignInScreen({ navigation }: SignInScreenProps) {
           <TouchableOpacity
             onPress={() => navigation.navigate('ForgotPassword')}
           >
-            <Text style={[styles.forgotPassword, isDark && styles.forgotPasswordDark]}>Forgot Password?</Text>
+            <Text style={[styles.forgotPassword, isDark && styles.forgotPasswordDark]}>{t('auth.signIn.forgotPassword')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -93,7 +95,7 @@ export default function SignInScreen({ navigation }: SignInScreenProps) {
             {loading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.buttonText}>Sign In</Text>
+              <Text style={styles.buttonText}>{t('auth.signIn.signInButton')}</Text>
             )}
           </TouchableOpacity>
         </View>

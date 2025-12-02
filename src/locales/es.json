@@ -1,0 +1,296 @@
+{
+  "app": {
+    "name": "TeeTime Cloud",
+    "version": "TeeTime Cloud v1.0.0"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "confirm": "Confirmar",
+    "yes": "Sí",
+    "no": "No",
+    "ok": "OK",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "done": "Hecho",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "viewAll": "Ver Todo →",
+    "viewDetails": "Ver Detalles",
+    "retry": "Reintentar",
+    "refresh": "Actualizar"
+  },
+  "navigation": {
+    "home": "Inicio",
+    "courses": "Campos",
+    "teeTimes": "Horarios",
+    "notifications": "Notificaciones",
+    "profile": "Perfil"
+  },
+  "landing": {
+    "logo": "⛳ TeeTime Cloud",
+    "tagline": "Tu Ronda Perfecta Te Espera",
+    "features": {
+      "bookTeeTimes": {
+        "title": "Reservar Horarios",
+        "description": "Reserva tu lugar en los mejores campos de golf fácilmente"
+      },
+      "findCourses": {
+        "title": "Encontrar Campos",
+        "description": "Descubre y explora campos de golf cerca de ti"
+      },
+      "manageBookings": {
+        "title": "Gestionar Reservas",
+        "description": "Ve y gestiona todos tus horarios en un solo lugar"
+      }
+    },
+    "getStarted": "Comenzar",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "signIn": "Iniciar Sesión"
+  },
+  "auth": {
+    "signIn": {
+      "title": "Bienvenido de Nuevo",
+      "subtitle": "Inicia sesión para continuar",
+      "emailLabel": "Correo Electrónico",
+      "emailPlaceholder": "Ingresa tu correo electrónico",
+      "passwordLabel": "Contraseña",
+      "passwordPlaceholder": "Ingresa tu contraseña",
+      "forgotPassword": "¿Olvidaste tu Contraseña?",
+      "signInButton": "Iniciar Sesión",
+      "errorAllFields": "Por favor completa todos los campos",
+      "errorInvalidCredentials": "Credenciales inválidas",
+      "errorSignInFailed": "Error al Iniciar Sesión"
+    },
+    "forgotPassword": {
+      "title": "Olvidé mi Contraseña",
+      "subtitle": "Ingresa tu correo para restablecer tu contraseña",
+      "emailLabel": "Correo Electrónico",
+      "emailPlaceholder": "Ingresa tu correo electrónico",
+      "sendResetLink": "Enviar Enlace de Restablecimiento",
+      "successTitle": "Revisa tu Correo",
+      "successMessage": "Te hemos enviado un enlace para restablecer tu contraseña",
+      "errorAllFields": "Por favor ingresa tu correo electrónico",
+      "backToSignIn": "Volver a Iniciar Sesión"
+    },
+    "updatePassword": {
+      "title": "Actualizar Contraseña",
+      "subtitle": "Ingresa tu nueva contraseña",
+      "newPasswordLabel": "Nueva Contraseña",
+      "newPasswordPlaceholder": "Ingresa nueva contraseña",
+      "confirmPasswordLabel": "Confirmar Contraseña",
+      "confirmPasswordPlaceholder": "Confirma nueva contraseña",
+      "updateButton": "Actualizar Contraseña",
+      "successTitle": "Contraseña Actualizada",
+      "successMessage": "Tu contraseña ha sido actualizada exitosamente",
+      "errorAllFields": "Por favor completa todos los campos",
+      "errorPasswordMismatch": "Las contraseñas no coinciden",
+      "errorPasswordLength": "La contraseña debe tener al menos 6 caracteres"
+    },
+    "signOut": {
+      "title": "Cerrar Sesión",
+      "message": "¿Estás seguro de que quieres cerrar sesión?",
+      "signOut": "Cerrar Sesión",
+      "cancel": "Cancelar",
+      "errorFailed": "Error al cerrar sesión. Por favor intenta de nuevo."
+    }
+  },
+  "home": {
+    "nextTeeTime": "Próximo Horario",
+    "quickActions": "Acciones Rápidas",
+    "upcomingEvents": "Próximos Eventos",
+    "recentNotifications": "Notificaciones Recientes",
+    "bookTeeTime": "Reservar Horario",
+    "nearbyCourses": "Campos Cercanos",
+    "myTeeTimes": "Mis Horarios",
+    "inbox": "Bandeja",
+    "weather": {
+      "temperature": "Temperatura",
+      "wind": "Viento",
+      "humidity": "Humedad",
+      "condition": "Condición"
+    },
+    "profile": {
+      "handicap": "Handicap",
+      "viewProfile": "Ver Perfil →"
+    },
+    "teeTimeCard": {
+      "holes": "Hoyos"
+    }
+  },
+  "courses": {
+    "title": "Campos",
+    "searchPlaceholder": "Buscar campos...",
+    "noCourses": "No se encontraron campos",
+    "errorLoading": "Error al cargar campos",
+    "errorUnexpected": "Ocurrió un error inesperado",
+    "details": {
+      "title": "Detalles del Campo",
+      "about": "Acerca de",
+      "specifications": "Especificaciones",
+      "holes": "Hoyos",
+      "par": "Par",
+      "length": "Longitud",
+      "yards": "yardas",
+      "rating": "Rating",
+      "slope": "Slope",
+      "bookTeeTime": "Reservar Horario",
+      "facilities": "Instalaciones",
+      "contact": "Contacto",
+      "phone": "Teléfono",
+      "email": "Correo",
+      "website": "Sitio Web",
+      "hours": "Horario"
+    },
+    "teeTimes": {
+      "title": "Horarios Disponibles",
+      "selectDate": "Seleccionar Fecha",
+      "noTimes": "No hay horarios disponibles para esta fecha",
+      "available": "Disponible",
+      "booked": "Reservado",
+      "book": "Reservar"
+    }
+  },
+  "teeTimes": {
+    "title": "Mis Horarios",
+    "upcoming": "Próximos",
+    "past": "Pasados",
+    "noUpcoming": "No hay horarios próximos",
+    "noPast": "No hay horarios pasados",
+    "cancel": "Cancelar Reserva",
+    "cancelConfirm": "¿Estás seguro de que quieres cancelar esta reserva?",
+    "cancelSuccess": "Reserva cancelada exitosamente",
+    "cancelError": "Error al cancelar reserva",
+    "bookNew": "Reservar Nuevo Horario",
+    "details": {
+      "date": "Fecha",
+      "time": "Hora",
+      "course": "Campo",
+      "holes": "Hoyos",
+      "players": "Jugadores",
+      "status": "Estado",
+      "bookingNumber": "Número de Reserva"
+    },
+    "status": {
+      "confirmed": "CONFIRMADO",
+      "pending": "PENDIENTE",
+      "cancelled": "CANCELADO",
+      "completed": "COMPLETADO"
+    }
+  },
+  "reservation": {
+    "title": "Reservar Horario",
+    "selectPlayers": "Seleccionar Número de Jugadores",
+    "player": "Jugador",
+    "players": "Jugadores",
+    "selectDate": "Seleccionar Fecha",
+    "selectTime": "Seleccionar Hora",
+    "specialRequests": "Solicitudes Especiales",
+    "specialRequestsPlaceholder": "¿Alguna solicitud especial o nota?",
+    "confirmBooking": "Confirmar Reserva",
+    "summary": "Resumen de Reserva",
+    "course": "Campo",
+    "date": "Fecha",
+    "time": "Hora",
+    "holes": "Hoyos",
+    "totalCost": "Costo Total",
+    "bookNow": "Reservar Ahora",
+    "successTitle": "¡Reserva Confirmada!",
+    "successMessage": "Tu horario ha sido reservado exitosamente",
+    "errorTitle": "Error en Reserva",
+    "errorMessage": "Error al reservar horario. Por favor intenta de nuevo.",
+    "errorAllFields": "Por favor completa todos los campos requeridos"
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "markAllRead": "Marcar Todo como Leído",
+    "noNotifications": "No hay notificaciones",
+    "unread": "No Leídas",
+    "all": "Todas",
+    "types": {
+      "booking": "Reserva",
+      "reminder": "Recordatorio",
+      "announcement": "Anuncio",
+      "promotion": "Promoción"
+    }
+  },
+  "profile": {
+    "title": "Perfil",
+    "editProfile": "Editar Perfil",
+    "updateProfileInfo": "Actualiza tu información personal",
+    "updatePassword": "Actualizar Contraseña",
+    "changePassword": "Cambia la contraseña de tu cuenta",
+    "support": "Soporte",
+    "getHelp": "Obtén ayuda y contáctanos",
+    "termsOfUse": "Términos de Uso",
+    "readTerms": "Lee nuestros términos y condiciones",
+    "signOut": "Cerrar Sesión",
+    "edit": {
+      "title": "Editar Perfil",
+      "firstName": "Nombre",
+      "firstNamePlaceholder": "Ingresa nombre",
+      "lastName": "Apellido",
+      "lastNamePlaceholder": "Ingresa apellido",
+      "phone": "Número de Teléfono",
+      "phonePlaceholder": "Ingresa número de teléfono",
+      "handicap": "Índice de Handicap",
+      "handicapPlaceholder": "Ingresa handicap",
+      "homeCourse": "Campo Principal",
+      "selectHomeCourse": "Selecciona tu campo principal",
+      "changePhoto": "Cambiar Foto",
+      "saveChanges": "Guardar Cambios",
+      "successTitle": "Perfil Actualizado",
+      "successMessage": "Tu perfil ha sido actualizado exitosamente",
+      "errorTitle": "Error de Actualización",
+      "errorMessage": "Error al actualizar perfil. Por favor intenta de nuevo."
+    },
+    "support": {
+      "title": "Soporte",
+      "subtitle": "Obtén ayuda y contáctanos",
+      "contactEmail": "Soporte por Correo",
+      "contactPhone": "Soporte Telefónico",
+      "faq": "Preguntas Frecuentes",
+      "sendMessage": "Enviar Mensaje",
+      "subject": "Asunto",
+      "subjectPlaceholder": "¿En qué podemos ayudarte?",
+      "message": "Mensaje",
+      "messagePlaceholder": "Describe tu problema o pregunta...",
+      "send": "Enviar",
+      "successTitle": "Mensaje Enviado",
+      "successMessage": "Te responderemos pronto",
+      "errorAllFields": "Por favor completa todos los campos"
+    },
+    "termsOfUse": {
+      "title": "Términos de Uso",
+      "lastUpdated": "Última Actualización",
+      "accept": "Aceptar Términos",
+      "decline": "Rechazar"
+    }
+  },
+  "theme": {
+    "title": "Tema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema"
+  },
+  "language": {
+    "title": "Idioma",
+    "english": "Inglés",
+    "spanish": "Español",
+    "selectLanguage": "Seleccionar Idioma"
+  },
+  "errors": {
+    "network": "Error de red. Por favor verifica tu conexión.",
+    "server": "Error del servidor. Por favor intenta más tarde.",
+    "unauthorized": "No autorizado. Por favor inicia sesión de nuevo.",
+    "notFound": "Recurso no encontrado.",
+    "unknown": "Ocurrió un error desconocido.",
+    "timeout": "Tiempo de espera agotado. Por favor intenta de nuevo."
+  }
+}
