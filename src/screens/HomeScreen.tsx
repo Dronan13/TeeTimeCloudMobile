@@ -209,7 +209,7 @@ export default function HomeScreen() {
 
       {/* Next Tee Time / Book CTA */}
       <View style={homeStyles.section}>
-        {nextTeeTime ? (
+        {nextTeeTime && (
           <View style={homeStyles.nextTeeTimeCard}>
             <Text style={homeStyles.sectionTitle}>Next Tee Time</Text>
             <View style={homeStyles.teeTimeDetails}>
@@ -240,17 +240,6 @@ export default function HomeScreen() {
               <Text style={homeStyles.buttonText}>View Details</Text>
             </TouchableOpacity>
           </View>
-        ) : (
-          <View style={homeStyles.bookCTACard}>
-            <Text style={homeStyles.sectionTitle}>No Upcoming Tee Times</Text>
-            <Text style={homeStyles.ctaSubtext}>Ready to hit the links?</Text>
-            <TouchableOpacity
-              style={homeStyles.button}
-              onPress={() => navigation.navigate('Courses')}
-            >
-              <Text style={homeStyles.buttonText}>Book a Tee Time</Text>
-            </TouchableOpacity>
-          </View>
         )}
       </View>
 
@@ -260,7 +249,19 @@ export default function HomeScreen() {
         <View style={homeStyles.quickActionsRow}>
           <TouchableOpacity
             style={homeStyles.quickActionButton}
-            onPress={() => navigation.navigate('Courses')}
+            onPress={() => {
+              if (profile?.home_course_id && homeCourseName) {
+                navigation.navigate('Courses', {
+                  screen: 'CourseTeeTimesScreen',
+                  params: {
+                    courseId: profile.home_course_id,
+                    courseName: homeCourseName,
+                  },
+                });
+              } else {
+                navigation.navigate('Courses');
+              }
+            }}
           >
             <Text style={homeStyles.quickActionIcon}>⛳</Text>
             <Text style={homeStyles.quickActionText}>Book Tee Time</Text>

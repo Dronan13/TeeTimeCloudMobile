@@ -10,6 +10,7 @@ import {
   Alert,
   Animated,
   PanResponder,
+  Image,
 } from 'react-native';
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -17,6 +18,7 @@ import { CoursesStackParamList, Database } from '@/types';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/hooks/useAuth';
 import { format, addDays, parseISO, isSameDay } from 'date-fns';
+import { weatherService, WeatherForecast } from '@/services/weather';
 
 type CourseTeeTimesScreenRouteProp = RouteProp<
   CoursesStackParamList,
@@ -51,6 +53,8 @@ export default function CourseTeeTimesScreen() {
     hole: number;
     status: string;
   } | null>(null);
+  const [weatherForecast, setWeatherForecast] = useState<WeatherForecast | null>(null);
+  const [courseLocation, setCourseLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 
   useEffect(() => {
     fetchCourseDetails();
@@ -65,13 +69,33 @@ export default function CourseTeeTimesScreen() {
     try {
       const { data, error } = await supabase
         .from('courses')
-        .select('booking_window_days')
+        .select('booking_window_days, location')
         .eq('id', courseId)
         .single();
 
       if (error) throw error;
       if (data?.booking_window_days) {
         setBookingWindowDays(data.booking_window_days);
+      }
+
+      // Fetch weather forecast if location is available
+      if (data?.location) {
+        const location = data.location as any;
+        if (location?.latitude && location?.longitude) {
+          setCourseLocation({ latitude: location.latitude, longitude: location.longitude });
+
+          // Fetch weather forecast for up to 14 days (max supported by API is usually 14-16 days)
+          const forecastDays = bookingWindowDays+1;
+          const weatherRes = await weatherService.getForecast(
+            location.latitude,
+            location.longitude,
+            forecastDays
+          );
+
+          if (weatherRes.data) {
+            setWeatherForecast(weatherRes.data);
+          }
+        }
       }
     } catch (error) {
       console.error('Error fetching course details:', error);
@@ -278,6 +302,13 @@ export default function CourseTeeTimesScreen() {
 
   const renderDateItem = ({ item }: { item: Date }) => {
     const isSelected = isSameDay(item, selectedDate);
+    const dateStr = format(item, 'yyyy-MM-dd');
+
+    // Find weather forecast for this date
+    const dayForecast = weatherForecast?.forecast?.forecastday?.find(
+      (day) => day.date === dateStr
+    );
+
     return (
       <TouchableOpacity
         style={[styles.dateItem, isSelected && styles.dateItemActive]}
@@ -289,6 +320,17 @@ export default function CourseTeeTimesScreen() {
         <Text style={[styles.dateNumber, isSelected && styles.dateTextActive]}>
           {format(item, 'd')}
         </Text>
+        {dayForecast && (
+          <View style={styles.weatherContainer}>
+            <Image
+              source={{ uri: `https:${dayForecast.day.condition.icon}` }}
+              style={styles.weatherIcon}
+            />
+            <Text style={[styles.weatherTemp, isSelected && styles.dateTextActive]}>
+              {Math.round(dayForecast.day.avgtemp_f)}°
+            </Text>
+          </View>
+        )}
       </TouchableOpacity>
     );
   };
@@ -464,7 +506,7 @@ const styles = StyleSheet.create({
   },
   dateItem: {
     width: 60,
-    height: 70,
+    height: 110,
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 4,
@@ -472,6 +514,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f3f4f6',
     borderWidth: 1,
     borderColor: 'transparent',
+    paddingVertical: 8,
   },
   dateItemActive: {
     backgroundColor: '#22c55e',
@@ -679,5 +722,19 @@ const styles = StyleSheet.create({
   },
   bookButtonDisabled: {
     backgroundColor: '#d1d5db',
+  },
+  weatherContainer: {
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  weatherIcon: {
+    width: 24,
+    height: 24,
+    marginBottom: 2,
+  },
+  weatherTemp: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#111827',
   },
 });

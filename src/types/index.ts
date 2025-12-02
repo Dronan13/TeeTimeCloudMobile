@@ -1,4 +1,5 @@
 import { Tables, Database as SupabaseDatabase } from './supabase';
+import { NavigatorScreenParams } from '@react-navigation/native';
 
 // Database types
 export type Database = SupabaseDatabase;
@@ -46,10 +47,10 @@ export type RootStackParamList = {
 
 export type AppTabParamList = {
   Home: undefined;
-  Courses: undefined;
+  Courses: NavigatorScreenParams<CoursesStackParamList> | undefined;
   TeeTimes: undefined;
   Notifications: undefined;
-  Profile: undefined;
+  Profile: NavigatorScreenParams<ProfileStackParamList> | undefined;
 };
 
 export type CoursesStackParamList = {
