@@ -21,7 +21,6 @@ const LANGUAGE_STORAGE_KEY = '@teetimecloud_language';
 i18n
   .use(initReactI18next)
   .init({
-    compatibilityJSON: 'v3',
     resources: {
       en: { translation: en },
       es: { translation: es },
