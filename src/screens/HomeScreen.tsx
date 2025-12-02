@@ -8,6 +8,9 @@ import {
   ActivityIndicator,
   RefreshControl,
   Image,
+  Modal,
+  StatusBar,
+  Dimensions,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -23,6 +26,8 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
 dayjs.extend(relativeTime);
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 type HomeScreenNavigationProp = CompositeNavigationProp<
   BottomTabNavigationProp<AppTabParamList, 'Home'>,
@@ -41,6 +46,8 @@ export default function HomeScreen() {
   const [upcomingEvents, setUpcomingEvents] = useState<CourseEvent[]>([]);
   const [weather, setWeather] = useState<any>(null);
   const [homeCourseName, setHomeCourseName] = useState<string>('');
+  const [fullscreenImageUrl, setFullscreenImageUrl] = useState<string | null>(null);
+  const [isImageModalVisible, setIsImageModalVisible] = useState(false);
 
   useEffect(() => {
     loadHomeData();
@@ -129,6 +136,16 @@ export default function HomeScreen() {
     loadHomeData();
   };
 
+  const handleImagePress = (imageUrl: string) => {
+    setFullscreenImageUrl(imageUrl);
+    setIsImageModalVisible(true);
+  };
+
+  const handleCloseImageModal = () => {
+    setIsImageModalVisible(false);
+    setTimeout(() => setFullscreenImageUrl(null), 300);
+  };
+
   if (loading) {
     return (
       <View style={homeStyles.loadingContainer}>
@@ -138,10 +155,11 @@ export default function HomeScreen() {
   }
 
   return (
-    <ScrollView
-      style={homeStyles.container}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-    >
+    <>
+      <ScrollView
+        style={homeStyles.container}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      >
       {/* Profile Snapshot */}
       <View style={homeStyles.profileSection}>
         <View style={homeStyles.profileInfo}>
@@ -307,11 +325,16 @@ export default function HomeScreen() {
             return (
               <View key={event.id} style={homeStyles.eventCard}>
                 {event.image_url && (
-                  <Image
-                    source={{ uri: event.image_url }}
-                    style={homeStyles.eventImage}
-                    resizeMode="cover"
-                  />
+                  <TouchableOpacity
+                    onPress={() => handleImagePress(event.image_url!)}
+                    activeOpacity={0.9}
+                  >
+                    <Image
+                      source={{ uri: event.image_url }}
+                      style={homeStyles.eventImage}
+                      resizeMode="cover"
+                    />
+                  </TouchableOpacity>
                 )}
                 <View style={homeStyles.eventInfo}>
                   <Text style={homeStyles.eventTitle} numberOfLines={2}>
@@ -363,7 +386,41 @@ export default function HomeScreen() {
           ))}
         </View>
       )}
-    </ScrollView>
+      </ScrollView>
+
+      {/* Fullscreen Image Modal */}
+      <Modal
+        visible={isImageModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={handleCloseImageModal}
+      >
+        <View style={homeStyles.modalContainer}>
+          <StatusBar barStyle="light-content" />
+          <TouchableOpacity
+            style={homeStyles.modalCloseButton}
+            onPress={handleCloseImageModal}
+            activeOpacity={0.8}
+          >
+            <Text style={homeStyles.modalCloseText}>✕</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={homeStyles.modalImageContainer}
+            activeOpacity={1}
+            onPress={handleCloseImageModal}
+          >
+            {fullscreenImageUrl && (
+              <Image
+                source={{ uri: fullscreenImageUrl }}
+                style={homeStyles.modalImage}
+                resizeMode="contain"
+              />
+            )}
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    </>
   );
 }
 
@@ -681,5 +738,40 @@ const homeStyles = StyleSheet.create({
   notificationTime: {
     fontSize: 11,
     color: '#9ca3af',
+  },
+
+  // Modal
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.95)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalCloseButton: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    zIndex: 10,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalCloseText: {
+    color: '#fff',
+    fontSize: 28,
+    fontWeight: '300',
+  },
+  modalImageContainer: {
+    flex: 1,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalImage: {
+    width: SCREEN_WIDTH,
+    height: '100%',
   },
 });
