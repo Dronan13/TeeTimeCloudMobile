@@ -15,6 +15,7 @@ import { CoursesStackParamList, Course } from '@/types';
 import { coursesService } from '@/services/courses';
 import { useTheme } from '@/contexts/ThemeContext';
 import { styles as globalStyles } from '@/utils/styles';
+import { MapPin, Phone, Mail, ChevronRight, Flag, X } from 'lucide-react-native';
 
 type CoursesScreenNavigationProp = StackNavigationProp<
   CoursesStackParamList,
@@ -82,7 +83,6 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
     if (!location) return null;
     if (typeof location === 'string') return location;
     if (typeof location === 'object') {
-      // Try common address field names
       return location.address || location.formatted_address || location.city || null;
     }
     return null;
@@ -105,23 +105,32 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
             {item.name}
           </Text>
           {locationAddress && (
-            <Text style={[styles.courseLocation, isDark && styles.courseLocationDark]} numberOfLines={3}>
-              📍 {locationAddress}
-            </Text>
+            <View style={styles.courseRow}>
+              <MapPin size={14} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={2} />
+              <Text style={[styles.courseLocation, isDark && styles.courseLocationDark]} numberOfLines={2}>
+                {locationAddress}
+              </Text>
+            </View>
           )}
           {item.phone && (
-            <Text style={[styles.coursePhone, isDark && styles.coursePhoneDark]} numberOfLines={1}>
-              📞 {item.phone}
-            </Text>
+            <View style={styles.courseRow}>
+              <Phone size={14} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={2} />
+              <Text style={[styles.coursePhone, isDark && styles.coursePhoneDark]} numberOfLines={1}>
+                {item.phone}
+              </Text>
+            </View>
           )}
           {item.email && (
-            <Text style={[styles.courseEmail, isDark && styles.courseEmailDark]} numberOfLines={1}>
-              📧 {item.email}
-            </Text>
+            <View style={styles.courseRow}>
+              <Mail size={14} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={2} />
+              <Text style={[styles.courseEmail, isDark && styles.courseEmailDark]} numberOfLines={1}>
+                {item.email}
+              </Text>
+            </View>
           )}
         </View>
         <View style={[styles.courseArrowContainer, isDark && styles.courseArrowContainerDark]}>
-          <Text style={styles.courseArrow}>›</Text>
+          <ChevronRight size={24} color="#2d7a4e" strokeWidth={2} />
         </View>
       </TouchableOpacity>
     );
@@ -129,7 +138,7 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
 
   const renderEmptyState = () => (
     <View style={[styles.emptyState, isDark && styles.emptyStateDark]}>
-      <Text style={styles.emptyStateIcon}>⛳</Text>
+      <Flag size={48} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={1.5} />
       <Text style={[styles.emptyStateTitle, isDark && styles.emptyStateTitleDark]}>
         {searchQuery ? 'No courses found' : 'No courses available'}
       </Text>
@@ -144,7 +153,7 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
   if (loading && !refreshing) {
     return (
       <View style={[styles.centerContainer, isDark && styles.centerContainerDark]}>
-        <ActivityIndicator size="large" color="#22c55e" />
+        <ActivityIndicator size="large" color="#2d7a4e" />
         <Text style={[styles.loadingText, isDark && styles.loadingTextDark]}>Loading courses...</Text>
       </View>
     );
@@ -171,7 +180,7 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
         <TextInput
           style={[styles.searchInput, isDark && styles.searchInputDark]}
           placeholder="Search courses by name..."
-          placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
+          placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
           value={searchQuery}
           onChangeText={handleSearch}
           autoCapitalize="none"
@@ -179,8 +188,8 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
           clearButtonMode="while-editing"
         />
         {searchQuery.length > 0 && (
-          <TouchableOpacity style={[styles.clearButton, isDark && styles.clearButtonDark]} onPress={() => handleSearch('')}>
-            <Text style={styles.clearButtonText}>✕</Text>
+          <TouchableOpacity style={styles.clearButton} onPress={() => handleSearch('')}>
+            <X size={16} color="#fff" strokeWidth={2} />
           </TouchableOpacity>
         )}
       </View>
@@ -197,8 +206,8 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            tintColor="#22c55e"
-            colors={['#22c55e']}
+            tintColor="#2d7a4e"
+            colors={['#2d7a4e']}
           />
         }
         showsVerticalScrollIndicator={false}
@@ -210,14 +219,14 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8f9fa',
   },
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8f9fa',
   },
   searchContainer: {
     flexDirection: 'row',
@@ -226,16 +235,16 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: '#d1d6db',
   },
   searchInput: {
     flex: 1,
     height: 44,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: '#e9ecef',
     borderRadius: 10,
     paddingHorizontal: 16,
     fontSize: 16,
-    color: '#111827',
+    color: '#212529',
   },
   clearButton: {
     position: 'absolute',
@@ -244,13 +253,8 @@ const styles = StyleSheet.create({
     height: 28,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#d1d5db',
+    backgroundColor: '#868e96',
     borderRadius: 14,
-  },
-  clearButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
   },
   listContainer: {
     padding: 16,
@@ -265,45 +269,51 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.08,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 2,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#e9ecef',
   },
   courseImage: {
     width: '25%',
     minHeight: 120,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: '#d1d6db',
   },
   courseInfo: {
     flex: 1,
     padding: 12,
     justifyContent: 'center',
+    gap: 6,
   },
   courseName: {
     fontSize: 16,
-    fontWeight: '700',
-    color: '#111827',
-    marginBottom: 4,
+    fontWeight: '600',
+    color: '#212529',
+    marginBottom: 2,
+  },
+  courseRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
   },
   courseLocation: {
     fontSize: 13,
-    color: '#6b7280',
-    marginBottom: 3,
+    color: '#868e96',
+    flex: 1,
   },
   coursePhone: {
     fontSize: 13,
-    color: '#6b7280',
-    marginBottom: 3,
+    color: '#868e96',
   },
   courseEmail: {
     fontSize: 13,
-    color: '#6b7280',
-    marginBottom: 3,
+    color: '#868e96',
   },
   courseDescription: {
     fontSize: 13,
-    color: '#4b5563',
+    color: '#495057',
     lineHeight: 18,
     marginTop: 4,
   },
@@ -312,45 +322,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 12,
   },
-  courseArrow: {
-    fontSize: 28,
-    color: '#22c55e',
-    fontWeight: '300',
-  },
   emptyState: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 32,
-  },
-  emptyStateIcon: {
-    fontSize: 64,
-    marginBottom: 16,
+    gap: 12,
   },
   emptyStateTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#111827',
-    marginBottom: 8,
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#212529',
     textAlign: 'center',
   },
   emptyStateText: {
-    fontSize: 16,
-    color: '#6b7280',
+    fontSize: 15,
+    color: '#868e96',
     textAlign: 'center',
-    lineHeight: 24,
+    lineHeight: 22,
   },
   loadingText: {
     marginTop: 16,
-    fontSize: 16,
-    color: '#6b7280',
+    fontSize: 15,
+    color: '#868e96',
   },
   errorIcon: {
-    fontSize: 64,
+    fontSize: 48,
     marginBottom: 16,
   },
   errorText: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#ef4444',
     textAlign: 'center',
     marginBottom: 24,
@@ -358,54 +359,52 @@ const styles = StyleSheet.create({
   },
   // Dark mode styles
   containerDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
   },
   centerContainerDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
   },
   searchContainerDark: {
-    backgroundColor: '#1f2937',
-    borderBottomColor: '#374151',
+    backgroundColor: '#2b3137',
+    borderBottomColor: '#343a40',
   },
   searchInputDark: {
-    backgroundColor: '#374151',
-    color: '#f9fafb',
-  },
-  clearButtonDark: {
-    backgroundColor: '#4b5563',
+    backgroundColor: '#343a40',
+    color: '#f8f9fa',
   },
   courseCardDark: {
-    backgroundColor: '#1f2937',
+    backgroundColor: '#2b3137',
+    borderColor: '#343a40',
   },
   courseInfoDark: {
-    backgroundColor: '#1f2937',
+    backgroundColor: '#2b3137',
   },
   courseNameDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   courseLocationDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   coursePhoneDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   courseEmailDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   courseArrowContainerDark: {
-    backgroundColor: '#1f2937',
+    backgroundColor: '#2b3137',
   },
   emptyStateDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
   },
   emptyStateTitleDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   emptyStateTextDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   loadingTextDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   errorTextDark: {
     color: '#ef4444',

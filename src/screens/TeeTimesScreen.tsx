@@ -14,6 +14,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/lib/supabaseClient';
 import { Database } from '@/types/supabase';
 import { format, parseISO, isPast, startOfDay } from 'date-fns';
+import { Calendar, Clock, Flag, DollarSign, X } from 'lucide-react-native';
 
 type TeeTimeReservation =
   Database['public']['Views']['tee_time_reservations_with_slot']['Row'];
@@ -55,14 +56,12 @@ export default function TeeTimesScreen() {
         }
       });
 
-      // Sort upcoming: tee_date -> tee_time ascending
       upcoming.sort((a, b) => {
         const dateCompare = (a.tee_date || '').localeCompare(b.tee_date || '');
         if (dateCompare !== 0) return dateCompare;
         return (a.tee_time || '').localeCompare(b.tee_time || '');
       });
 
-      // Sort past: tee_date -> tee_time descending
       past.sort((a, b) => {
         const dateCompare = (b.tee_date || '').localeCompare(a.tee_date || '');
         if (dateCompare !== 0) return dateCompare;
@@ -131,13 +130,13 @@ export default function TeeTimesScreen() {
   const getStatusColor = (status: string | null) => {
     switch (status) {
       case 'confirmed':
-        return '#22c55e';
+        return '#2d7a4e';
       case 'pending':
         return '#f59e0b';
       case 'cancelled':
         return '#ef4444';
       default:
-        return '#6b7280';
+        return '#868e96';
     }
   };
 
@@ -164,6 +163,7 @@ export default function TeeTimesScreen() {
 
         <View style={styles.cardBody}>
           <View style={styles.infoRow}>
+            <Calendar size={16} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={2} />
             <Text style={[styles.infoLabel, isDark && styles.infoLabelDark]}>Date:</Text>
             <Text style={[styles.infoValue, isDark && styles.infoValueDark]}>
               {reservation.tee_date
@@ -173,6 +173,7 @@ export default function TeeTimesScreen() {
           </View>
 
           <View style={styles.infoRow}>
+            <Clock size={16} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={2} />
             <Text style={[styles.infoLabel, isDark && styles.infoLabelDark]}>Time:</Text>
             <Text style={[styles.infoValue, isDark && styles.infoValueDark]}>
               {reservation.tee_time ? reservation.tee_time.slice(0, 5) : 'N/A'}
@@ -180,12 +181,14 @@ export default function TeeTimesScreen() {
           </View>
 
           <View style={styles.infoRow}>
+            <Flag size={16} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={2} />
             <Text style={[styles.infoLabel, isDark && styles.infoLabelDark]}>Hole:</Text>
             <Text style={[styles.infoValue, isDark && styles.infoValueDark]}>{reservation.hole || 'N/A'}</Text>
           </View>
 
           {reservation.total_price && (
             <View style={styles.infoRow}>
+              <DollarSign size={16} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={2} />
               <Text style={[styles.infoLabel, isDark && styles.infoLabelDark]}>Price:</Text>
               <Text style={[styles.infoValue, isDark && styles.infoValueDark]}>${reservation.total_price.toFixed(2)}</Text>
             </View>
@@ -216,6 +219,7 @@ export default function TeeTimesScreen() {
               style={[styles.cancelButton, isDark && styles.cancelButtonDark]}
               onPress={() => handleCancelReservation(reservation)}
             >
+              <X size={16} color="#dc2626" strokeWidth={2} />
               <Text style={styles.cancelButtonText}>Cancel Reservation</Text>
             </TouchableOpacity>
           )}
@@ -227,7 +231,7 @@ export default function TeeTimesScreen() {
   if (loading) {
     return (
       <View style={[styles.loadingContainer, isDark && styles.loadingContainerDark]}>
-        <ActivityIndicator size="large" color="#22c55e" />
+        <ActivityIndicator size="large" color="#2d7a4e" />
       </View>
     );
   }
@@ -265,12 +269,13 @@ export default function TeeTimesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8f9fa',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#f8f9fa',
   },
   section: {
     marginTop: 16,
@@ -278,8 +283,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#111827',
+    fontWeight: '600',
+    color: '#212529',
     marginBottom: 12,
   },
   reservationCard: {
@@ -289,9 +294,11 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
     elevation: 2,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
   },
   cardHeader: {
     flexDirection: 'row',
@@ -300,12 +307,12 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: '#e9ecef',
   },
   courseName: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '600',
-    color: '#111827',
+    color: '#212529',
     flex: 1,
   },
   statusBadge: {
@@ -316,25 +323,27 @@ const styles = StyleSheet.create({
   statusText: {
     color: '#fff',
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
   cardBody: {
-    gap: 8,
+    gap: 10,
   },
   infoRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    gap: 8,
   },
   infoLabel: {
     fontSize: 14,
-    color: '#6b7280',
+    color: '#868e96',
     fontWeight: '500',
+    minWidth: 50,
   },
   infoValue: {
     fontSize: 14,
-    color: '#111827',
+    color: '#212529',
     fontWeight: '600',
+    flex: 1,
   },
   emptyState: {
     backgroundColor: '#fff',
@@ -342,57 +351,59 @@ const styles = StyleSheet.create({
     padding: 32,
     alignItems: 'center',
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
   },
   emptyText: {
-    fontSize: 16,
-    color: '#9ca3af',
+    fontSize: 15,
+    color: '#adb5bd',
   },
   requestedItemsContainer: {
     marginTop: 8,
-    paddingTop: 8,
+    paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#f3f4f6',
+    borderTopColor: '#e9ecef',
   },
   requestedItemsLabel: {
     fontSize: 14,
-    color: '#6b7280',
+    color: '#868e96',
     fontWeight: '500',
-    marginBottom: 6,
+    marginBottom: 8,
   },
   tagsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 6,
+    gap: 8,
   },
   tag: {
-    backgroundColor: '#e0f2fe',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 6,
+    backgroundColor: '#f0f9f4',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#7dd3fc',
+    borderColor: '#daf1e4',
   },
   tagText: {
-    fontSize: 12,
-    color: '#0369a1',
+    fontSize: 13,
+    color: '#2d7a4e',
     fontWeight: '600',
   },
   notesContainer: {
     marginTop: 8,
-    paddingTop: 8,
+    paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#f3f4f6',
+    borderTopColor: '#e9ecef',
   },
   notesLabel: {
     fontSize: 14,
-    color: '#6b7280',
+    color: '#868e96',
     fontWeight: '500',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   notesText: {
-    fontSize: 13,
-    color: '#4b5563',
-    fontStyle: 'italic',
+    fontSize: 14,
+    color: '#495057',
+    lineHeight: 20,
   },
   cancelButton: {
     marginTop: 12,
@@ -403,6 +414,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 8,
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
   },
   cancelButtonText: {
     color: '#dc2626',
@@ -411,56 +425,58 @@ const styles = StyleSheet.create({
   },
   // Dark mode styles
   containerDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
   },
   loadingContainerDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
   },
   sectionTitleDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   reservationCardDark: {
-    backgroundColor: '#1f2937',
+    backgroundColor: '#2b3137',
+    borderColor: '#343a40',
   },
   cardHeaderDark: {
-    borderBottomColor: '#374151',
+    borderBottomColor: '#343a40',
   },
   courseNameDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   infoLabelDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   infoValueDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   emptyStateDark: {
-    backgroundColor: '#1f2937',
+    backgroundColor: '#2b3137',
+    borderColor: '#343a40',
   },
   emptyTextDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   requestedItemsContainerDark: {
-    borderTopColor: '#374151',
+    borderTopColor: '#343a40',
   },
   requestedItemsLabelDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   tagDark: {
-    backgroundColor: '#1f2937',
-    borderColor: '#374151',
+    backgroundColor: '#1a1d21',
+    borderColor: '#343a40',
   },
   tagTextDark: {
-    color: '#22c55e',
+    color: '#2d7a4e',
   },
   notesContainerDark: {
-    borderTopColor: '#374151',
+    borderTopColor: '#343a40',
   },
   notesLabelDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   notesTextDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   cancelButtonDark: {
     backgroundColor: '#7f1d1d',

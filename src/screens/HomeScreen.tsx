@@ -26,6 +26,7 @@ import { weatherService } from '@/services/weather';
 import { ReservationWithDetails, Notification, CourseEvent, AppTabParamList, CoursesStackParamList } from '@/types';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { Flag, MapPin, Calendar, Bell, Thermometer, Wind, Droplets, CloudSun, Clock, X } from 'lucide-react-native';
 
 dayjs.extend(relativeTime);
 
@@ -62,7 +63,6 @@ export default function HomeScreen() {
     try {
       setLoading(true);
 
-      // Fetch home course name if available
       if (profile?.home_course_id) {
         const courseRes = await coursesService.fetchCourseById(profile.home_course_id);
         if (courseRes.data?.name) {
@@ -70,7 +70,6 @@ export default function HomeScreen() {
         }
       }
 
-      // Fetch weather for home course first
       if (profile?.home_course_id) {
         const courseRes = await coursesService.fetchCourseById(profile.home_course_id);
         const homeCourseLocation = courseRes.data?.location as any;
@@ -85,20 +84,17 @@ export default function HomeScreen() {
           }
         }
 
-        // Fetch events for home course
         const eventsRes = await coursesService.fetchCourseEvents(profile.home_course_id);
         if (eventsRes.data) {
           setUpcomingEvents(eventsRes.data.slice(0, 3));
         }
       }
 
-      // Fetch next tee time
       const nextRes = await reservationsService.fetchNextReservation(user.id);
       if (nextRes.data) {
         setNextTeeTime(nextRes.data);
       }
 
-      // Fetch unread count
       const unreadRes = await notificationsService.fetchUnreadCount(user.id);
       if (unreadRes.data !== null) {
         setUnreadCount(unreadRes.data);
@@ -129,7 +125,7 @@ export default function HomeScreen() {
   if (loading) {
     return (
       <View style={[homeStyles.loadingContainer, isDark && homeStyles.loadingContainerDark]}>
-        <ActivityIndicator size="large" color="#22c55e" />
+        <ActivityIndicator size="large" color="#2d7a4e" />
       </View>
     );
   }
@@ -164,16 +160,16 @@ export default function HomeScreen() {
               {profile?.first_name || 'Golfer'} {profile?.last_name || ''}
             </Text>
             {homeCourseName && (
-              <Text style={homeStyles.homeCourse}>🏌️ {homeCourseName}</Text>
+              <View style={homeStyles.homeCourseRow}>
+                <Flag size={14} color="#fff" strokeWidth={2} />
+                <Text style={homeStyles.homeCourse}>{homeCourseName}</Text>
+              </View>
             )}
             {profile?.handicap_index !== null && profile?.handicap_index !== undefined && (
               <Text style={homeStyles.handicap}>{t('home.profile.handicap')}: {profile.handicap_index}</Text>
             )}
           </View>
         </View>
-        {/* <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-          <Text style={homeStyles.viewProfileLink}>View Profile →</Text>
-        </TouchableOpacity> */}
       </View>
 
       {/* Weather at Home Course */}
@@ -181,22 +177,26 @@ export default function HomeScreen() {
         <View style={[homeStyles.section, isDark && homeStyles.sectionDark]}>
           <View style={homeStyles.weatherDetails}>
               <View style={homeStyles.weatherItem}>
+                <Thermometer size={20} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={1.5} />
                 <Text style={[homeStyles.weatherLabel, isDark && homeStyles.weatherLabelDark]}>{t('home.weather.temperature')}</Text>
                 <Text style={[homeStyles.weatherValue, isDark && homeStyles.weatherValueDark]}>
                   {Math.round(weather.current?.temp_f)}°F
                 </Text>
               </View>
               <View style={homeStyles.weatherItem}>
+                <Wind size={20} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={1.5} />
                 <Text style={[homeStyles.weatherLabel, isDark && homeStyles.weatherLabelDark]}>{t('home.weather.wind')}</Text>
                 <Text style={[homeStyles.weatherValue, isDark && homeStyles.weatherValueDark]}>
-                  {Math.round(weather.current?.wind_mph)} mph {weather.current?.wind_dir}
+                  {Math.round(weather.current?.wind_mph)} mph
                 </Text>
               </View>
               <View style={homeStyles.weatherItem}>
+                <Droplets size={20} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={1.5} />
                 <Text style={[homeStyles.weatherLabel, isDark && homeStyles.weatherLabelDark]}>{t('home.weather.humidity')}</Text>
                 <Text style={[homeStyles.weatherValue, isDark && homeStyles.weatherValueDark]}>{weather.current?.humidity}%</Text>
               </View>
               <View style={homeStyles.weatherItem}>
+                <CloudSun size={20} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={1.5} />
                 <Text style={[homeStyles.weatherLabel, isDark && homeStyles.weatherLabelDark]}>{t('home.weather.condition')}</Text>
                 <Text style={[homeStyles.weatherValue, isDark && homeStyles.weatherValueDark]}>{weather.current?.condition?.text}</Text>
               </View>
@@ -210,18 +210,29 @@ export default function HomeScreen() {
           <View style={[homeStyles.nextTeeTimeCard, isDark && homeStyles.nextTeeTimeCardDark]}>
             <Text style={[homeStyles.sectionTitle, isDark && homeStyles.sectionTitleDark]}>{t('home.nextTeeTime')}</Text>
             <View style={homeStyles.teeTimeDetails}>
-              <Text style={[homeStyles.teeTimeDate, isDark && homeStyles.teeTimeDateDark]}>
-                📅 {dayjs(nextTeeTime.slot?.tee_date).format('dddd, MMMM D, YYYY')}
-              </Text>
-              <Text style={[homeStyles.teeTimeTime, isDark && homeStyles.teeTimeTimeDark]}>
-                ⏰ {dayjs(nextTeeTime.slot?.tee_date).format('h:mm A')}
-              </Text>
-              <Text style={[homeStyles.teeTimeCourse, isDark && homeStyles.teeTimeCourseDark]}>
-                ⛳ {nextTeeTime.course?.name || 'Golf Course'}
-              </Text>
-              <Text style={[homeStyles.teeTimeHoles, isDark && homeStyles.teeTimeHolesDark]}>
-                🏌️ {nextTeeTime.holes} {t('home.teeTimeCard.holes')}
-              </Text>
+              <View style={homeStyles.teeTimeRow}>
+                <Calendar size={16} color={isDark ? '#f8f9fa' : '#212529'} strokeWidth={2} />
+                <Text style={[homeStyles.teeTimeDate, isDark && homeStyles.teeTimeDateDark]}>
+                  {dayjs(nextTeeTime.slot?.tee_date).format('dddd, MMMM D, YYYY')}
+                </Text>
+              </View>
+              <View style={homeStyles.teeTimeRow}>
+                <Clock size={16} color={isDark ? '#f8f9fa' : '#212529'} strokeWidth={2} />
+                <Text style={[homeStyles.teeTimeTime, isDark && homeStyles.teeTimeTimeDark]}>
+                  {dayjs(nextTeeTime.slot?.tee_date).format('h:mm A')}
+                </Text>
+              </View>
+              <View style={homeStyles.teeTimeRow}>
+                <Flag size={16} color={isDark ? '#adb5bd' : '#495057'} strokeWidth={2} />
+                <Text style={[homeStyles.teeTimeCourse, isDark && homeStyles.teeTimeCourseDark]}>
+                  {nextTeeTime.course?.name || 'Golf Course'}
+                </Text>
+              </View>
+              <View style={homeStyles.teeTimeRow}>
+                <Text style={[homeStyles.teeTimeHoles, isDark && homeStyles.teeTimeHolesDark]}>
+                  {nextTeeTime.holes} {t('home.teeTimeCard.holes')}
+                </Text>
+              </View>
               {nextTeeTime.booking_status && (
                 <View style={homeStyles.statusBadge}>
                   <Text style={homeStyles.statusText}>
@@ -260,28 +271,28 @@ export default function HomeScreen() {
               }
             }}
           >
-            <Text style={homeStyles.quickActionIcon}>⛳</Text>
+            <Flag size={24} color="#2d7a4e" strokeWidth={2} />
             <Text style={[homeStyles.quickActionText, isDark && homeStyles.quickActionTextDark]}>{t('home.bookTeeTime')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[homeStyles.quickActionButton, isDark && homeStyles.quickActionButtonDark]}
             onPress={() => navigation.navigate('Courses')}
           >
-            <Text style={homeStyles.quickActionIcon}>📍</Text>
+            <MapPin size={24} color="#2d7a4e" strokeWidth={2} />
             <Text style={[homeStyles.quickActionText, isDark && homeStyles.quickActionTextDark]}>{t('home.nearbyCourses')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[homeStyles.quickActionButton, isDark && homeStyles.quickActionButtonDark]}
             onPress={() => navigation.navigate('TeeTimes')}
           >
-            <Text style={homeStyles.quickActionIcon}>📅</Text>
+            <Calendar size={24} color="#2d7a4e" strokeWidth={2} />
             <Text style={[homeStyles.quickActionText, isDark && homeStyles.quickActionTextDark]}>{t('home.myTeeTimes')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[homeStyles.quickActionButton, isDark && homeStyles.quickActionButtonDark]}
             onPress={() => navigation.navigate('Notifications')}
           >
-            <Text style={homeStyles.quickActionIcon}>🔔</Text>
+            <Bell size={24} color="#2d7a4e" strokeWidth={2} />
             <Text style={[homeStyles.quickActionText, isDark && homeStyles.quickActionTextDark]}>{t('home.inbox')}</Text>
             {unreadCount > 0 && (
               <View style={homeStyles.badge}>
@@ -291,8 +302,6 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
       </View>
-      
-      
 
       {/* Upcoming Course Events */}
       {upcomingEvents.length > 0 && (
@@ -328,16 +337,22 @@ export default function HomeScreen() {
                   <Text style={[homeStyles.eventTitle, isDark && homeStyles.eventTitleDark]} numberOfLines={2}>
                     {event.title}
                   </Text>
-                  <Text style={[homeStyles.eventDate, isDark && homeStyles.eventDateDark]}>
-                    📅 {formattedDate} at {formattedTime}
-                  </Text>
-                  {event.location && (
-                    <Text style={[homeStyles.eventLocation, isDark && homeStyles.eventLocationDark]} numberOfLines={1}>
-                      📍 {event.location}
+                  <View style={homeStyles.eventRow}>
+                    <Calendar size={12} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={2} />
+                    <Text style={[homeStyles.eventDate, isDark && homeStyles.eventDateDark]}>
+                      {formattedDate} at {formattedTime}
                     </Text>
+                  </View>
+                  {event.location && (
+                    <View style={homeStyles.eventRow}>
+                      <MapPin size={12} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={2} />
+                      <Text style={[homeStyles.eventLocation, isDark && homeStyles.eventLocationDark]} numberOfLines={1}>
+                        {event.location}
+                      </Text>
+                    </View>
                   )}
                   {event.price !== null && event.price > 0 && (
-                    <Text style={homeStyles.eventPrice}>💰 ${event.price.toFixed(2)}</Text>
+                    <Text style={homeStyles.eventPrice}>${event.price.toFixed(2)}</Text>
                   )}
                 </View>
               </View>
@@ -361,7 +376,7 @@ export default function HomeScreen() {
             onPress={handleCloseImageModal}
             activeOpacity={0.8}
           >
-            <Text style={homeStyles.modalCloseText}>✕</Text>
+            <X size={24} color="#fff" strokeWidth={2} />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -386,13 +401,13 @@ export default function HomeScreen() {
 const homeStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8f9fa',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8f9fa',
   },
   section: {
     backgroundColor: '#fff',
@@ -407,19 +422,19 @@ const homeStyles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1f2937',
+    fontWeight: '600',
+    color: '#212529',
     marginBottom: 12,
   },
   viewAllLink: {
     fontSize: 14,
-    color: '#22c55e',
+    color: '#2d7a4e',
     fontWeight: '600',
   },
 
   // Profile Snapshot
   profileSection: {
-    backgroundColor: '#22c55e',
+    backgroundColor: '#2d7a4e',
     padding: 20,
     marginBottom: 0,
   },
@@ -444,23 +459,28 @@ const homeStyles = StyleSheet.create({
   },
   avatarText: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#22c55e',
+    fontWeight: '600',
+    color: '#2d7a4e',
   },
   profileDetails: {
     flex: 1,
   },
   profileName: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: '600',
     color: '#fff',
     marginBottom: 4,
+  },
+  homeCourseRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 2,
   },
   homeCourse: {
     fontSize: 14,
     color: '#fff',
     opacity: 0.9,
-    marginBottom: 2,
   },
   handicap: {
     fontSize: 14,
@@ -476,43 +496,46 @@ const homeStyles = StyleSheet.create({
 
   // Next Tee Time
   nextTeeTimeCard: {
-    backgroundColor: '#f0fdf4',
+    backgroundColor: '#f0f9f4',
     borderRadius: 12,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#22c55e',
+    borderColor: '#2d7a4e',
   },
   teeTimeDetails: {
     marginBottom: 16,
+    gap: 8,
+  },
+  teeTimeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   teeTimeDate: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    color: '#1f2937',
-    marginBottom: 8,
+    color: '#212529',
   },
   teeTimeTime: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    color: '#1f2937',
-    marginBottom: 8,
+    color: '#212529',
   },
   teeTimeCourse: {
-    fontSize: 16,
-    color: '#4b5563',
-    marginBottom: 6,
+    fontSize: 15,
+    color: '#495057',
   },
   teeTimeHoles: {
     fontSize: 14,
-    color: '#6b7280',
-    marginBottom: 8,
+    color: '#868e96',
   },
   statusBadge: {
-    backgroundColor: '#22c55e',
+    backgroundColor: '#2d7a4e',
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 12,
     alignSelf: 'flex-start',
+    marginTop: 4,
   },
   statusText: {
     color: '#fff',
@@ -520,25 +543,9 @@ const homeStyles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  // Book CTA
-  bookCTACard: {
-    backgroundColor: '#f9fafb',
-    borderRadius: 12,
-    padding: 24,
-    alignItems: 'center',
-    borderWidth: 2,
-    borderStyle: 'dashed',
-    borderColor: '#d1d5db',
-  },
-  ctaSubtext: {
-    fontSize: 14,
-    color: '#6b7280',
-    marginBottom: 16,
-  },
-
   // Common Button
   button: {
-    backgroundColor: '#22c55e',
+    backgroundColor: '#2d7a4e',
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
@@ -559,22 +566,21 @@ const homeStyles = StyleSheet.create({
   quickActionButton: {
     width: '23%',
     aspectRatio: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8f9fa',
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 8,
     position: 'relative',
-  },
-  quickActionIcon: {
-    fontSize: 28,
-    marginBottom: 4,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
   },
   quickActionText: {
     fontSize: 11,
-    color: '#4b5563',
+    color: '#495057',
     textAlign: 'center',
     fontWeight: '500',
+    marginTop: 6,
   },
   badge: {
     position: 'absolute',
@@ -590,118 +596,73 @@ const homeStyles = StyleSheet.create({
   badgeText: {
     color: '#fff',
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
 
   // Weather
-  weatherCard: {
-    backgroundColor: '#f0f9ff',
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#bae6fd',
-  },
-  weatherHeader: {
-    marginBottom: 12,
-  },
-  weatherLocation: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#1f2937',
-    marginBottom: 4,
-  },
-  weatherCondition: {
-    fontSize: 14,
-    color: '#6b7280',
-  },
   weatherDetails: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   weatherItem: {
     alignItems: 'center',
+    gap: 4,
   },
   weatherLabel: {
-    fontSize: 12,
-    color: '#6b7280',
-    marginBottom: 4,
+    fontSize: 11,
+    color: '#868e96',
+    textAlign: 'center',
   },
   weatherValue: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    color: '#1f2937',
+    color: '#212529',
   },
 
   // Events
   eventCard: {
     flexDirection: 'row',
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8f9fa',
     borderRadius: 12,
     marginBottom: 12,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: '#e9ecef',
   },
   eventImage: {
     width: 100,
     height: 100,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: '#d1d6db',
   },
   eventInfo: {
     flex: 1,
     padding: 12,
     justifyContent: 'center',
+    gap: 4,
   },
   eventTitle: {
     fontSize: 15,
-    fontWeight: '700',
-    color: '#111827',
-    marginBottom: 4,
+    fontWeight: '600',
+    color: '#212529',
+  },
+  eventRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   eventDate: {
     fontSize: 13,
-    color: '#6b7280',
-    marginBottom: 2,
+    color: '#868e96',
   },
   eventLocation: {
     fontSize: 13,
-    color: '#6b7280',
-    marginBottom: 2,
+    color: '#868e96',
   },
   eventPrice: {
-    fontSize: 13,
-    color: '#22c55e',
+    fontSize: 14,
+    color: '#2d7a4e',
     fontWeight: '600',
     marginTop: 4,
-  },
-
-  // Notifications
-  notificationCard: {
-    backgroundColor: '#f9fafb',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 8,
-    borderLeftWidth: 3,
-    borderLeftColor: '#d1d5db',
-  },
-  notificationUnread: {
-    backgroundColor: '#f0fdf4',
-    borderLeftColor: '#22c55e',
-  },
-  notificationTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1f2937',
-    marginBottom: 4,
-  },
-  notificationMessage: {
-    fontSize: 13,
-    color: '#6b7280',
-    marginBottom: 4,
-  },
-  notificationTime: {
-    fontSize: 11,
-    color: '#9ca3af',
   },
 
   // Modal
@@ -723,11 +684,6 @@ const homeStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  modalCloseText: {
-    color: '#fff',
-    fontSize: 28,
-    fontWeight: '300',
-  },
   modalImageContainer: {
     flex: 1,
     width: '100%',
@@ -741,86 +697,72 @@ const homeStyles = StyleSheet.create({
 
   // Dark Mode Styles
   containerDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
   },
   loadingContainerDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
   },
   sectionDark: {
-    backgroundColor: '#1f2937',
+    backgroundColor: '#2b3137',
   },
   sectionTitleDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   viewAllLinkDark: {
-    color: '#22c55e',
+    color: '#2d7a4e',
   },
   profileSectionDark: {
-    backgroundColor: '#1f2937',
+    backgroundColor: '#2b3137',
   },
   weatherLabelDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   weatherValueDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
 
   // Next Tee Time Dark
   nextTeeTimeCardDark: {
-    backgroundColor: '#1f2937',
-    borderColor: '#22c55e',
+    backgroundColor: '#2b3137',
+    borderColor: '#2d7a4e',
   },
   teeTimeDateDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   teeTimeTimeDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   teeTimeCourseDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   teeTimeHolesDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
 
   // Quick Actions Dark
   quickActionButtonDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
+    borderColor: '#343a40',
   },
   quickActionTextDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
 
   // Events Dark
   eventCardDark: {
-    backgroundColor: '#111827',
-    borderColor: '#374151',
+    backgroundColor: '#1a1d21',
+    borderColor: '#343a40',
   },
   eventInfoDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
   },
   eventTitleDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   eventDateDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   eventLocationDark: {
-    color: '#9ca3af',
-  },
-
-  // Notifications Dark
-  notificationCardDark: {
-    backgroundColor: '#111827',
-    borderLeftColor: '#374151',
-  },
-  notificationTitleDark: {
-    color: '#f9fafb',
-  },
-  notificationMessageDark: {
-    color: '#9ca3af',
-  },
-  notificationTimeDark: {
-    color: '#6b7280',
+    color: '#adb5bd',
   },
 });
