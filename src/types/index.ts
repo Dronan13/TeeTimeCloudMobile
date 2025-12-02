@@ -51,6 +51,7 @@ export type AppTabParamList = {
   TeeTimes: undefined;
   Notifications: undefined;
   Profile: NavigatorScreenParams<ProfileStackParamList> | undefined;
+  RSSArticles: undefined;
 };
 
 export type CoursesStackParamList = {

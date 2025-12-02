@@ -30,6 +30,7 @@
     "home": "Home",
     "courses": "Courses",
     "teeTimes": "Tee Times",
+    "articles": "Articles",
     "notifications": "Notifications",
     "profile": "Profile"
   },
@@ -319,6 +320,16 @@
     "english": "English",
     "spanish": "Spanish",
     "selectLanguage": "Select Language"
+  },
+  "rssArticles": {
+    "title": "Golf News & Articles",
+    "loading": "Loading articles...",
+    "loadingMore": "Loading more articles...",
+    "error": "Failed to load articles. Please try again.",
+    "unexpectedError": "An unexpected error occurred.",
+    "retry": "Retry",
+    "noArticles": "No articles available",
+    "checkBackLater": "Check back later for new golf articles"
   },
   "errors": {
     "network": "Network error. Please check your connection.",

@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { AppTabParamList, CoursesStackParamList, ProfileStackParamList } from '@/types';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Home, Flag, Calendar, Bell, User } from 'lucide-react-native';
+import { Home, Flag, Calendar, Bell, User, Newspaper } from 'lucide-react-native';
 
 // Import screens
 import HomeScreen from '@/screens/HomeScreen';
@@ -19,6 +19,7 @@ import ProfileEditScreen from '@/screens/ProfileEditScreen';
 import UpdatePasswordScreen from '@/screens/UpdatePasswordScreen';
 import SupportScreen from '@/screens/SupportScreen';
 import TermsOfUseScreen from '@/screens/TermsOfUseScreen';
+import RSSArticlesScreen from '@/screens/RSSArticlesScreen';
 
 const Tab = createBottomTabNavigator<AppTabParamList>();
 const CoursesStack = createStackNavigator<CoursesStackParamList>();
@@ -180,6 +181,20 @@ export default function AppTabs() {
             />
           ),
           title: t('teeTimes.title'),
+        }}
+      />
+      <Tab.Screen
+        name="RSSArticles"
+        component={RSSArticlesScreen}
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <Newspaper
+              size={24}
+              color={color}
+              strokeWidth={focused ? 2.5 : 2}
+            />
+          ),
+          title: t('navigation.articles') || 'Articles',
         }}
       />
       <Tab.Screen

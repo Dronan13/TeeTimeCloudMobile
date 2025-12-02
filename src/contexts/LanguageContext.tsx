@@ -9,6 +9,7 @@ type Language = 'en' | 'es';
 
 interface LanguageContextType {
   language: Language;
+  locale: string;
   setLanguage: (lang: Language) => Promise<void>;
   t: (key: string, params?: Record<string, any>) => string;
 }
@@ -76,8 +77,10 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
     return null;
   }
 
+  const locale = language === 'es' ? 'es-ES' : 'en-US';
+
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language, locale, setLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );

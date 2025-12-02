@@ -30,6 +30,7 @@
     "home": "Inicio",
     "courses": "Campos",
     "teeTimes": "Horarios",
+    "articles": "Artículos",
     "notifications": "Notificaciones",
     "profile": "Perfil"
   },
@@ -319,6 +320,16 @@
     "english": "Inglés",
     "spanish": "Español",
     "selectLanguage": "Seleccionar Idioma"
+  },
+  "rssArticles": {
+    "title": "Noticias y Artículos de Golf",
+    "loading": "Cargando artículos...",
+    "loadingMore": "Cargando más artículos...",
+    "error": "Error al cargar artículos. Por favor intenta de nuevo.",
+    "unexpectedError": "Ocurrió un error inesperado.",
+    "retry": "Reintentar",
+    "noArticles": "No hay artículos disponibles",
+    "checkBackLater": "Vuelve más tarde para nuevos artículos de golf"
   },
   "errors": {
     "network": "Error de red. Por favor verifica tu conexión.",
