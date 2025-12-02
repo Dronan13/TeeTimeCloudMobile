@@ -149,7 +149,7 @@ export default function ProfileScreen() {
             <MessageCircle size={20} color="#2d7a4e" strokeWidth={2} />
           </View>
           <View style={styles.menuTextContainer}>
-            <Text style={[styles.menuTitle, isDark && styles.menuTitleDark]}>{t('profile.support')}</Text>
+            <Text style={[styles.menuTitle, isDark && styles.menuTitleDark]}>{t('profile.supportTitle')}</Text>
             <Text style={[styles.menuSubtitle, isDark && styles.menuSubtitleDark]}>{t('profile.getHelp')}</Text>
           </View>
           <ChevronRight size={20} color={isDark ? '#868e96' : '#adb5bd'} strokeWidth={2} />
@@ -165,7 +165,7 @@ export default function ProfileScreen() {
             <FileText size={20} color="#2d7a4e" strokeWidth={2} />
           </View>
           <View style={styles.menuTextContainer}>
-            <Text style={[styles.menuTitle, isDark && styles.menuTitleDark]}>{t('profile.termsOfUse')}</Text>
+            <Text style={[styles.menuTitle, isDark && styles.menuTitleDark]}>{t('profile.termsOfUseTitle')}</Text>
             <Text style={[styles.menuSubtitle, isDark && styles.menuSubtitleDark]}>{t('profile.readTerms')}</Text>
           </View>
           <ChevronRight size={20} color={isDark ? '#868e96' : '#adb5bd'} strokeWidth={2} />

@@ -226,9 +226,9 @@
     "updateProfileInfo": "Update your personal information",
     "updatePassword": "Update Password",
     "changePassword": "Change your account password",
-    "support": "Support",
+    "supportTitle": "Support",
     "getHelp": "Get help and contact us",
-    "termsOfUse": "Terms of Use",
+    "termsOfUseTitle": "Terms of Use",
     "readTerms": "Read our terms and conditions",
     "signOut": "Sign Out",
     "edit": {
@@ -294,7 +294,18 @@
       "title": "Terms of Use",
       "lastUpdated": "Last Updated",
       "accept": "Accept Terms",
-      "decline": "Decline"
+      "decline": "Decline",
+      "content": "Please review our terms and conditions of use for TeeTime Cloud. By using this application, you agree to comply with all terms outlined below.",
+      "section1Title": "1. Acceptance of Terms",
+      "section1Content": "By accessing and using TeeTime Cloud, you accept and agree to be bound by the terms and provision of this agreement.",
+      "section2Title": "2. Use of Service",
+      "section2Content": "You agree to use the service for lawful purposes only and in a way that does not infringe the rights of, restrict or inhibit anyone else's use and enjoyment of the application.",
+      "section3Title": "3. Booking and Reservations",
+      "section3Content": "All tee time bookings are subject to availability and confirmation. Cancellation policies may vary by golf course.",
+      "section4Title": "4. Privacy",
+      "section4Content": "Your privacy is important to us. Please review our Privacy Policy to understand how we collect and use your information.",
+      "section5Title": "5. Changes to Terms",
+      "section5Content": "We reserve the right to modify these terms at any time. Continued use of the service constitutes acceptance of any changes."
     }
   },
   "theme": {

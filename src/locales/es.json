@@ -226,9 +226,9 @@
     "updateProfileInfo": "Actualiza tu información personal",
     "updatePassword": "Actualizar Contraseña",
     "changePassword": "Cambia la contraseña de tu cuenta",
-    "support": "Soporte",
+    "supportTitle": "Soporte",
     "getHelp": "Obtén ayuda y contáctanos",
-    "termsOfUse": "Términos de Uso",
+    "termsOfUseTitle": "Términos de Uso",
     "readTerms": "Lee nuestros términos y condiciones",
     "signOut": "Cerrar Sesión",
     "edit": {
@@ -294,7 +294,18 @@
       "title": "Términos de Uso",
       "lastUpdated": "Última Actualización",
       "accept": "Aceptar Términos",
-      "decline": "Rechazar"
+      "decline": "Rechazar",
+      "content": "Por favor revisa nuestros términos y condiciones de uso de TeeTime Cloud. Al usar esta aplicación, aceptas cumplir con todos los términos descritos a continuación.",
+      "section1Title": "1. Aceptación de Términos",
+      "section1Content": "Al acceder y usar TeeTime Cloud, aceptas y te comprometes a cumplir con los términos y disposiciones de este acuerdo.",
+      "section2Title": "2. Uso del Servicio",
+      "section2Content": "Aceptas usar el servicio solo para fines legales y de una manera que no infrinja los derechos de, restrinja o inhiba el uso y disfrute de la aplicación por parte de otra persona.",
+      "section3Title": "3. Reservas",
+      "section3Content": "Todas las reservas de horarios están sujetas a disponibilidad y confirmación. Las políticas de cancelación pueden variar según el campo de golf.",
+      "section4Title": "4. Privacidad",
+      "section4Content": "Tu privacidad es importante para nosotros. Por favor revisa nuestra Política de Privacidad para entender cómo recopilamos y usamos tu información.",
+      "section5Title": "5. Cambios a los Términos",
+      "section5Content": "Nos reservamos el derecho de modificar estos términos en cualquier momento. El uso continuo del servicio constituye la aceptación de cualquier cambio."
     }
   },
   "theme": {

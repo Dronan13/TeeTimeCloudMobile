@@ -15,12 +15,15 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/lib/supabaseClient';
 import { pickAndUploadImage } from '@/utils/imageUpload';
+import { Camera, X } from 'lucide-react-native';
 
 export default function SupportScreen() {
   const { user, profile } = useAuth();
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -47,7 +50,7 @@ export default function SupportScreen() {
       if (result) {
         setImageUrl(result.publicUrl);
         setLocalImageUri(result.publicUrl);
-        Alert.alert('Success', 'Image uploaded successfully');
+        Alert.alert(t('common.success'), 'Image uploaded successfully');
       }
     } catch (error: any) {
       if (error.message === 'Permission to access gallery is required') {
@@ -56,7 +59,7 @@ export default function SupportScreen() {
           'Please grant permission to access your photo library in Settings.'
         );
       } else {
-        Alert.alert('Error', error.message || 'Failed to upload image');
+        Alert.alert(t('common.error'), error.message || 'Failed to upload image');
       }
     } finally {
       setUploadingImage(false);
@@ -65,7 +68,7 @@ export default function SupportScreen() {
 
   const handleRemoveImage = () => {
     Alert.alert('Remove Image', 'Are you sure you want to remove this image?', [
-      { text: 'Cancel', style: 'cancel' },
+      { text: t('common.cancel'), style: 'cancel' },
       {
         text: 'Remove',
         style: 'destructive',
@@ -81,12 +84,12 @@ export default function SupportScreen() {
     const { full_name, email, description } = formData;
 
     if (!description.trim()) {
-      Alert.alert('Error', 'Please describe your issue or question');
+      Alert.alert(t('common.error'), 'Please describe your issue or question');
       return;
     }
 
     if (!email.trim()) {
-      Alert.alert('Error', 'Please provide your email address');
+      Alert.alert(t('common.error'), 'Please provide your email address');
       return;
     }
 
@@ -105,11 +108,11 @@ export default function SupportScreen() {
       if (error) throw error;
 
       Alert.alert(
-        'Request Submitted',
-        'Thank you for contacting us. We will respond to your request as soon as possible.',
+        t('profile.support.successTitle'),
+        t('profile.support.successMessage'),
         [
           {
-            text: 'OK',
+            text: t('common.ok'),
             onPress: () => {
               setFormData((prev) => ({
                 ...prev,
@@ -123,7 +126,7 @@ export default function SupportScreen() {
         ]
       );
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to submit support request');
+      Alert.alert(t('common.error'), error.message || 'Failed to submit support request');
     } finally {
       setLoading(false);
     }
@@ -140,10 +143,9 @@ export default function SupportScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={[styles.header, isDark && styles.headerDark]}>
-          <Text style={[styles.title, isDark && styles.titleDark]}>Contact Support</Text>
+          <Text style={[styles.title, isDark && styles.titleDark]}>{t('profile.support.title')}</Text>
           <Text style={[styles.subtitle, isDark && styles.subtitleDark]}>
-            Have a question or need help? Send us a message and we'll get back to you
-            as soon as possible.
+            {t('profile.support.subtitle')}
           </Text>
         </View>
 
@@ -151,12 +153,12 @@ export default function SupportScreen() {
 
           <View style={styles.inputContainer}>
             <Text style={[styles.label, isDark && styles.labelDark]}>
-              Message <Text style={styles.required}>*</Text>
+              {t('profile.support.message')} <Text style={styles.required}>*</Text>
             </Text>
             <TextInput
               style={[styles.input, styles.textArea, isDark && styles.inputDark]}
-              placeholder="Describe your issue or question..."
-              placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
+              placeholder={t('profile.support.messagePlaceholder')}
+              placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
               value={formData.description}
               onChangeText={(value) => handleInputChange('description', value)}
               multiline
@@ -174,7 +176,7 @@ export default function SupportScreen() {
                   style={styles.removeImageButton}
                   onPress={handleRemoveImage}
                 >
-                  <Text style={styles.removeImageText}>✕</Text>
+                  <X size={18} color="#fff" strokeWidth={2} />
                 </TouchableOpacity>
               </View>
             ) : (
@@ -184,10 +186,10 @@ export default function SupportScreen() {
                 disabled={uploadingImage}
               >
                 {uploadingImage ? (
-                  <ActivityIndicator color="#22c55e" />
+                  <ActivityIndicator color="#2d7a4e" />
                 ) : (
                   <>
-                    <Text style={styles.uploadIcon}>📷</Text>
+                    <Camera size={32} color="#2d7a4e" strokeWidth={1.5} />
                     <Text style={[styles.uploadText, isDark && styles.uploadTextDark]}>Upload Image from Gallery</Text>
                   </>
                 )}
@@ -204,7 +206,7 @@ export default function SupportScreen() {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.submitButtonText}>Submit Request</Text>
+            <Text style={styles.submitButtonText}>{t('profile.support.send')}</Text>
           )}
         </TouchableOpacity>
 
@@ -217,16 +219,16 @@ export default function SupportScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8f9fa',
   },
   containerDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
   },
   scrollView: {
     flex: 1,
   },
   scrollViewDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
   },
   scrollContent: {
     paddingHorizontal: 20,
@@ -236,24 +238,24 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   headerDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
   },
   title: {
     fontSize: 28,
-    fontWeight: '700',
-    color: '#111827',
+    fontWeight: '600',
+    color: '#212529',
     marginBottom: 8,
   },
   titleDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   subtitle: {
     fontSize: 15,
-    color: '#6b7280',
+    color: '#868e96',
     lineHeight: 22,
   },
   subtitleDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   section: {
     backgroundColor: '#fff',
@@ -265,9 +267,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
+    borderWidth: 1,
+    borderColor: '#d1d6db',
   },
   sectionDark: {
-    backgroundColor: '#1f2937',
+    backgroundColor: '#2b3137',
+    borderColor: '#343a40',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.3,
@@ -280,64 +285,36 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
+    color: '#495057',
     marginBottom: 8,
   },
   labelDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   required: {
     color: '#ef4444',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: '#d1d6db',
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 16,
     fontSize: 16,
     backgroundColor: '#fff',
-    color: '#111827',
+    color: '#212529',
   },
   inputDark: {
-    backgroundColor: '#111827',
-    borderColor: '#374151',
-    color: '#f9fafb',
+    backgroundColor: '#343a40',
+    borderColor: '#495057',
+    color: '#f8f9fa',
   },
   textArea: {
     minHeight: 120,
     paddingTop: 12,
   },
-  infoSection: {
-    backgroundColor: '#f0fdf4',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: '#bbf7d0',
-  },
-  infoTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#166534',
-    marginBottom: 12,
-  },
-  infoItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  infoIcon: {
-    fontSize: 16,
-    marginRight: 10,
-  },
-  infoText: {
-    fontSize: 14,
-    color: '#166534',
-    flex: 1,
-  },
   submitButton: {
-    backgroundColor: '#22c55e',
+    backgroundColor: '#2d7a4e',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
@@ -355,7 +332,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   submitButtonDisabled: {
-    backgroundColor: '#9ca3af',
+    backgroundColor: '#adb5bd',
   },
   submitButtonText: {
     color: '#fff',
@@ -367,38 +344,35 @@ const styles = StyleSheet.create({
   },
   uploadButton: {
     borderWidth: 2,
-    borderColor: '#22c55e',
+    borderColor: '#2d7a4e',
     borderStyle: 'dashed',
     borderRadius: 8,
     paddingVertical: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f0fdf4',
+    backgroundColor: '#f0f9f4',
+    gap: 8,
   },
   uploadButtonDark: {
-    backgroundColor: '#111827',
-    borderColor: '#22c55e',
-  },
-  uploadIcon: {
-    fontSize: 32,
-    marginBottom: 8,
+    backgroundColor: '#1a1d21',
+    borderColor: '#2d7a4e',
   },
   uploadText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#22c55e',
+    color: '#2d7a4e',
   },
   uploadTextDark: {
-    color: '#22c55e',
+    color: '#2d7a4e',
   },
   imagePreviewContainer: {
     position: 'relative',
     borderRadius: 8,
     overflow: 'hidden',
-    backgroundColor: '#f3f4f6',
+    backgroundColor: '#e9ecef',
   },
   imagePreviewContainerDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
   },
   imagePreview: {
     width: '100%',
@@ -415,10 +389,5 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  removeImageText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '700',
   },
 });
