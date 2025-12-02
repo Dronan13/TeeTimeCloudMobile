@@ -1,6 +1,7 @@
-import { Tables } from './supabase';
+import { Tables, Database as SupabaseDatabase } from './supabase';
 
 // Database types
+export type Database = SupabaseDatabase;
 export type Course = Tables<'courses'>;
 export type TeeTimeSlot = Tables<'tee_time_slots'>;
 export type TeeTimeReservation = Tables<'tee_time_reservations'>;
