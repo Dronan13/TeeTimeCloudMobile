@@ -1,14 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
-export default function UpdatePasswordScreen() {
+export default function TermsOfUseScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Update Password</Text>
-        <Text style={styles.subtitle}>
-          Password update functionality will be implemented here.
-        </Text>
+        <Text style={styles.title}>Terms of Use</Text>
+        <Text style={styles.subtitle}>Terms and conditions will be displayed here.</Text>
       </View>
     </ScrollView>
   );

@@ -1,13 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
-export default function UpdatePasswordScreen() {
+export default function ProfileEditScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Update Password</Text>
+        <Text style={styles.title}>Edit Profile</Text>
         <Text style={styles.subtitle}>
-          Password update functionality will be implemented here.
+          Profile editing functionality will be implemented here.
         </Text>
       </View>
     </ScrollView>

@@ -58,6 +58,14 @@ export type CoursesStackParamList = {
   ReservationScreen: { slotId: string; courseId: string };
 };
 
+export type ProfileStackParamList = {
+  ProfileMain: undefined;
+  ProfileEdit: undefined;
+  UpdatePassword: undefined;
+  Support: undefined;
+  TermsOfUse: undefined;
+};
+
 // Form types
 export interface SignInFormData {
   email: string;
