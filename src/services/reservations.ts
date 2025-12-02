@@ -53,6 +53,7 @@ export const reservationsService = {
     try {
       const now = dayjs().toISOString();
 
+      // First fetch all upcoming reservations
       const { data, error } = await supabase
         .from('tee_time_reservations')
         .select(`
@@ -62,20 +63,30 @@ export const reservationsService = {
         `)
         .eq('user_id', userId)
         .eq('booking_status', 'confirmed')
-        .gte('tee_time_slots.tee_date', now)
-        .order('tee_time_slots.tee_date', { ascending: true })
-        .limit(1)
-        .single();
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      const transformedData = {
-        ...data,
-        slot: (data as any).slot,
-        course: (data as any).course?.courses,
-      };
+      // Filter and sort on the client side
+      const upcoming = (data || [])
+        .map((reservation: any) => ({
+          ...reservation,
+          slot: reservation.slot,
+          course: reservation.course?.courses,
+        }))
+        .filter((reservation: any) =>
+          reservation.slot?.tee_date &&
+          new Date(reservation.slot.tee_date) >= new Date(now)
+        )
+        .sort((a: any, b: any) =>
+          new Date(a.slot.tee_date).getTime() - new Date(b.slot.tee_date).getTime()
+        );
 
-      return { data: transformedData, error: null };
+      if (upcoming.length === 0) {
+        return { data: null, error: null };
+      }
+
+      return { data: upcoming[0], error: null };
     } catch (error) {
       console.error('Error fetching next reservation:', error);
       return { data: null, error: error as Error };

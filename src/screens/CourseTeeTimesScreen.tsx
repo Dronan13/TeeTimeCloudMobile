@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   View,
   Text,
@@ -8,11 +8,14 @@ import {
   FlatList,
   ScrollView,
   Alert,
+  Animated,
+  PanResponder,
 } from 'react-native';
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { CoursesStackParamList, Database } from '@/types';
 import { supabase } from '@/lib/supabaseClient';
+import { useAuth } from '@/hooks/useAuth';
 import { format, addDays, parseISO, isSameDay } from 'date-fns';
 
 type CourseTeeTimesScreenRouteProp = RouteProp<
@@ -33,6 +36,7 @@ export default function CourseTeeTimesScreen() {
   const route = useRoute<CourseTeeTimesScreenRouteProp>();
   const navigation = useNavigation<CourseTeeTimesScreenNavigationProp>();
   const { courseId, courseName } = route.params;
+  const { user } = useAuth();
 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedTimePeriod, setSelectedTimePeriod] = useState<TimePeriod>('all');
@@ -40,6 +44,13 @@ export default function CourseTeeTimesScreen() {
   const [teeTimes, setTeeTimes] = useState<TeeTimeSlot[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [bookingWindowDays, setBookingWindowDays] = useState<number>(14); // Default to 14
+  const [hasReservationOnDate, setHasReservationOnDate] = useState<boolean>(false);
+  const [reservationDetails, setReservationDetails] = useState<{
+    reservationId: string;
+    teeTime: string;
+    hole: number;
+    status: string;
+  } | null>(null);
 
   useEffect(() => {
     fetchCourseDetails();
@@ -47,6 +58,7 @@ export default function CourseTeeTimesScreen() {
 
   useEffect(() => {
     fetchTeeTimes();
+    checkExistingReservation();
   }, [courseId, selectedDate, selectedHole]);
 
   const fetchCourseDetails = async () => {
@@ -90,6 +102,38 @@ export default function CourseTeeTimesScreen() {
     }
   };
 
+  const checkExistingReservation = async () => {
+    if (!user) return;
+
+    try {
+      const dateStr = format(selectedDate, 'yyyy-MM-dd');
+
+      const { data, error } = await supabase
+        .from('tee_time_reservations_with_slot')
+        .select('reservation_id, tee_time, hole, booking_status')
+        .eq('user_id', user.id)
+        .eq('tee_date', dateStr)
+        .in('booking_status', ['confirmed', 'pending']);
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        setHasReservationOnDate(true);
+        setReservationDetails({
+          reservationId: data[0].reservation_id || '',
+          teeTime: data[0].tee_time || '',
+          hole: data[0].hole || 0,
+          status: data[0].booking_status || '',
+        });
+      } else {
+        setHasReservationOnDate(false);
+        setReservationDetails(null);
+      }
+    } catch (error) {
+      console.error('Error checking existing reservation:', error);
+    }
+  };
+
   const dates = useMemo(() => {
     const result = [];
     const today = new Date();
@@ -113,12 +157,123 @@ export default function CourseTeeTimesScreen() {
     });
   }, [teeTimes, selectedTimePeriod]);
 
-  const handleSlotPress = (slot: TeeTimeSlot) => {
-    if (!slot.id) return;
+  const handleCancelExistingReservation = () => {
+    if (!reservationDetails) return;
+
+    Alert.alert(
+      'Cancel Existing Reservation',
+      `Are you sure you want to cancel your ${reservationDetails.status} reservation at ${reservationDetails.teeTime.slice(0, 5)} on Hole ${reservationDetails.hole}?`,
+      [
+        {
+          text: 'No',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes, Cancel',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const { error } = await supabase
+                .from('tee_time_reservations')
+                .update({ booking_status: 'cancelled' })
+                .eq('id', reservationDetails.reservationId);
+
+              if (error) throw error;
+
+              Alert.alert('Success', 'Your reservation has been cancelled. You can now book a new tee time.');
+
+              // Refresh the data
+              checkExistingReservation();
+              fetchTeeTimes();
+            } catch (error) {
+              console.error('Error cancelling reservation:', error);
+              Alert.alert('Error', 'Failed to cancel reservation. Please try again.');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleSlotPress = async (slot: TeeTimeSlot) => {
+    if (!slot.id || !user) return;
+
+    // If already has reservation on this date, prevent booking
+    if (hasReservationOnDate) {
+      return;
+    }
+
+    // Proceed to booking
     navigation.navigate('ReservationScreen', {
       slotId: slot.id,
       courseId: courseId,
     });
+  };
+
+  const SwipeableAlert = () => {
+    const translateX = useRef(new Animated.Value(0)).current;
+    const SWIPE_THRESHOLD = -80;
+
+    const panResponder = useRef(
+      PanResponder.create({
+        onMoveShouldSetPanResponder: (_, gestureState) => {
+          return Math.abs(gestureState.dx) > 5;
+        },
+        onPanResponderMove: (_, gestureState) => {
+          if (gestureState.dx < 0) {
+            translateX.setValue(Math.max(gestureState.dx, SWIPE_THRESHOLD));
+          }
+        },
+        onPanResponderRelease: (_, gestureState) => {
+          if (gestureState.dx < -40) {
+            Animated.spring(translateX, {
+              toValue: SWIPE_THRESHOLD,
+              useNativeDriver: true,
+            }).start();
+          } else {
+            Animated.spring(translateX, {
+              toValue: 0,
+              useNativeDriver: true,
+            }).start();
+          }
+        },
+      })
+    ).current;
+
+    if (!reservationDetails) return null;
+
+    return (
+      <View style={styles.alertBanner}>
+        <View style={styles.swipeableContainer}>
+          <TouchableOpacity
+            style={styles.cancelAlertButtonBehind}
+            onPress={handleCancelExistingReservation}
+          >
+            <Text style={styles.cancelAlertButtonText}>Cancel</Text>
+          </TouchableOpacity>
+          <Animated.View
+            style={[
+              styles.alertContent,
+              {
+                transform: [{ translateX }],
+              },
+            ]}
+            {...panResponder.panHandlers}
+          >
+            <View style={styles.alertTextContainer}>
+              <Text style={styles.alertTitle}>You have a reservation on this date</Text>
+              <Text style={styles.alertText}>
+                {reservationDetails.teeTime.slice(0, 5)} - Hole {reservationDetails.hole} (
+                {reservationDetails.status})
+              </Text>
+              <Text style={styles.alertSubtext}>
+                Swipe left to cancel and re-book
+              </Text>
+            </View>
+          </Animated.View>
+        </View>
+      </View>
+    );
   };
 
   const renderDateItem = ({ item }: { item: Date }) => {
@@ -145,23 +300,33 @@ export default function CourseTeeTimesScreen() {
   };
 
   const renderTeeTimeItem = ({ item }: { item: TeeTimeSlot }) => (
-    <TouchableOpacity style={styles.teeTimeItem} onPress={() => handleSlotPress(item)}>
+    <TouchableOpacity
+      style={[styles.teeTimeItem, hasReservationOnDate && styles.teeTimeItemDisabled]}
+      onPress={() => handleSlotPress(item)}
+      disabled={hasReservationOnDate}
+    >
       <View style={styles.timeContainer}>
-        <Text style={styles.timeText}>
+        <Text style={[styles.timeText, hasReservationOnDate && styles.textDisabled]}>
           {item.tee_time ? item.tee_time.slice(0, 5) : ''}
         </Text>
-        <Text style={styles.holeText}>Hole {item.hole}</Text>
+        <Text style={[styles.holeText, hasReservationOnDate && styles.textDisabled]}>
+          Hole {item.hole}
+        </Text>
       </View>
       <View style={styles.availabilityContainer}>
         <Text
           style={[
             styles.spotsText,
-            { color: getSpotsColor(item.available_players || 0) },
+            hasReservationOnDate
+              ? styles.textDisabled
+              : { color: getSpotsColor(item.available_players || 0) },
           ]}
         >
           {item.available_players} spots left
         </Text>
-        <View style={styles.bookButton}>
+        <View
+          style={[styles.bookButton, hasReservationOnDate && styles.bookButtonDisabled]}
+        >
           <Text style={styles.bookButtonText}>Book</Text>
         </View>
       </View>
@@ -186,6 +351,9 @@ export default function CourseTeeTimesScreen() {
           contentContainerStyle={styles.dateList}
         />
       </View>
+
+      {/* Existing Reservation Alert */}
+      {hasReservationOnDate && <SwipeableAlert />}
 
       {/* Filters Section */}
       <View style={styles.filtersContainer}>
@@ -445,5 +613,71 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     fontSize: 15,
     textAlign: 'center',
+  },
+  alertBanner: {
+    marginHorizontal: 16,
+    marginVertical: 12,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  swipeableContainer: {
+    position: 'relative',
+    height: 100,
+  },
+  cancelAlertButtonBehind: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: 80,
+    backgroundColor: '#dc2626',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderTopRightRadius: 8,
+    borderBottomRightRadius: 8,
+  },
+  alertContent: {
+    backgroundColor: '#fef3c7',
+    borderLeftWidth: 4,
+    borderLeftColor: '#f59e0b',
+    padding: 16,
+    borderRadius: 8,
+    height: '100%',
+    justifyContent: 'center',
+  },
+  alertTextContainer: {
+    flex: 1,
+  },
+  alertTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#92400e',
+    marginBottom: 4,
+  },
+  alertText: {
+    fontSize: 14,
+    color: '#78350f',
+    marginBottom: 4,
+    fontWeight: '500',
+  },
+  alertSubtext: {
+    fontSize: 12,
+    color: '#92400e',
+    fontStyle: 'italic',
+  },
+  cancelAlertButtonText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  teeTimeItemDisabled: {
+    opacity: 0.5,
+    backgroundColor: '#f3f4f6',
+  },
+  textDisabled: {
+    color: '#9ca3af',
+  },
+  bookButtonDisabled: {
+    backgroundColor: '#d1d5db',
   },
 });
