@@ -67,38 +67,15 @@ export default function HomeScreen() {
         }
       }
 
-      // Fetch next tee time
-      const nextRes = await reservationsService.fetchNextReservation(user.id);
-      if (nextRes.data) {
-        setNextTeeTime(nextRes.data);
-
-        // Fetch weather for the course location if available
-        const courseLocation = nextRes.data.course?.location as any;
-        if (courseLocation?.lat && courseLocation?.lng) {
-          const weatherRes = await weatherService.getCurrentWeather(
-            courseLocation.lat,
-            courseLocation.lng
-          );
-          if (weatherRes.data) {
-            setWeather(weatherRes.data);
-          }
-        }
-
-        // Fetch upcoming events for the home course
-        if (nextRes.data.course?.id) {
-          const eventsRes = await coursesService.fetchCourseEvents(nextRes.data.course.id);
-          if (eventsRes.data) {
-            setUpcomingEvents(eventsRes.data.slice(0, 3));
-          }
-        }
-      } else if (profile?.home_course_id) {
-        // If no tee time, try to get weather for home course
+      // Fetch weather for home course first
+      if (profile?.home_course_id) {
         const courseRes = await coursesService.fetchCourseById(profile.home_course_id);
         const homeCourseLocation = courseRes.data?.location as any;
-        if (homeCourseLocation?.lat && homeCourseLocation?.lng) {
+
+        if (homeCourseLocation?.latitude && homeCourseLocation?.longitude) {
           const weatherRes = await weatherService.getCurrentWeather(
-            homeCourseLocation.lat,
-            homeCourseLocation.lng
+            homeCourseLocation.latitude,
+            homeCourseLocation.longitude
           );
           if (weatherRes.data) {
             setWeather(weatherRes.data);
@@ -110,6 +87,12 @@ export default function HomeScreen() {
         if (eventsRes.data) {
           setUpcomingEvents(eventsRes.data.slice(0, 3));
         }
+      }
+
+      // Fetch next tee time
+      const nextRes = await reservationsService.fetchNextReservation(user.id);
+      if (nextRes.data) {
+        setNextTeeTime(nextRes.data);
       }
 
       // Fetch recent notifications
@@ -164,10 +147,20 @@ export default function HomeScreen() {
       <View style={homeStyles.profileSection}>
         <View style={homeStyles.profileInfo}>
           <View style={homeStyles.avatar}>
-            <Text style={homeStyles.avatarText}>
-              {profile?.first_name?.[0] || 'G'}
-              {profile?.last_name?.[0] || ''}
-            </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+              {profile?.avatar_url ? (
+                <Image
+                  source={{ uri: profile.avatar_url }}
+                  style={homeStyles.avatarImage}
+                  resizeMode="cover"
+                />
+              ) : (
+                <Text style={homeStyles.avatarText}>
+                  {profile?.first_name?.[0] || 'G'}
+                  {profile?.last_name?.[0] || ''}
+                </Text>
+              )}
+            </TouchableOpacity>
           </View>
           <View style={homeStyles.profileDetails}>
             <Text style={homeStyles.profileName}>
@@ -181,10 +174,38 @@ export default function HomeScreen() {
             )}
           </View>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+        {/* <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
           <Text style={homeStyles.viewProfileLink}>View Profile →</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
+
+      {/* Weather at Home Course */}
+      {weather && (
+        <View style={homeStyles.section}>
+          <View style={homeStyles.weatherDetails}>
+              <View style={homeStyles.weatherItem}>
+                <Text style={homeStyles.weatherLabel}>Temperature</Text>
+                <Text style={homeStyles.weatherValue}>
+                  {Math.round(weather.current?.temp_f)}°F
+                </Text>
+              </View>
+              <View style={homeStyles.weatherItem}>
+                <Text style={homeStyles.weatherLabel}>Wind</Text>
+                <Text style={homeStyles.weatherValue}>
+                  {Math.round(weather.current?.wind_mph)} mph {weather.current?.wind_dir}
+                </Text>
+              </View>
+              <View style={homeStyles.weatherItem}>
+                <Text style={homeStyles.weatherLabel}>Humidity</Text>
+                <Text style={homeStyles.weatherValue}>{weather.current?.humidity}%</Text>
+              </View>
+              <View style={homeStyles.weatherItem}>
+                <Text style={homeStyles.weatherLabel}>Condition</Text>
+                <Text style={homeStyles.weatherValue}>{weather.current?.condition?.text}</Text>
+              </View>
+            </View>
+        </View>
+      )}
 
       {/* Next Tee Time / Book CTA */}
       <View style={homeStyles.section}>
@@ -272,39 +293,8 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
       </View>
-
-      {/* Weather at Home Course */}
-      {weather && (
-        <View style={homeStyles.section}>
-          <Text style={homeStyles.sectionTitle}>Weather</Text>
-          <View style={homeStyles.weatherCard}>
-            <View style={homeStyles.weatherHeader}>
-              <Text style={homeStyles.weatherLocation}>{weather.location?.name}</Text>
-              <Text style={homeStyles.weatherCondition}>
-                {weather.current?.condition?.text}
-              </Text>
-            </View>
-            <View style={homeStyles.weatherDetails}>
-              <View style={homeStyles.weatherItem}>
-                <Text style={homeStyles.weatherLabel}>Temperature</Text>
-                <Text style={homeStyles.weatherValue}>
-                  {Math.round(weather.current?.temp_f)}°F
-                </Text>
-              </View>
-              <View style={homeStyles.weatherItem}>
-                <Text style={homeStyles.weatherLabel}>Wind</Text>
-                <Text style={homeStyles.weatherValue}>
-                  {Math.round(weather.current?.wind_mph)} mph {weather.current?.wind_dir}
-                </Text>
-              </View>
-              <View style={homeStyles.weatherItem}>
-                <Text style={homeStyles.weatherLabel}>Humidity</Text>
-                <Text style={homeStyles.weatherValue}>{weather.current?.humidity}%</Text>
-              </View>
-            </View>
-          </View>
-        </View>
-      )}
+      
+      
 
       {/* Upcoming Course Events */}
       {upcomingEvents.length > 0 && (
@@ -462,7 +452,7 @@ const homeStyles = StyleSheet.create({
   profileSection: {
     backgroundColor: '#22c55e',
     padding: 20,
-    marginBottom: 12,
+    marginBottom: 0,
   },
   profileInfo: {
     flexDirection: 'row',
@@ -477,6 +467,11 @@ const homeStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: 60,
+    height: 60,
   },
   avatarText: {
     fontSize: 24,

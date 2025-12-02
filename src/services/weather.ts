@@ -1,7 +1,7 @@
 import { ApiResponse } from '@/types';
 
 const WEATHER_API_BASE_URL = 'http://api.weatherapi.com/v1';
-const WEATHER_API_KEY = process.env.EXPO_WEATHER_API_KEY;
+const WEATHER_API_KEY = 'd6b143fd40d4428e95763949251311';
 
 export interface CurrentWeather {
   location: {
