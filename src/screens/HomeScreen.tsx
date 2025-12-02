@@ -26,7 +26,7 @@ import { weatherService } from '@/services/weather';
 import { ReservationWithDetails, Notification, CourseEvent, AppTabParamList, CoursesStackParamList } from '@/types';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { Flag, MapPin, Calendar, Bell, Thermometer, Wind, Droplets, CloudSun, Clock, X } from 'lucide-react-native';
+import { Flag, MapPin, Calendar, Bell, Thermometer, Wind, Droplets, CloudSun, Clock, X, Newspaper } from 'lucide-react-native';
 
 dayjs.extend(relativeTime);
 
@@ -290,7 +290,14 @@ export default function HomeScreen() {
           </TouchableOpacity>
           <TouchableOpacity
             style={[homeStyles.quickActionButton, isDark && homeStyles.quickActionButtonDark]}
-            onPress={() => navigation.navigate('Notifications')}
+            onPress={() => navigation.navigate('RSSArticles')}
+          >
+            <Newspaper size={24} color="#2d7a4e" strokeWidth={2} />
+            <Text style={[homeStyles.quickActionText, isDark && homeStyles.quickActionTextDark]}>{t('navigation.articles')}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[homeStyles.quickActionButton, isDark && homeStyles.quickActionButtonDark]}
+            onPress={() => navigation.navigate('Profile', { screen: 'Notifications' })}
           >
             <Bell size={24} color="#2d7a4e" strokeWidth={2} />
             <Text style={[homeStyles.quickActionText, isDark && homeStyles.quickActionTextDark]}>{t('home.inbox')}</Text>

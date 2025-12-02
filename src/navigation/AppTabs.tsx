@@ -106,6 +106,11 @@ function ProfileStackNavigator() {
         component={TermsOfUseScreen}
         options={{ title: t('profile.termsOfUse.title') }}
       />
+      <ProfileStack.Screen
+        name="Notifications"
+        component={NotificationsScreen}
+        options={{ title: t('navigation.notifications') }}
+      />
     </ProfileStack.Navigator>
   );
 }
@@ -195,20 +200,6 @@ export default function AppTabs() {
             />
           ),
           title: t('navigation.articles') || 'Articles',
-        }}
-      />
-      <Tab.Screen
-        name="Notifications"
-        component={NotificationsScreen}
-        options={{
-          tabBarIcon: ({ color, focused }) => (
-            <Bell
-              size={24}
-              color={color}
-              strokeWidth={focused ? 2.5 : 2}
-            />
-          ),
-          title: t('navigation.notifications'),
         }}
       />
       <Tab.Screen

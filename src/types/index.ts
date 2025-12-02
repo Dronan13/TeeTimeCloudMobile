@@ -49,9 +49,8 @@ export type AppTabParamList = {
   Home: undefined;
   Courses: NavigatorScreenParams<CoursesStackParamList> | undefined;
   TeeTimes: undefined;
-  Notifications: undefined;
-  Profile: NavigatorScreenParams<ProfileStackParamList> | undefined;
   RSSArticles: undefined;
+  Profile: NavigatorScreenParams<ProfileStackParamList> | undefined;
 };
 
 export type CoursesStackParamList = {
@@ -67,6 +66,7 @@ export type ProfileStackParamList = {
   UpdatePassword: undefined;
   Support: undefined;
   TermsOfUse: undefined;
+  Notifications: undefined;
 };
 
 // Form types
