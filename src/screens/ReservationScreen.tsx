@@ -15,6 +15,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { CoursesStackParamList, Database } from '@/types';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from '@/contexts/ThemeContext';
 import { format, parseISO } from 'date-fns';
 
 type ReservationScreenRouteProp = RouteProp<CoursesStackParamList, 'ReservationScreen'>;
@@ -31,6 +32,7 @@ export default function ReservationScreen() {
   const navigation = useNavigation<ReservationScreenNavigationProp>();
   const { slotId, courseId } = route.params;
   const { user, profile } = useAuth();
+  const { isDark } = useTheme();
 
   const [slot, setSlot] = useState<TeeTimeSlot | null>(null);
   const [loading, setLoading] = useState(true);
@@ -142,19 +144,19 @@ export default function ReservationScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={[styles.loadingContainer, isDark && styles.loadingContainerDark]}>
         <ActivityIndicator size="large" color="#22c55e" />
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <View style={styles.header}>
-        <Text style={styles.courseName}>Reservation Details</Text>
+    <ScrollView style={[styles.container, isDark && styles.containerDark]} contentContainerStyle={styles.contentContainer}>
+      <View style={[styles.header, isDark && styles.headerDark]}>
+        <Text style={[styles.courseName, isDark && styles.courseNameDark]}>Reservation Details</Text>
         {slot && (
           <View style={styles.slotInfo}>
-            <Text style={styles.slotDate}>
+            <Text style={[styles.slotDate, isDark && styles.slotDateDark]}>
               {slot.tee_date ? format(parseISO(slot.tee_date), 'EEEE, MMMM d, yyyy') : ''}
             </Text>
             <Text style={styles.slotTime}>
@@ -165,32 +167,32 @@ export default function ReservationScreen() {
       </View>
 
       <View style={styles.form}>
-        <Text style={styles.sectionTitle}>Game Details</Text>
+        <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Game Details</Text>
 
-        <Text style={styles.label}>Holes</Text>
-        <View style={styles.holesSelector}>
+        <Text style={[styles.label, isDark && styles.labelDark]}>Holes</Text>
+        <View style={[styles.holesSelector, isDark && styles.holesSelectorDark]}>
           <TouchableOpacity
-            style={[styles.holesOption, holes === 9 && styles.holesOptionActive]}
+            style={[styles.holesOption, holes === 9 && styles.holesOptionActive, isDark && styles.holesOptionDark, holes === 9 && isDark && styles.holesOptionActiveDark]}
             onPress={() => setHoles(9)}
           >
-            <Text style={[styles.holesText, holes === 9 && styles.holesTextActive]}>
+            <Text style={[styles.holesText, holes === 9 && styles.holesTextActive, isDark && styles.holesTextDark]}>
               9 Holes
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.holesOption, holes === 18 && styles.holesOptionActive]}
+            style={[styles.holesOption, holes === 18 && styles.holesOptionActive, isDark && styles.holesOptionDark, holes === 18 && isDark && styles.holesOptionActiveDark]}
             onPress={() => setHoles(18)}
           >
-            <Text style={[styles.holesText, holes === 18 && styles.holesTextActive]}>
+            <Text style={[styles.holesText, holes === 18 && styles.holesTextActive, isDark && styles.holesTextDark]}>
               18 Holes
             </Text>
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.sectionTitle}>Extras & Requirements</Text>
+        <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Extras & Requirements</Text>
 
-        <View style={styles.checkboxRow}>
-          <Text style={styles.checkboxLabel}>Golf Cart Required</Text>
+        <View style={[styles.checkboxRow, isDark && styles.checkboxRowDark]}>
+          <Text style={[styles.checkboxLabel, isDark && styles.checkboxLabelDark]}>Golf Cart Required</Text>
           <Switch
             value={golfCartRequired}
             onValueChange={setGolfCartRequired}
@@ -199,8 +201,8 @@ export default function ReservationScreen() {
           />
         </View>
 
-        <View style={styles.checkboxRow}>
-          <Text style={styles.checkboxLabel}>Push Cart Required</Text>
+        <View style={[styles.checkboxRow, isDark && styles.checkboxRowDark]}>
+          <Text style={[styles.checkboxLabel, isDark && styles.checkboxLabelDark]}>Push Cart Required</Text>
           <Switch
             value={pushCartRequired}
             onValueChange={setPushCartRequired}
@@ -209,8 +211,8 @@ export default function ReservationScreen() {
           />
         </View>
 
-        <View style={styles.checkboxRow}>
-          <Text style={styles.checkboxLabel}>Caddy Required</Text>
+        <View style={[styles.checkboxRow, isDark && styles.checkboxRowDark]}>
+          <Text style={[styles.checkboxLabel, isDark && styles.checkboxLabelDark]}>Caddy Required</Text>
           <Switch
             value={caddyRequired}
             onValueChange={setCaddyRequired}
@@ -219,8 +221,8 @@ export default function ReservationScreen() {
           />
         </View>
 
-        <View style={styles.checkboxRow}>
-          <Text style={styles.checkboxLabel}>Clubs Required</Text>
+        <View style={[styles.checkboxRow, isDark && styles.checkboxRowDark]}>
+          <Text style={[styles.checkboxLabel, isDark && styles.checkboxLabelDark]}>Clubs Required</Text>
           <Switch
             value={clubsRequired}
             onValueChange={setClubsRequired}
@@ -229,8 +231,8 @@ export default function ReservationScreen() {
           />
         </View>
 
-        <View style={styles.checkboxRow}>
-          <Text style={styles.checkboxLabel}>Assistance Required</Text>
+        <View style={[styles.checkboxRow, isDark && styles.checkboxRowDark]}>
+          <Text style={[styles.checkboxLabel, isDark && styles.checkboxLabelDark]}>Assistance Required</Text>
           <Switch
             value={assistanceRequired}
             onValueChange={setAssistanceRequired}
@@ -239,12 +241,13 @@ export default function ReservationScreen() {
           />
         </View>
 
-        <Text style={styles.label}>Notes</Text>
+        <Text style={[styles.label, isDark && styles.labelDark]}>Notes</Text>
         <TextInput
-          style={[styles.input, styles.textArea]}
+          style={[styles.input, styles.textArea, isDark && styles.inputDark]}
           value={notes}
           onChangeText={setNotes}
           placeholder="Any special requests or notes..."
+          placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
           multiline
           numberOfLines={4}
           textAlignVertical="top"
@@ -271,6 +274,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f9fafb',
   },
+  containerDark: {
+    backgroundColor: '#111827',
+  },
   contentContainer: {
     paddingBottom: 40,
   },
@@ -279,6 +285,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  loadingContainerDark: {
+    backgroundColor: '#111827',
+  },
   header: {
     backgroundColor: '#fff',
     padding: 20,
@@ -286,11 +295,18 @@ const styles = StyleSheet.create({
     borderBottomColor: '#e5e7eb',
     alignItems: 'center',
   },
+  headerDark: {
+    backgroundColor: '#1f2937',
+    borderBottomColor: '#374151',
+  },
   courseName: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#111827',
     marginBottom: 8,
+  },
+  courseNameDark: {
+    color: '#f9fafb',
   },
   slotInfo: {
     alignItems: 'center',
@@ -299,6 +315,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#4b5563',
     marginBottom: 4,
+  },
+  slotDateDark: {
+    color: '#9ca3af',
   },
   slotTime: {
     fontSize: 18,
@@ -315,12 +334,18 @@ const styles = StyleSheet.create({
     marginTop: 16,
     marginBottom: 12,
   },
+  sectionTitleDark: {
+    color: '#f9fafb',
+  },
   label: {
     fontSize: 14,
     fontWeight: '500',
     color: '#374151',
     marginBottom: 6,
     marginTop: 8,
+  },
+  labelDark: {
+    color: '#9ca3af',
   },
   input: {
     backgroundColor: '#fff',
@@ -331,6 +356,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#111827',
   },
+  inputDark: {
+    backgroundColor: '#1f2937',
+    borderColor: '#374151',
+    color: '#f9fafb',
+  },
   textArea: {
     height: 100,
   },
@@ -340,11 +370,17 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 4,
   },
+  holesSelectorDark: {
+    backgroundColor: '#1f2937',
+  },
   holesOption: {
     flex: 1,
     paddingVertical: 10,
     alignItems: 'center',
     borderRadius: 6,
+  },
+  holesOptionDark: {
+    backgroundColor: '#1f2937',
   },
   holesOptionActive: {
     backgroundColor: '#fff',
@@ -354,10 +390,16 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
+  holesOptionActiveDark: {
+    backgroundColor: '#374151',
+  },
   holesText: {
     fontSize: 14,
     fontWeight: '600',
     color: '#6b7280',
+  },
+  holesTextDark: {
+    color: '#9ca3af',
   },
   holesTextActive: {
     color: '#22c55e',
@@ -370,9 +412,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#f3f4f6',
   },
+  checkboxRowDark: {
+    borderBottomColor: '#374151',
+  },
   checkboxLabel: {
     fontSize: 16,
     color: '#374151',
+  },
+  checkboxLabelDark: {
+    color: '#9ca3af',
   },
   submitButton: {
     backgroundColor: '#22c55e',

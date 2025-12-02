@@ -17,6 +17,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { CoursesStackParamList, CourseWithDetails, CourseEvent } from '@/types';
 import { coursesService } from '@/services/courses';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -36,6 +37,7 @@ export default function CourseDetailScreen({
   route,
 }: CourseDetailScreenProps) {
   const { courseId } = route.params;
+  const { isDark } = useTheme();
   const [course, setCourse] = useState<CourseWithDetails | null>(null);
   const [events, setEvents] = useState<CourseEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -141,7 +143,7 @@ export default function CourseDetailScreen({
 
     return (
       <TouchableOpacity
-        style={styles.eventCard}
+        style={[styles.eventCard, isDark && styles.eventCardDark]}
         onPress={() => handleEventPress(item)}
         activeOpacity={0.7}
       >
@@ -161,14 +163,14 @@ export default function CourseDetailScreen({
           </TouchableOpacity>
         )}
         <View style={styles.eventInfo}>
-          <Text style={styles.eventTitle} numberOfLines={2}>
+          <Text style={[styles.eventTitle, isDark && styles.eventTitleDark]} numberOfLines={2}>
             {item.title}
           </Text>
-          <Text style={styles.eventDate}>
+          <Text style={[styles.eventDate, isDark && styles.eventDateDark]}>
             📅 {formattedDate} at {formattedTime}
           </Text>
           {item.location && (
-            <Text style={styles.eventLocation} numberOfLines={1}>
+            <Text style={[styles.eventLocation, isDark && styles.eventLocationDark]} numberOfLines={1}>
               📍 {item.location}
             </Text>
           )}
@@ -204,16 +206,16 @@ export default function CourseDetailScreen({
 
   if (loading) {
     return (
-      <View style={styles.centerContainer}>
+      <View style={[styles.centerContainer, isDark && styles.centerContainerDark]}>
         <ActivityIndicator size="large" color="#22c55e" />
-        <Text style={styles.loadingText}>Loading course details...</Text>
+        <Text style={[styles.loadingText, isDark && styles.loadingTextDark]}>Loading course details...</Text>
       </View>
     );
   }
 
   if (error || !course) {
     return (
-      <View style={styles.centerContainer}>
+      <View style={[styles.centerContainer, isDark && styles.centerContainerDark]}>
         <Text style={styles.errorIcon}>⚠️</Text>
         <Text style={styles.errorText}>{error || 'Course not found'}</Text>
         <TouchableOpacity style={styles.retryButton} onPress={fetchCourseDetails}>
@@ -232,7 +234,7 @@ export default function CourseDetailScreen({
 
   return (
     <>
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <ScrollView style={[styles.container, isDark && styles.containerDark]} showsVerticalScrollIndicator={false}>
         {/* Gallery Carousel */}
         {galleryImages.length > 0 && (
           <View style={styles.galleryContainer}>
@@ -264,8 +266,8 @@ export default function CourseDetailScreen({
         )}
 
         {/* Course Header */}
-        <View style={styles.headerSection}>
-          <Text style={styles.courseName}>{course.name}</Text>
+        <View style={[styles.headerSection, isDark && styles.headerSectionDark]}>
+          <Text style={[styles.courseName, isDark && styles.courseNameDark]}>{course.name}</Text>
 
           {/* Rating */}
           {course.rating !== null && course.rating > 0 && (
@@ -273,16 +275,16 @@ export default function CourseDetailScreen({
               <Text style={styles.ratingStars}>
                 {'⭐'.repeat(Math.round(course.rating))}
               </Text>
-              <Text style={styles.ratingText}>{course.rating.toFixed(1)}</Text>
+              <Text style={[styles.ratingText, isDark && styles.ratingTextDark]}>{course.rating.toFixed(1)}</Text>
             </View>
           )}
 
           {/* Holes Info */}
-          {course.holes && <Text style={styles.holesInfo}>🏌️ {course.holes} Holes</Text>}
+          {course.holes && <Text style={[styles.holesInfo, isDark && styles.holesInfoDark]}>🏌️ {course.holes} Holes</Text>}
         </View>
 
         {/* Reserve Button */}
-        <View style={styles.reserveSection}>
+        <View style={[styles.reserveSection, isDark && styles.reserveSectionDark]}>
           <TouchableOpacity
             style={styles.reserveButton}
             onPress={handleReserveTeeTime}
@@ -294,16 +296,16 @@ export default function CourseDetailScreen({
 
         {/* Description */}
         {course.description && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>About</Text>
-            <Text style={styles.description}>{course.description}</Text>
+          <View style={[styles.section, isDark && styles.sectionDark]}>
+            <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>About</Text>
+            <Text style={[styles.description, isDark && styles.descriptionDark]}>{course.description}</Text>
           </View>
         )}
 
         {/* Amenities */}
         {course.amenities && course.amenities.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Amenities</Text>
+          <View style={[styles.section, isDark && styles.sectionDark]}>
+            <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Amenities</Text>
             <View style={styles.amenitiesContainer}>
               {course.amenities.map((amenity, index) => renderAmenity(amenity, index))}
             </View>
@@ -311,44 +313,44 @@ export default function CourseDetailScreen({
         )}
 
         {/* Contact Information */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Contact Information</Text>
+        <View style={[styles.section, isDark && styles.sectionDark]}>
+          <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Contact Information</Text>
 
           {course.phone && (
             <TouchableOpacity
-              style={styles.contactItem}
+              style={[styles.contactItem, isDark && styles.contactItemDark]}
               onPress={() => handlePhonePress(course.phone!)}
             >
               <Text style={styles.contactIcon}>📞</Text>
-              <Text style={styles.contactText}>{course.phone}</Text>
+              <Text style={[styles.contactText, isDark && styles.contactTextDark]}>{course.phone}</Text>
             </TouchableOpacity>
           )}
 
           {course.email && (
             <TouchableOpacity
-              style={styles.contactItem}
+              style={[styles.contactItem, isDark && styles.contactItemDark]}
               onPress={() => handleEmailPress(course.email!)}
             >
               <Text style={styles.contactIcon}>✉️</Text>
-              <Text style={styles.contactText}>{course.email}</Text>
+              <Text style={[styles.contactText, isDark && styles.contactTextDark]}>{course.email}</Text>
             </TouchableOpacity>
           )}
 
           {course.site_url && (
             <TouchableOpacity
-              style={styles.contactItem}
+              style={[styles.contactItem, isDark && styles.contactItemDark]}
               onPress={() => handleWebsitePress(course.site_url!)}
             >
               <Text style={styles.contactIcon}>🌐</Text>
-              <Text style={styles.contactText}>Visit Website</Text>
+              <Text style={[styles.contactText, isDark && styles.contactTextDark]}>Visit Website</Text>
             </TouchableOpacity>
           )}
 
           {/* Operating Hours */}
           {course.operating_hours && (
-            <View style={styles.contactItem}>
+            <View style={[styles.contactItem, isDark && styles.contactItemDark]}>
               <Text style={styles.contactIcon}>🕒</Text>
-              <Text style={styles.contactText}>
+              <Text style={[styles.contactText, isDark && styles.contactTextDark]}>
                 {getOperatingHoursText(course.operating_hours)}
               </Text>
             </View>
@@ -357,23 +359,23 @@ export default function CourseDetailScreen({
 
         {/* Social Media */}
         {(course.facebook || course.instagram) && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Follow Us</Text>
+          <View style={[styles.section, isDark && styles.sectionDark]}>
+            <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Follow Us</Text>
             <View style={styles.socialContainer}>
               {course.facebook && (
                 <TouchableOpacity
-                  style={styles.socialButton}
+                  style={[styles.socialButton, isDark && styles.socialButtonDark]}
                   onPress={() => handleWebsitePress(course.facebook!)}
                 >
-                  <Text style={styles.socialButtonText}>📘 Facebook</Text>
+                  <Text style={[styles.socialButtonText, isDark && styles.socialButtonTextDark]}>📘 Facebook</Text>
                 </TouchableOpacity>
               )}
               {course.instagram && (
                 <TouchableOpacity
-                  style={styles.socialButton}
+                  style={[styles.socialButton, isDark && styles.socialButtonDark]}
                   onPress={() => handleWebsitePress(course.instagram!)}
                 >
-                  <Text style={styles.socialButtonText}>📷 Instagram</Text>
+                  <Text style={[styles.socialButtonText, isDark && styles.socialButtonTextDark]}>📷 Instagram</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -382,8 +384,8 @@ export default function CourseDetailScreen({
 
         {/* Upcoming Events */}
         {events.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Upcoming Events</Text>
+          <View style={[styles.section, isDark && styles.sectionDark]}>
+            <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Upcoming Events</Text>
             {events.map((event) => (
               <View key={event.id}>{renderEventItem({ item: event })}</View>
             ))}
@@ -692,5 +694,65 @@ const styles = StyleSheet.create({
   modalImage: {
     width: SCREEN_WIDTH,
     height: '100%',
+  },
+  // Dark mode styles
+  containerDark: {
+    backgroundColor: '#111827',
+  },
+  centerContainerDark: {
+    backgroundColor: '#111827',
+  },
+  loadingTextDark: {
+    color: '#9ca3af',
+  },
+  headerSectionDark: {
+    backgroundColor: '#1f2937',
+    borderBottomColor: '#374151',
+  },
+  courseNameDark: {
+    color: '#f9fafb',
+  },
+  ratingTextDark: {
+    color: '#f9fafb',
+  },
+  holesInfoDark: {
+    color: '#9ca3af',
+  },
+  reserveSectionDark: {
+    backgroundColor: '#1f2937',
+  },
+  sectionDark: {
+    backgroundColor: '#1f2937',
+  },
+  sectionTitleDark: {
+    color: '#f9fafb',
+  },
+  descriptionDark: {
+    color: '#9ca3af',
+  },
+  contactItemDark: {
+    borderBottomColor: '#374151',
+  },
+  contactTextDark: {
+    color: '#f9fafb',
+  },
+  socialButtonDark: {
+    backgroundColor: '#374151',
+  },
+  socialButtonTextDark: {
+    color: '#f9fafb',
+  },
+  eventCardDark: {
+    backgroundColor: '#1f2937',
+    borderColor: '#374151',
+  },
+  eventTitleDark: {
+    color: '#f9fafb',
+  },
+  eventDateDark: {
+    color: '#9ca3af',
+  },
+  eventLocationDark: {
+    color: '#9ca3af',
   },
 });

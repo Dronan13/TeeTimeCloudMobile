@@ -9,43 +9,46 @@ import {
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '@/types';
+import { useTheme } from '@/contexts/ThemeContext';
 
 type LandingScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Landing'>;
 };
 
 export default function LandingScreen({ navigation }: LandingScreenProps) {
+  const { isDark } = useTheme();
+
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.content}>
+    <ScrollView style={[styles.container, isDark && styles.containerDark]}>
+      <View style={[styles.content, isDark && styles.contentDark]}>
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.logo}>⛳ TeeTime Cloud</Text>
-          <Text style={styles.tagline}>Your Perfect Round Awaits</Text>
+          <Text style={[styles.tagline, isDark && styles.taglineDark]}>Your Perfect Round Awaits</Text>
         </View>
 
         {/* Features */}
         <View style={styles.features}>
           <View style={styles.feature}>
             <Text style={styles.featureIcon}>🏌️</Text>
-            <Text style={styles.featureTitle}>Book Tee Times</Text>
-            <Text style={styles.featureText}>
+            <Text style={[styles.featureTitle, isDark && styles.featureTitleDark]}>Book Tee Times</Text>
+            <Text style={[styles.featureText, isDark && styles.featureTextDark]}>
               Reserve your spot at top golf courses with ease
             </Text>
           </View>
 
           <View style={styles.feature}>
             <Text style={styles.featureIcon}>📍</Text>
-            <Text style={styles.featureTitle}>Find Courses</Text>
-            <Text style={styles.featureText}>
+            <Text style={[styles.featureTitle, isDark && styles.featureTitleDark]}>Find Courses</Text>
+            <Text style={[styles.featureText, isDark && styles.featureTextDark]}>
               Discover and explore golf courses near you
             </Text>
           </View>
 
           <View style={styles.feature}>
             <Text style={styles.featureIcon}>📱</Text>
-            <Text style={styles.featureTitle}>Manage Bookings</Text>
-            <Text style={styles.featureText}>
+            <Text style={[styles.featureTitle, isDark && styles.featureTitleDark]}>Manage Bookings</Text>
+            <Text style={[styles.featureText, isDark && styles.featureTextDark]}>
               View and manage all your tee times in one place
             </Text>
           </View>
@@ -60,7 +63,7 @@ export default function LandingScreen({ navigation }: LandingScreenProps) {
         </TouchableOpacity>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>
+          <Text style={[styles.footerText, isDark && styles.footerTextDark]}>
             Already have an account?{' '}
             <Text style={styles.link} onPress={() => navigation.navigate('SignIn')}>
               Sign In
@@ -142,5 +145,24 @@ const styles = StyleSheet.create({
   link: {
     color: '#22c55e',
     fontWeight: '600',
+  },
+  // Dark mode styles
+  containerDark: {
+    backgroundColor: '#111827',
+  },
+  contentDark: {
+    backgroundColor: '#111827',
+  },
+  taglineDark: {
+    color: '#9ca3af',
+  },
+  featureTitleDark: {
+    color: '#f9fafb',
+  },
+  featureTextDark: {
+    color: '#9ca3af',
+  },
+  footerTextDark: {
+    color: '#9ca3af',
   },
 });

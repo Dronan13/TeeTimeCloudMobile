@@ -17,6 +17,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { CoursesStackParamList, Database } from '@/types';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from '@/contexts/ThemeContext';
 import { format, addDays, parseISO, isSameDay } from 'date-fns';
 import { weatherService, WeatherForecast } from '@/services/weather';
 
@@ -39,6 +40,7 @@ export default function CourseTeeTimesScreen() {
   const navigation = useNavigation<CourseTeeTimesScreenNavigationProp>();
   const { courseId, courseName } = route.params;
   const { user } = useAuth();
+  const { isDark } = useTheme();
 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedTimePeriod, setSelectedTimePeriod] = useState<TimePeriod>('all');
@@ -278,6 +280,7 @@ export default function CourseTeeTimesScreen() {
           <Animated.View
             style={[
               styles.alertContent,
+              isDark && styles.alertContentDark,
               {
                 transform: [{ translateX }],
               },
@@ -285,12 +288,12 @@ export default function CourseTeeTimesScreen() {
             {...panResponder.panHandlers}
           >
             <View style={styles.alertTextContainer}>
-              <Text style={styles.alertTitle}>You have a reservation on this date</Text>
-              <Text style={styles.alertText}>
+              <Text style={[styles.alertTitle, isDark && styles.alertTitleDark]}>You have a reservation on this date</Text>
+              <Text style={[styles.alertText, isDark && styles.alertTextDark]}>
                 {reservationDetails.teeTime.slice(0, 5)} - Hole {reservationDetails.hole} (
                 {reservationDetails.status})
               </Text>
-              <Text style={styles.alertSubtext}>
+              <Text style={[styles.alertSubtext, isDark && styles.alertSubtextDark]}>
                 Swipe left to cancel and re-book
               </Text>
             </View>
@@ -311,13 +314,13 @@ export default function CourseTeeTimesScreen() {
 
     return (
       <TouchableOpacity
-        style={[styles.dateItem, isSelected && styles.dateItemActive]}
+        style={[styles.dateItem, isDark && styles.dateItemDark, isSelected && styles.dateItemActive]}
         onPress={() => setSelectedDate(item)}
       >
-        <Text style={[styles.dateDay, isSelected && styles.dateTextActive]}>
+        <Text style={[styles.dateDay, isDark && styles.dateDayDark, isSelected && styles.dateTextActive]}>
           {format(item, 'EEE')}
         </Text>
-        <Text style={[styles.dateNumber, isSelected && styles.dateTextActive]}>
+        <Text style={[styles.dateNumber, isDark && styles.dateNumberDark, isSelected && styles.dateTextActive]}>
           {format(item, 'd')}
         </Text>
         {dayForecast && (
@@ -326,7 +329,7 @@ export default function CourseTeeTimesScreen() {
               source={{ uri: `https:${dayForecast.day.condition.icon}` }}
               style={styles.weatherIcon}
             />
-            <Text style={[styles.weatherTemp, isSelected && styles.dateTextActive]}>
+            <Text style={[styles.weatherTemp, isDark && styles.weatherTempDark, isSelected && styles.dateTextActive]}>
               {Math.round(dayForecast.day.avgtemp_f)}°
             </Text>
           </View>
@@ -343,15 +346,15 @@ export default function CourseTeeTimesScreen() {
 
   const renderTeeTimeItem = ({ item }: { item: TeeTimeSlot }) => (
     <TouchableOpacity
-      style={[styles.teeTimeItem, hasReservationOnDate && styles.teeTimeItemDisabled]}
+      style={[styles.teeTimeItem, isDark && styles.teeTimeItemDark, hasReservationOnDate && styles.teeTimeItemDisabled]}
       onPress={() => handleSlotPress(item)}
       disabled={hasReservationOnDate}
     >
       <View style={styles.timeContainer}>
-        <Text style={[styles.timeText, hasReservationOnDate && styles.textDisabled]}>
+        <Text style={[styles.timeText, isDark && styles.timeTextDark, hasReservationOnDate && styles.textDisabled]}>
           {item.tee_time ? item.tee_time.slice(0, 5) : ''}
         </Text>
-        <Text style={[styles.holeText, hasReservationOnDate && styles.textDisabled]}>
+        <Text style={[styles.holeText, isDark && styles.holeTextDark, hasReservationOnDate && styles.textDisabled]}>
           Hole {item.hole}
         </Text>
       </View>
@@ -376,14 +379,14 @@ export default function CourseTeeTimesScreen() {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isDark && styles.containerDark]}>
       {/* Header with Course Name */}
-      <View style={styles.header}>
-        <Text style={styles.courseName}>{courseName}</Text>
+      <View style={[styles.header, isDark && styles.headerDark]}>
+        <Text style={[styles.courseName, isDark && styles.courseNameDark]}>{courseName}</Text>
       </View>
 
       {/* Date Selector */}
-      <View style={styles.dateSelectorContainer}>
+      <View style={[styles.dateSelectorContainer, isDark && styles.dateSelectorContainerDark]}>
         <FlatList
           data={dates}
           renderItem={renderDateItem}
@@ -398,26 +401,27 @@ export default function CourseTeeTimesScreen() {
       {hasReservationOnDate && <SwipeableAlert />}
 
       {/* Filters Section */}
-      <View style={styles.filtersContainer}>
+      <View style={[styles.filtersContainer, isDark && styles.filtersContainerDark]}>
         {/* Hole Selector */}
-        <View style={styles.holeSelector}>
+        <View style={[styles.holeSelector, isDark && styles.holeSelectorDark]}>
           <TouchableOpacity
-            style={[styles.holeTab, selectedHole === 1 && styles.holeTabActive]}
+            style={[styles.holeTab, isDark && styles.holeTabDark, selectedHole === 1 && styles.holeTabActive, selectedHole === 1 && isDark && styles.holeTabActiveDark]}
             onPress={() => setSelectedHole(1)}
           >
             <Text
-              style={[styles.holeTabText, selectedHole === 1 && styles.holeTabTextActive]}
+              style={[styles.holeTabText, isDark && styles.holeTabTextDark, selectedHole === 1 && styles.holeTabTextActive]}
             >
               Hole 1
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.holeTab, selectedHole === 10 && styles.holeTabActive]}
+            style={[styles.holeTab, isDark && styles.holeTabDark, selectedHole === 10 && styles.holeTabActive, selectedHole === 10 && isDark && styles.holeTabActiveDark]}
             onPress={() => setSelectedHole(10)}
           >
             <Text
               style={[
                 styles.holeTabText,
+                isDark && styles.holeTabTextDark,
                 selectedHole === 10 && styles.holeTabTextActive,
               ]}
             >
@@ -437,6 +441,7 @@ export default function CourseTeeTimesScreen() {
               key={period}
               style={[
                 styles.periodTab,
+                isDark && styles.periodTabDark,
                 selectedTimePeriod === period && styles.periodTabActive,
               ]}
               onPress={() => setSelectedTimePeriod(period)}
@@ -444,6 +449,7 @@ export default function CourseTeeTimesScreen() {
               <Text
                 style={[
                   styles.periodTabText,
+                  isDark && styles.periodTabTextDark,
                   selectedTimePeriod === period && styles.periodTabTextActive,
                 ]}
               >
@@ -467,7 +473,7 @@ export default function CourseTeeTimesScreen() {
           contentContainerStyle={styles.teeTimeList}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>
+              <Text style={[styles.emptyText, isDark && styles.emptyTextDark]}>
                 No tee times available for this selection.
               </Text>
             </View>
@@ -736,5 +742,78 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
     color: '#111827',
+  },
+  // Dark mode styles
+  containerDark: {
+    backgroundColor: '#111827',
+  },
+  headerDark: {
+    backgroundColor: '#1f2937',
+    borderBottomColor: '#374151',
+  },
+  courseNameDark: {
+    color: '#f9fafb',
+  },
+  dateSelectorContainerDark: {
+    backgroundColor: '#1f2937',
+    borderBottomColor: '#374151',
+  },
+  dateItemDark: {
+    backgroundColor: '#374151',
+  },
+  dateDayDark: {
+    color: '#9ca3af',
+  },
+  dateNumberDark: {
+    color: '#f9fafb',
+  },
+  weatherTempDark: {
+    color: '#f9fafb',
+  },
+  filtersContainerDark: {
+    backgroundColor: '#1f2937',
+  },
+  holeSelectorDark: {
+    backgroundColor: '#374151',
+  },
+  holeTabDark: {
+    backgroundColor: 'transparent',
+  },
+  holeTabActiveDark: {
+    backgroundColor: '#1f2937',
+  },
+  holeTabTextDark: {
+    color: '#9ca3af',
+  },
+  periodTabDark: {
+    backgroundColor: '#374151',
+  },
+  periodTabTextDark: {
+    color: '#9ca3af',
+  },
+  teeTimeItemDark: {
+    backgroundColor: '#1f2937',
+  },
+  timeTextDark: {
+    color: '#f9fafb',
+  },
+  holeTextDark: {
+    color: '#9ca3af',
+  },
+  emptyTextDark: {
+    color: '#9ca3af',
+  },
+  alertContentDark: {
+    backgroundColor: '#78350f',
+    borderLeftColor: '#f59e0b',
+  },
+  alertTitleDark: {
+    color: '#fef3c7',
+  },
+  alertTextDark: {
+    color: '#fde68a',
+  },
+  alertSubtextDark: {
+    color: '#fef3c7',
   },
 });

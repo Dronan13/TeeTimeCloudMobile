@@ -9,6 +9,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/lib/supabaseClient';
 import { Database } from '@/types/supabase';
 import { formatDistanceToNow, parseISO } from 'date-fns';
@@ -20,6 +21,7 @@ const ITEMS_PER_PAGE = 20;
 
 export default function NotificationsScreen() {
   const { user } = useAuth();
+  const { isDark } = useTheme();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -120,24 +122,37 @@ export default function NotificationsScreen() {
 
     return (
       <TouchableOpacity
-        style={[styles.notificationCard, !item.read && styles.unreadCard]}
+        style={[
+          styles.notificationCard,
+          isDark && styles.notificationCardDark,
+          !item.read && styles.unreadCard,
+          !item.read && isDark && styles.unreadCardDark,
+        ]}
         onPress={() => !item.read && markAsRead(item.id)}
       >
         <View style={styles.notificationHeader}>
-          <Text style={styles.notificationTitle}>{item.title}</Text>
+          <Text style={[styles.notificationTitle, isDark && styles.notificationTitleDark]}>
+            {item.title}
+          </Text>
           {!item.read && <View style={styles.unreadDot} />}
         </View>
 
-        {item.body && <Text style={styles.notificationBody}>{item.body}</Text>}
+        {item.body && (
+          <Text style={[styles.notificationBody, isDark && styles.notificationBodyDark]}>
+            {item.body}
+          </Text>
+        )}
 
-        <Text style={styles.notificationTime}>{timeAgo}</Text>
+        <Text style={[styles.notificationTime, isDark && styles.notificationTimeDark]}>
+          {timeAgo}
+        </Text>
       </TouchableOpacity>
     );
   };
 
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
-      <Text style={styles.emptyText}>
+      <Text style={[styles.emptyText, isDark && styles.emptyTextDark]}>
         {filter === 'unread'
           ? 'No unread notifications'
           : filter === 'read'
@@ -158,36 +173,66 @@ export default function NotificationsScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={[styles.loadingContainer, isDark && styles.loadingContainerDark]}>
         <ActivityIndicator size="large" color="#22c55e" />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.filterContainer}>
+    <View style={[styles.container, isDark && styles.containerDark]}>
+      <View style={[styles.filterContainer, isDark && styles.filterContainerDark]}>
         <TouchableOpacity
-          style={[styles.filterTab, filter === 'all' && styles.filterTabActive]}
+          style={[
+            styles.filterTab,
+            isDark && styles.filterTabDark,
+            filter === 'all' && styles.filterTabActive,
+          ]}
           onPress={() => setFilter('all')}
         >
-          <Text style={[styles.filterText, filter === 'all' && styles.filterTextActive]}>
+          <Text
+            style={[
+              styles.filterText,
+              isDark && styles.filterTextDark,
+              filter === 'all' && styles.filterTextActive,
+            ]}
+          >
             All
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.filterTab, filter === 'unread' && styles.filterTabActive]}
+          style={[
+            styles.filterTab,
+            isDark && styles.filterTabDark,
+            filter === 'unread' && styles.filterTabActive,
+          ]}
           onPress={() => setFilter('unread')}
         >
-          <Text style={[styles.filterText, filter === 'unread' && styles.filterTextActive]}>
+          <Text
+            style={[
+              styles.filterText,
+              isDark && styles.filterTextDark,
+              filter === 'unread' && styles.filterTextActive,
+            ]}
+          >
             Unread
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.filterTab, filter === 'read' && styles.filterTabActive]}
+          style={[
+            styles.filterTab,
+            isDark && styles.filterTabDark,
+            filter === 'read' && styles.filterTabActive,
+          ]}
           onPress={() => setFilter('read')}
         >
-          <Text style={[styles.filterText, filter === 'read' && styles.filterTextActive]}>
+          <Text
+            style={[
+              styles.filterText,
+              isDark && styles.filterTextDark,
+              filter === 'read' && styles.filterTextActive,
+            ]}
+          >
             Read
           </Text>
         </TouchableOpacity>
@@ -312,5 +357,41 @@ const styles = StyleSheet.create({
   footerLoader: {
     paddingVertical: 20,
     alignItems: 'center',
+  },
+  // Dark mode styles
+  containerDark: {
+    backgroundColor: '#111827',
+  },
+  loadingContainerDark: {
+    backgroundColor: '#111827',
+  },
+  notificationCardDark: {
+    backgroundColor: '#1f2937',
+  },
+  unreadCardDark: {
+    backgroundColor: '#1f2937',
+    borderLeftColor: '#22c55e',
+  },
+  notificationTitleDark: {
+    color: '#f9fafb',
+  },
+  notificationBodyDark: {
+    color: '#9ca3af',
+  },
+  notificationTimeDark: {
+    color: '#9ca3af',
+  },
+  emptyTextDark: {
+    color: '#9ca3af',
+  },
+  filterContainerDark: {
+    backgroundColor: '#1f2937',
+    borderBottomColor: '#374151',
+  },
+  filterTabDark: {
+    backgroundColor: '#374151',
+  },
+  filterTextDark: {
+    color: '#9ca3af',
   },
 });

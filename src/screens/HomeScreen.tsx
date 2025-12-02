@@ -17,6 +17,7 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { CompositeNavigationProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from '@/contexts/ThemeContext';
 import { reservationsService } from '@/services/reservations';
 import { notificationsService } from '@/services/notifications';
 import { coursesService } from '@/services/courses';
@@ -37,6 +38,7 @@ type HomeScreenNavigationProp = CompositeNavigationProp<
 export default function HomeScreen() {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const { user, profile } = useAuth();
+  const { isDark } = useTheme();
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -131,7 +133,7 @@ export default function HomeScreen() {
 
   if (loading) {
     return (
-      <View style={homeStyles.loadingContainer}>
+      <View style={[homeStyles.loadingContainer, isDark && homeStyles.loadingContainerDark]}>
         <ActivityIndicator size="large" color="#22c55e" />
       </View>
     );
@@ -140,11 +142,11 @@ export default function HomeScreen() {
   return (
     <>
       <ScrollView
-        style={homeStyles.container}
+        style={[homeStyles.container, isDark && homeStyles.containerDark]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
       {/* Profile Snapshot */}
-      <View style={homeStyles.profileSection}>
+      <View style={[homeStyles.profileSection, isDark && homeStyles.profileSectionDark]}>
         <View style={homeStyles.profileInfo}>
           <View style={homeStyles.avatar}>
             <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
@@ -181,48 +183,48 @@ export default function HomeScreen() {
 
       {/* Weather at Home Course */}
       {weather && (
-        <View style={homeStyles.section}>
+        <View style={[homeStyles.section, isDark && homeStyles.sectionDark]}>
           <View style={homeStyles.weatherDetails}>
               <View style={homeStyles.weatherItem}>
-                <Text style={homeStyles.weatherLabel}>Temperature</Text>
-                <Text style={homeStyles.weatherValue}>
+                <Text style={[homeStyles.weatherLabel, isDark && homeStyles.weatherLabelDark]}>Temperature</Text>
+                <Text style={[homeStyles.weatherValue, isDark && homeStyles.weatherValueDark]}>
                   {Math.round(weather.current?.temp_f)}°F
                 </Text>
               </View>
               <View style={homeStyles.weatherItem}>
-                <Text style={homeStyles.weatherLabel}>Wind</Text>
-                <Text style={homeStyles.weatherValue}>
+                <Text style={[homeStyles.weatherLabel, isDark && homeStyles.weatherLabelDark]}>Wind</Text>
+                <Text style={[homeStyles.weatherValue, isDark && homeStyles.weatherValueDark]}>
                   {Math.round(weather.current?.wind_mph)} mph {weather.current?.wind_dir}
                 </Text>
               </View>
               <View style={homeStyles.weatherItem}>
-                <Text style={homeStyles.weatherLabel}>Humidity</Text>
-                <Text style={homeStyles.weatherValue}>{weather.current?.humidity}%</Text>
+                <Text style={[homeStyles.weatherLabel, isDark && homeStyles.weatherLabelDark]}>Humidity</Text>
+                <Text style={[homeStyles.weatherValue, isDark && homeStyles.weatherValueDark]}>{weather.current?.humidity}%</Text>
               </View>
               <View style={homeStyles.weatherItem}>
-                <Text style={homeStyles.weatherLabel}>Condition</Text>
-                <Text style={homeStyles.weatherValue}>{weather.current?.condition?.text}</Text>
+                <Text style={[homeStyles.weatherLabel, isDark && homeStyles.weatherLabelDark]}>Condition</Text>
+                <Text style={[homeStyles.weatherValue, isDark && homeStyles.weatherValueDark]}>{weather.current?.condition?.text}</Text>
               </View>
             </View>
         </View>
       )}
 
       {/* Next Tee Time / Book CTA */}
-      <View style={homeStyles.section}>
+      <View style={[homeStyles.section, isDark && homeStyles.sectionDark]}>
         {nextTeeTime && (
-          <View style={homeStyles.nextTeeTimeCard}>
-            <Text style={homeStyles.sectionTitle}>Next Tee Time</Text>
+          <View style={[homeStyles.nextTeeTimeCard, isDark && homeStyles.nextTeeTimeCardDark]}>
+            <Text style={[homeStyles.sectionTitle, isDark && homeStyles.sectionTitleDark]}>Next Tee Time</Text>
             <View style={homeStyles.teeTimeDetails}>
-              <Text style={homeStyles.teeTimeDate}>
+              <Text style={[homeStyles.teeTimeDate, isDark && homeStyles.teeTimeDateDark]}>
                 📅 {dayjs(nextTeeTime.slot?.tee_date).format('dddd, MMMM D, YYYY')}
               </Text>
-              <Text style={homeStyles.teeTimeTime}>
+              <Text style={[homeStyles.teeTimeTime, isDark && homeStyles.teeTimeTimeDark]}>
                 ⏰ {dayjs(nextTeeTime.slot?.tee_date).format('h:mm A')}
               </Text>
-              <Text style={homeStyles.teeTimeCourse}>
+              <Text style={[homeStyles.teeTimeCourse, isDark && homeStyles.teeTimeCourseDark]}>
                 ⛳ {nextTeeTime.course?.name || 'Golf Course'}
               </Text>
-              <Text style={homeStyles.teeTimeHoles}>
+              <Text style={[homeStyles.teeTimeHoles, isDark && homeStyles.teeTimeHolesDark]}>
                 🏌️ {nextTeeTime.holes} Holes
               </Text>
               {nextTeeTime.booking_status && (
@@ -244,11 +246,11 @@ export default function HomeScreen() {
       </View>
 
       {/* Quick Actions Row */}
-      <View style={homeStyles.section}>
-        <Text style={homeStyles.sectionTitle}>Quick Actions</Text>
+      <View style={[homeStyles.section, isDark && homeStyles.sectionDark]}>
+        <Text style={[homeStyles.sectionTitle, isDark && homeStyles.sectionTitleDark]}>Quick Actions</Text>
         <View style={homeStyles.quickActionsRow}>
           <TouchableOpacity
-            style={homeStyles.quickActionButton}
+            style={[homeStyles.quickActionButton, isDark && homeStyles.quickActionButtonDark]}
             onPress={() => {
               if (profile?.home_course_id && homeCourseName) {
                 navigation.navigate('Courses', {
@@ -264,28 +266,28 @@ export default function HomeScreen() {
             }}
           >
             <Text style={homeStyles.quickActionIcon}>⛳</Text>
-            <Text style={homeStyles.quickActionText}>Book Tee Time</Text>
+            <Text style={[homeStyles.quickActionText, isDark && homeStyles.quickActionTextDark]}>Book Tee Time</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={homeStyles.quickActionButton}
+            style={[homeStyles.quickActionButton, isDark && homeStyles.quickActionButtonDark]}
             onPress={() => navigation.navigate('Courses')}
           >
             <Text style={homeStyles.quickActionIcon}>📍</Text>
-            <Text style={homeStyles.quickActionText}>Nearby Courses</Text>
+            <Text style={[homeStyles.quickActionText, isDark && homeStyles.quickActionTextDark]}>Nearby Courses</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={homeStyles.quickActionButton}
+            style={[homeStyles.quickActionButton, isDark && homeStyles.quickActionButtonDark]}
             onPress={() => navigation.navigate('TeeTimes')}
           >
             <Text style={homeStyles.quickActionIcon}>📅</Text>
-            <Text style={homeStyles.quickActionText}>My Tee Times</Text>
+            <Text style={[homeStyles.quickActionText, isDark && homeStyles.quickActionTextDark]}>My Tee Times</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={homeStyles.quickActionButton}
+            style={[homeStyles.quickActionButton, isDark && homeStyles.quickActionButtonDark]}
             onPress={() => navigation.navigate('Notifications')}
           >
             <Text style={homeStyles.quickActionIcon}>🔔</Text>
-            <Text style={homeStyles.quickActionText}>Inbox</Text>
+            <Text style={[homeStyles.quickActionText, isDark && homeStyles.quickActionTextDark]}>Inbox</Text>
             {unreadCount > 0 && (
               <View style={homeStyles.badge}>
                 <Text style={homeStyles.badgeText}>{unreadCount}</Text>
@@ -299,8 +301,8 @@ export default function HomeScreen() {
 
       {/* Upcoming Course Events */}
       {upcomingEvents.length > 0 && (
-        <View style={homeStyles.section}>
-          <Text style={homeStyles.sectionTitle}>Upcoming Events</Text>
+        <View style={[homeStyles.section, isDark && homeStyles.sectionDark]}>
+          <Text style={[homeStyles.sectionTitle, isDark && homeStyles.sectionTitleDark]}>Upcoming Events</Text>
           {upcomingEvents.map((event) => {
             const startDate = new Date(event.start_at);
             const formattedDate = startDate.toLocaleDateString('en-US', {
@@ -314,7 +316,7 @@ export default function HomeScreen() {
             });
 
             return (
-              <View key={event.id} style={homeStyles.eventCard}>
+              <View key={event.id} style={[homeStyles.eventCard, isDark && homeStyles.eventCardDark]}>
                 {event.image_url && (
                   <TouchableOpacity
                     onPress={() => handleImagePress(event.image_url!)}
@@ -327,15 +329,15 @@ export default function HomeScreen() {
                     />
                   </TouchableOpacity>
                 )}
-                <View style={homeStyles.eventInfo}>
-                  <Text style={homeStyles.eventTitle} numberOfLines={2}>
+                <View style={[homeStyles.eventInfo, isDark && homeStyles.eventInfoDark]}>
+                  <Text style={[homeStyles.eventTitle, isDark && homeStyles.eventTitleDark]} numberOfLines={2}>
                     {event.title}
                   </Text>
-                  <Text style={homeStyles.eventDate}>
+                  <Text style={[homeStyles.eventDate, isDark && homeStyles.eventDateDark]}>
                     📅 {formattedDate} at {formattedTime}
                   </Text>
                   {event.location && (
-                    <Text style={homeStyles.eventLocation} numberOfLines={1}>
+                    <Text style={[homeStyles.eventLocation, isDark && homeStyles.eventLocationDark]} numberOfLines={1}>
                       📍 {event.location}
                     </Text>
                   )}
@@ -351,11 +353,11 @@ export default function HomeScreen() {
 
       {/* Notifications Preview */}
       {recentNotifications.length > 0 && (
-        <View style={homeStyles.section}>
+        <View style={[homeStyles.section, isDark && homeStyles.sectionDark]}>
           <View style={homeStyles.sectionHeader}>
-            <Text style={homeStyles.sectionTitle}>Recent Notifications</Text>
+            <Text style={[homeStyles.sectionTitle, isDark && homeStyles.sectionTitleDark]}>Recent Notifications</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
-              <Text style={homeStyles.viewAllLink}>View All →</Text>
+              <Text style={[homeStyles.viewAllLink, isDark && homeStyles.viewAllLinkDark]}>View All →</Text>
             </TouchableOpacity>
           </View>
           {recentNotifications.map((notification) => (
@@ -363,14 +365,15 @@ export default function HomeScreen() {
               key={notification.id}
               style={[
                 homeStyles.notificationCard,
+                isDark && homeStyles.notificationCardDark,
                 !notification.read && homeStyles.notificationUnread,
               ]}
             >
-              <Text style={homeStyles.notificationTitle}>{notification.title}</Text>
-              <Text style={homeStyles.notificationMessage} numberOfLines={2}>
+              <Text style={[homeStyles.notificationTitle, isDark && homeStyles.notificationTitleDark]}>{notification.title}</Text>
+              <Text style={[homeStyles.notificationMessage, isDark && homeStyles.notificationMessageDark]} numberOfLines={2}>
                 {notification.body}
               </Text>
-              <Text style={homeStyles.notificationTime}>
+              <Text style={[homeStyles.notificationTime, isDark && homeStyles.notificationTimeDark]}>
                 {dayjs(notification.created_at).fromNow()}
               </Text>
             </View>
@@ -769,5 +772,90 @@ const homeStyles = StyleSheet.create({
   modalImage: {
     width: SCREEN_WIDTH,
     height: '100%',
+  },
+
+  // Dark Mode Styles
+  containerDark: {
+    backgroundColor: '#111827',
+  },
+  loadingContainerDark: {
+    backgroundColor: '#111827',
+  },
+  sectionDark: {
+    backgroundColor: '#1f2937',
+  },
+  sectionTitleDark: {
+    color: '#f9fafb',
+  },
+  viewAllLinkDark: {
+    color: '#22c55e',
+  },
+  profileSectionDark: {
+    backgroundColor: '#1f2937',
+  },
+  weatherLabelDark: {
+    color: '#9ca3af',
+  },
+  weatherValueDark: {
+    color: '#f9fafb',
+  },
+
+  // Next Tee Time Dark
+  nextTeeTimeCardDark: {
+    backgroundColor: '#1f2937',
+    borderColor: '#22c55e',
+  },
+  teeTimeDateDark: {
+    color: '#f9fafb',
+  },
+  teeTimeTimeDark: {
+    color: '#f9fafb',
+  },
+  teeTimeCourseDark: {
+    color: '#9ca3af',
+  },
+  teeTimeHolesDark: {
+    color: '#9ca3af',
+  },
+
+  // Quick Actions Dark
+  quickActionButtonDark: {
+    backgroundColor: '#111827',
+  },
+  quickActionTextDark: {
+    color: '#9ca3af',
+  },
+
+  // Events Dark
+  eventCardDark: {
+    backgroundColor: '#111827',
+    borderColor: '#374151',
+  },
+  eventInfoDark: {
+    backgroundColor: '#111827',
+  },
+  eventTitleDark: {
+    color: '#f9fafb',
+  },
+  eventDateDark: {
+    color: '#9ca3af',
+  },
+  eventLocationDark: {
+    color: '#9ca3af',
+  },
+
+  // Notifications Dark
+  notificationCardDark: {
+    backgroundColor: '#111827',
+    borderLeftColor: '#374151',
+  },
+  notificationTitleDark: {
+    color: '#f9fafb',
+  },
+  notificationMessageDark: {
+    color: '#9ca3af',
+  },
+  notificationTimeDark: {
+    color: '#6b7280',
   },
 });

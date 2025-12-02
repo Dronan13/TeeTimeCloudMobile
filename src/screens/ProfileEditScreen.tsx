@@ -14,10 +14,12 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabaseClient';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function ProfileEditScreen() {
   const { profile, user, refreshProfile } = useAuth();
   const navigation = useNavigation();
+  const { isDark } = useTheme();
   const [loading, setLoading] = useState(false);
 
   // Form state
@@ -90,21 +92,22 @@ export default function ProfileEditScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
+      style={[styles.container, isDark && styles.containerDark]}
     >
       <ScrollView
-        style={styles.scrollView}
+        style={[styles.scrollView, isDark && styles.scrollViewDark]}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Personal Information</Text>
+        <View style={[styles.section, isDark && styles.sectionDark]}>
+          <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Personal Information</Text>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Phone</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>Phone</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDark && styles.inputDark]}
               placeholder="Enter your phone number"
+              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
               value={formData.phone}
               onChangeText={(value) => handleInputChange('phone', value)}
               keyboardType="phone-pad"
@@ -112,20 +115,22 @@ export default function ProfileEditScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Date of Birth</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>Date of Birth</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDark && styles.inputDark]}
               placeholder="YYYY-MM-DD"
+              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
               value={formData.date_of_birth}
               onChangeText={(value) => handleInputChange('date_of_birth', value)}
             />
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Gender</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>Gender</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDark && styles.inputDark]}
               placeholder="Enter your gender"
+              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
               value={formData.gender}
               onChangeText={(value) => handleInputChange('gender', value)}
               autoCapitalize="words"
@@ -133,14 +138,15 @@ export default function ProfileEditScreen() {
           </View>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Location</Text>
+        <View style={[styles.section, isDark && styles.sectionDark]}>
+          <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Location</Text>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>City</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>City</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDark && styles.inputDark]}
               placeholder="Enter your city"
+              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
               value={formData.city}
               onChangeText={(value) => handleInputChange('city', value)}
               autoCapitalize="words"
@@ -148,10 +154,11 @@ export default function ProfileEditScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>State</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>State</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDark && styles.inputDark]}
               placeholder="Enter your state"
+              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
               value={formData.state}
               onChangeText={(value) => handleInputChange('state', value)}
               autoCapitalize="words"
@@ -159,10 +166,11 @@ export default function ProfileEditScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Country</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>Country</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDark && styles.inputDark]}
               placeholder="Enter your country"
+              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
               value={formData.country}
               onChangeText={(value) => handleInputChange('country', value)}
               autoCapitalize="words"
@@ -170,10 +178,11 @@ export default function ProfileEditScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Zip Code</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>Zip Code</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDark && styles.inputDark]}
               placeholder="Enter your zip code"
+              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
               value={formData.zip_code}
               onChangeText={(value) => handleInputChange('zip_code', value)}
               keyboardType="number-pad"
@@ -181,14 +190,15 @@ export default function ProfileEditScreen() {
           </View>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Golf Information</Text>
+        <View style={[styles.section, isDark && styles.sectionDark]}>
+          <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Golf Information</Text>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Handicap Index</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>Handicap Index</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDark && styles.inputDark]}
               placeholder="Enter your handicap index"
+              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
               value={formData.handicap_index}
               onChangeText={(value) => handleInputChange('handicap_index', value)}
               keyboardType="decimal-pad"
@@ -196,10 +206,11 @@ export default function ProfileEditScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>GHIN ID</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>GHIN ID</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDark && styles.inputDark]}
               placeholder="Enter your GHIN ID"
+              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
               value={formData.ghin_id}
               onChangeText={(value) => handleInputChange('ghin_id', value)}
               keyboardType="number-pad"
@@ -207,10 +218,11 @@ export default function ProfileEditScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Average Score</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>Average Score</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDark && styles.inputDark]}
               placeholder="Enter your average score"
+              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
               value={formData.average_score}
               onChangeText={(value) => handleInputChange('average_score', value)}
               keyboardType="decimal-pad"
@@ -218,10 +230,11 @@ export default function ProfileEditScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Average Drive (yards)</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>Average Drive (yards)</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDark && styles.inputDark]}
               placeholder="Enter average drive distance"
+              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
               value={formData.average_drive_yards}
               onChangeText={(value) => handleInputChange('average_drive_yards', value)}
               keyboardType="number-pad"
@@ -229,10 +242,11 @@ export default function ProfileEditScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Playing Frequency</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>Playing Frequency</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDark && styles.inputDark]}
               placeholder="e.g., Weekly, Monthly"
+              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
               value={formData.playing_frequency}
               onChangeText={(value) => handleInputChange('playing_frequency', value)}
               autoCapitalize="words"
@@ -263,8 +277,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f9fafb',
   },
+  containerDark: {
+    backgroundColor: '#111827',
+  },
   scrollView: {
     flex: 1,
+  },
+  scrollViewDark: {
+    backgroundColor: '#111827',
   },
   scrollContent: {
     paddingHorizontal: 20,
@@ -281,11 +301,19 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
   },
+  sectionDark: {
+    backgroundColor: '#1f2937',
+    borderColor: '#374151',
+    borderWidth: 1,
+  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
     color: '#111827',
     marginBottom: 16,
+  },
+  sectionTitleDark: {
+    color: '#f9fafb',
   },
   inputContainer: {
     marginBottom: 16,
@@ -296,6 +324,9 @@ const styles = StyleSheet.create({
     color: '#374151',
     marginBottom: 8,
   },
+  labelDark: {
+    color: '#f9fafb',
+  },
   input: {
     borderWidth: 1,
     borderColor: '#d1d5db',
@@ -305,6 +336,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#fff',
     color: '#111827',
+  },
+  inputDark: {
+    backgroundColor: '#374151',
+    borderColor: '#4b5563',
+    color: '#f9fafb',
   },
   saveButton: {
     backgroundColor: '#22c55e',

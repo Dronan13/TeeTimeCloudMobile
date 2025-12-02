@@ -13,6 +13,7 @@ import {
 import { StackNavigationProp } from '@react-navigation/stack';
 import { CoursesStackParamList, Course } from '@/types';
 import { coursesService } from '@/services/courses';
+import { useTheme } from '@/contexts/ThemeContext';
 import { styles as globalStyles } from '@/utils/styles';
 
 type CoursesScreenNavigationProp = StackNavigationProp<
@@ -25,6 +26,7 @@ interface CoursesScreenProps {
 }
 
 export default function CoursesScreen({ navigation }: CoursesScreenProps) {
+  const { isDark } = useTheme();
   const [courses, setCourses] = useState<Course[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
@@ -93,32 +95,32 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
 
     return (
       <TouchableOpacity
-        style={styles.courseCard}
+        style={[styles.courseCard, isDark && styles.courseCardDark]}
         onPress={() => handleCoursePress(item.id)}
         activeOpacity={0.7}
       >
         <Image source={{ uri: imageUrl }} style={styles.courseImage} resizeMode="cover" />
-        <View style={styles.courseInfo}>
-          <Text style={styles.courseName} numberOfLines={1}>
+        <View style={[styles.courseInfo, isDark && styles.courseInfoDark]}>
+          <Text style={[styles.courseName, isDark && styles.courseNameDark]} numberOfLines={1}>
             {item.name}
           </Text>
           {locationAddress && (
-            <Text style={styles.courseLocation} numberOfLines={3}>
+            <Text style={[styles.courseLocation, isDark && styles.courseLocationDark]} numberOfLines={3}>
               📍 {locationAddress}
             </Text>
           )}
           {item.phone && (
-            <Text style={styles.coursePhone} numberOfLines={1}>
+            <Text style={[styles.coursePhone, isDark && styles.coursePhoneDark]} numberOfLines={1}>
               📞 {item.phone}
             </Text>
           )}
           {item.email && (
-            <Text style={styles.courseEmail} numberOfLines={1}>
+            <Text style={[styles.courseEmail, isDark && styles.courseEmailDark]} numberOfLines={1}>
               📧 {item.email}
             </Text>
           )}
         </View>
-        <View style={styles.courseArrowContainer}>
+        <View style={[styles.courseArrowContainer, isDark && styles.courseArrowContainerDark]}>
           <Text style={styles.courseArrow}>›</Text>
         </View>
       </TouchableOpacity>
@@ -126,12 +128,12 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
   };
 
   const renderEmptyState = () => (
-    <View style={styles.emptyState}>
+    <View style={[styles.emptyState, isDark && styles.emptyStateDark]}>
       <Text style={styles.emptyStateIcon}>⛳</Text>
-      <Text style={styles.emptyStateTitle}>
+      <Text style={[styles.emptyStateTitle, isDark && styles.emptyStateTitleDark]}>
         {searchQuery ? 'No courses found' : 'No courses available'}
       </Text>
-      <Text style={styles.emptyStateText}>
+      <Text style={[styles.emptyStateText, isDark && styles.emptyStateTextDark]}>
         {searchQuery
           ? 'Try adjusting your search query'
           : 'Check back later for available courses'}
@@ -141,18 +143,18 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
 
   if (loading && !refreshing) {
     return (
-      <View style={styles.centerContainer}>
+      <View style={[styles.centerContainer, isDark && styles.centerContainerDark]}>
         <ActivityIndicator size="large" color="#22c55e" />
-        <Text style={styles.loadingText}>Loading courses...</Text>
+        <Text style={[styles.loadingText, isDark && styles.loadingTextDark]}>Loading courses...</Text>
       </View>
     );
   }
 
   if (error && !refreshing) {
     return (
-      <View style={styles.centerContainer}>
+      <View style={[styles.centerContainer, isDark && styles.centerContainerDark]}>
         <Text style={styles.errorIcon}>⚠️</Text>
-        <Text style={styles.errorText}>{error}</Text>
+        <Text style={[styles.errorText, isDark && styles.errorTextDark]}>{error}</Text>
         <TouchableOpacity
           style={globalStyles.button}
           onPress={() => fetchCourses(searchQuery)}
@@ -164,11 +166,12 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.searchContainer}>
+    <View style={[styles.container, isDark && styles.containerDark]}>
+      <View style={[styles.searchContainer, isDark && styles.searchContainerDark]}>
         <TextInput
-          style={styles.searchInput}
+          style={[styles.searchInput, isDark && styles.searchInputDark]}
           placeholder="Search courses by name..."
+          placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
           value={searchQuery}
           onChangeText={handleSearch}
           autoCapitalize="none"
@@ -176,7 +179,7 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
           clearButtonMode="while-editing"
         />
         {searchQuery.length > 0 && (
-          <TouchableOpacity style={styles.clearButton} onPress={() => handleSearch('')}>
+          <TouchableOpacity style={[styles.clearButton, isDark && styles.clearButtonDark]} onPress={() => handleSearch('')}>
             <Text style={styles.clearButtonText}>✕</Text>
           </TouchableOpacity>
         )}
@@ -352,5 +355,59 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 24,
     paddingHorizontal: 32,
+  },
+  // Dark mode styles
+  containerDark: {
+    backgroundColor: '#111827',
+  },
+  centerContainerDark: {
+    backgroundColor: '#111827',
+  },
+  searchContainerDark: {
+    backgroundColor: '#1f2937',
+    borderBottomColor: '#374151',
+  },
+  searchInputDark: {
+    backgroundColor: '#374151',
+    color: '#f9fafb',
+  },
+  clearButtonDark: {
+    backgroundColor: '#4b5563',
+  },
+  courseCardDark: {
+    backgroundColor: '#1f2937',
+  },
+  courseInfoDark: {
+    backgroundColor: '#1f2937',
+  },
+  courseNameDark: {
+    color: '#f9fafb',
+  },
+  courseLocationDark: {
+    color: '#9ca3af',
+  },
+  coursePhoneDark: {
+    color: '#9ca3af',
+  },
+  courseEmailDark: {
+    color: '#9ca3af',
+  },
+  courseArrowContainerDark: {
+    backgroundColor: '#1f2937',
+  },
+  emptyStateDark: {
+    backgroundColor: '#111827',
+  },
+  emptyStateTitleDark: {
+    color: '#f9fafb',
+  },
+  emptyStateTextDark: {
+    color: '#9ca3af',
+  },
+  loadingTextDark: {
+    color: '#9ca3af',
+  },
+  errorTextDark: {
+    color: '#ef4444',
   },
 });

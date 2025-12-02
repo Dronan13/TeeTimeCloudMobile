@@ -9,12 +9,13 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useAuth } from '@/hooks/useAuth';
-import { styles } from '@/utils/styles';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const { resetPassword } = useAuth();
+  const { isDark } = useTheme();
 
   const handleResetPassword = async () => {
     if (!email) {
@@ -33,12 +34,15 @@ export default function ForgotPasswordScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Reset Password</Text>
-      <Text style={styles.subtitle}>Enter your email to receive reset instructions</Text>
+    <View style={[styles.container, isDark && styles.containerDark]}>
+      <Text style={[styles.title, isDark && styles.titleDark]}>Reset Password</Text>
+      <Text style={[styles.subtitle, isDark && styles.subtitleDark]}>
+        Enter your email to receive reset instructions
+      </Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, isDark && styles.inputDark]}
         placeholder="Email"
+        placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
@@ -58,3 +62,56 @@ export default function ForgotPasswordScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 24,
+    backgroundColor: '#fff',
+  },
+  containerDark: {
+    backgroundColor: '#111827',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    color: '#111827',
+  },
+  titleDark: {
+    color: '#f9fafb',
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#6b7280',
+    marginBottom: 24,
+  },
+  subtitleDark: {
+    color: '#9ca3af',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    backgroundColor: '#fff',
+    color: '#111827',
+  },
+  inputDark: {
+    backgroundColor: '#374151',
+    color: '#f9fafb',
+    borderColor: '#4b5563',
+  },
+  button: {
+    backgroundColor: '#22c55e',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});

@@ -14,11 +14,13 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/lib/supabaseClient';
 import { pickAndUploadImage } from '@/utils/imageUpload';
 
 export default function SupportScreen() {
   const { user, profile } = useAuth();
+  const { isDark } = useTheme();
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -130,30 +132,31 @@ export default function SupportScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
+      style={[styles.container, isDark && styles.containerDark]}
     >
       <ScrollView
-        style={styles.scrollView}
+        style={[styles.scrollView, isDark && styles.scrollViewDark]}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.header}>
-          <Text style={styles.title}>Contact Support</Text>
-          <Text style={styles.subtitle}>
+        <View style={[styles.header, isDark && styles.headerDark]}>
+          <Text style={[styles.title, isDark && styles.titleDark]}>Contact Support</Text>
+          <Text style={[styles.subtitle, isDark && styles.subtitleDark]}>
             Have a question or need help? Send us a message and we'll get back to you
             as soon as possible.
           </Text>
         </View>
 
-        <View style={styles.section}>
+        <View style={[styles.section, isDark && styles.sectionDark]}>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>
+            <Text style={[styles.label, isDark && styles.labelDark]}>
               Message <Text style={styles.required}>*</Text>
             </Text>
             <TextInput
-              style={[styles.input, styles.textArea]}
+              style={[styles.input, styles.textArea, isDark && styles.inputDark]}
               placeholder="Describe your issue or question..."
+              placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
               value={formData.description}
               onChangeText={(value) => handleInputChange('description', value)}
               multiline
@@ -163,9 +166,9 @@ export default function SupportScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Attachment (Optional)</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>Attachment (Optional)</Text>
             {localImageUri ? (
-              <View style={styles.imagePreviewContainer}>
+              <View style={[styles.imagePreviewContainer, isDark && styles.imagePreviewContainerDark]}>
                 <Image source={{ uri: localImageUri }} style={styles.imagePreview} />
                 <TouchableOpacity
                   style={styles.removeImageButton}
@@ -176,7 +179,7 @@ export default function SupportScreen() {
               </View>
             ) : (
               <TouchableOpacity
-                style={styles.uploadButton}
+                style={[styles.uploadButton, isDark && styles.uploadButtonDark]}
                 onPress={handlePickImage}
                 disabled={uploadingImage}
               >
@@ -185,7 +188,7 @@ export default function SupportScreen() {
                 ) : (
                   <>
                     <Text style={styles.uploadIcon}>📷</Text>
-                    <Text style={styles.uploadText}>Upload Image from Gallery</Text>
+                    <Text style={[styles.uploadText, isDark && styles.uploadTextDark]}>Upload Image from Gallery</Text>
                   </>
                 )}
               </TouchableOpacity>
@@ -194,7 +197,7 @@ export default function SupportScreen() {
         </View>
 
         <TouchableOpacity
-          style={[styles.submitButton, loading && styles.submitButtonDisabled]}
+          style={[styles.submitButton, loading && styles.submitButtonDisabled, isDark && styles.submitButtonDark]}
           onPress={handleSubmit}
           disabled={loading}
         >
@@ -216,8 +219,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f9fafb',
   },
+  containerDark: {
+    backgroundColor: '#111827',
+  },
   scrollView: {
     flex: 1,
+  },
+  scrollViewDark: {
+    backgroundColor: '#111827',
   },
   scrollContent: {
     paddingHorizontal: 20,
@@ -226,16 +235,25 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: 24,
   },
+  headerDark: {
+    backgroundColor: '#111827',
+  },
   title: {
     fontSize: 28,
     fontWeight: '700',
     color: '#111827',
     marginBottom: 8,
   },
+  titleDark: {
+    color: '#f9fafb',
+  },
   subtitle: {
     fontSize: 15,
     color: '#6b7280',
     lineHeight: 22,
+  },
+  subtitleDark: {
+    color: '#9ca3af',
   },
   section: {
     backgroundColor: '#fff',
@@ -248,6 +266,14 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
   },
+  sectionDark: {
+    backgroundColor: '#1f2937',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 1,
+  },
   inputContainer: {
     marginBottom: 16,
   },
@@ -256,6 +282,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#374151',
     marginBottom: 8,
+  },
+  labelDark: {
+    color: '#9ca3af',
   },
   required: {
     color: '#ef4444',
@@ -269,6 +298,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#fff',
     color: '#111827',
+  },
+  inputDark: {
+    backgroundColor: '#111827',
+    borderColor: '#374151',
+    color: '#f9fafb',
   },
   textArea: {
     minHeight: 120,
@@ -313,6 +347,13 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
+  submitButtonDark: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 2,
+  },
   submitButtonDisabled: {
     backgroundColor: '#9ca3af',
   },
@@ -334,6 +375,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#f0fdf4',
   },
+  uploadButtonDark: {
+    backgroundColor: '#111827',
+    borderColor: '#22c55e',
+  },
   uploadIcon: {
     fontSize: 32,
     marginBottom: 8,
@@ -343,11 +388,17 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#22c55e',
   },
+  uploadTextDark: {
+    color: '#22c55e',
+  },
   imagePreviewContainer: {
     position: 'relative',
     borderRadius: 8,
     overflow: 'hidden',
     backgroundColor: '#f3f4f6',
+  },
+  imagePreviewContainerDark: {
+    backgroundColor: '#111827',
   },
   imagePreview: {
     width: '100%',

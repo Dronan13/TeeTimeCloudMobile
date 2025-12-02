@@ -13,9 +13,11 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function UpdatePasswordScreen() {
   const { updatePassword } = useAuth();
+  const { isDark } = useTheme();
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
 
@@ -86,26 +88,27 @@ export default function UpdatePasswordScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
+      style={[styles.container, isDark && styles.containerDark]}
     >
       <ScrollView
-        style={styles.scrollView}
+        style={[styles.scrollView, isDark && styles.scrollViewDark]}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.header}>
-          <Text style={styles.title}>Update Password</Text>
-          <Text style={styles.subtitle}>
+        <View style={[styles.header, isDark && styles.headerDark]}>
+          <Text style={[styles.title, isDark && styles.titleDark]}>Update Password</Text>
+          <Text style={[styles.subtitle, isDark && styles.subtitleDark]}>
             Choose a strong password to keep your account secure
           </Text>
         </View>
 
-        <View style={styles.section}>
+        <View style={[styles.section, isDark && styles.sectionDark]}>
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>New Password</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>New Password</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDark && styles.inputDark]}
               placeholder="Enter new password"
+              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
               value={formData.newPassword}
               onChangeText={(value) => handleInputChange('newPassword', value)}
               secureTextEntry
@@ -115,10 +118,11 @@ export default function UpdatePasswordScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Confirm New Password</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>Confirm New Password</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDark && styles.inputDark]}
               placeholder="Confirm new password"
+              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
               value={formData.confirmPassword}
               onChangeText={(value) => handleInputChange('confirmPassword', value)}
               secureTextEntry
@@ -128,24 +132,24 @@ export default function UpdatePasswordScreen() {
           </View>
         </View>
 
-        <View style={styles.requirementsSection}>
-          <Text style={styles.requirementsTitle}>Password Requirements:</Text>
+        <View style={[styles.requirementsSection, isDark && styles.requirementsSectionDark]}>
+          <Text style={[styles.requirementsTitle, isDark && styles.requirementsTitleDark]}>Password Requirements:</Text>
           <View style={styles.requirementsList}>
             <View style={styles.requirementItem}>
-              <Text style={styles.requirementBullet}>•</Text>
-              <Text style={styles.requirementText}>At least 8 characters long</Text>
+              <Text style={[styles.requirementBullet, isDark && styles.requirementBulletDark]}>•</Text>
+              <Text style={[styles.requirementText, isDark && styles.requirementTextDark]}>At least 8 characters long</Text>
             </View>
             <View style={styles.requirementItem}>
-              <Text style={styles.requirementBullet}>•</Text>
-              <Text style={styles.requirementText}>Contains uppercase letter (A-Z)</Text>
+              <Text style={[styles.requirementBullet, isDark && styles.requirementBulletDark]}>•</Text>
+              <Text style={[styles.requirementText, isDark && styles.requirementTextDark]}>Contains uppercase letter (A-Z)</Text>
             </View>
             <View style={styles.requirementItem}>
-              <Text style={styles.requirementBullet}>•</Text>
-              <Text style={styles.requirementText}>Contains lowercase letter (a-z)</Text>
+              <Text style={[styles.requirementBullet, isDark && styles.requirementBulletDark]}>•</Text>
+              <Text style={[styles.requirementText, isDark && styles.requirementTextDark]}>Contains lowercase letter (a-z)</Text>
             </View>
             <View style={styles.requirementItem}>
-              <Text style={styles.requirementBullet}>•</Text>
-              <Text style={styles.requirementText}>Contains number (0-9)</Text>
+              <Text style={[styles.requirementBullet, isDark && styles.requirementBulletDark]}>•</Text>
+              <Text style={[styles.requirementText, isDark && styles.requirementTextDark]}>Contains number (0-9)</Text>
             </View>
           </View>
         </View>
@@ -173,8 +177,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f9fafb',
   },
+  containerDark: {
+    backgroundColor: '#111827',
+  },
   scrollView: {
     flex: 1,
+  },
+  scrollViewDark: {
+    backgroundColor: '#111827',
   },
   scrollContent: {
     paddingHorizontal: 20,
@@ -183,16 +193,25 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: 24,
   },
+  headerDark: {
+    marginBottom: 24,
+  },
   title: {
     fontSize: 28,
     fontWeight: '700',
     color: '#111827',
     marginBottom: 8,
   },
+  titleDark: {
+    color: '#f9fafb',
+  },
   subtitle: {
     fontSize: 15,
     color: '#6b7280',
     lineHeight: 22,
+  },
+  subtitleDark: {
+    color: '#9ca3af',
   },
   section: {
     backgroundColor: '#fff',
@@ -205,6 +224,9 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
   },
+  sectionDark: {
+    backgroundColor: '#1f2937',
+  },
   inputContainer: {
     marginBottom: 16,
   },
@@ -213,6 +235,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#374151',
     marginBottom: 8,
+  },
+  labelDark: {
+    color: '#9ca3af',
   },
   input: {
     borderWidth: 1,
@@ -224,6 +249,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     color: '#111827',
   },
+  inputDark: {
+    backgroundColor: '#374151',
+    color: '#f9fafb',
+    borderColor: '#4b5563',
+  },
   requirementsSection: {
     backgroundColor: '#eff6ff',
     borderRadius: 12,
@@ -232,11 +262,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#dbeafe',
   },
+  requirementsSectionDark: {
+    backgroundColor: '#1e3a5f',
+    borderColor: '#2563eb',
+  },
   requirementsTitle: {
     fontSize: 14,
     fontWeight: '600',
     color: '#1e40af',
     marginBottom: 12,
+  },
+  requirementsTitleDark: {
+    color: '#93c5fd',
   },
   requirementsList: {
     gap: 8,
@@ -251,11 +288,17 @@ const styles = StyleSheet.create({
     marginRight: 8,
     fontWeight: '700',
   },
+  requirementBulletDark: {
+    color: '#bfdbfe',
+  },
   requirementText: {
     fontSize: 14,
     color: '#1e40af',
     flex: 1,
     lineHeight: 20,
+  },
+  requirementTextDark: {
+    color: '#bfdbfe',
   },
   updateButton: {
     backgroundColor: '#22c55e',

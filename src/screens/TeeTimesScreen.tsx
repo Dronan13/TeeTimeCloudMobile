@@ -10,6 +10,7 @@ import {
   Alert,
 } from 'react-native';
 import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/lib/supabaseClient';
 import { Database } from '@/types/supabase';
 import { format, parseISO, isPast, startOfDay } from 'date-fns';
@@ -19,6 +20,7 @@ type TeeTimeReservation =
 
 export default function TeeTimesScreen() {
   const { user } = useAuth();
+  const { isDark } = useTheme();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [upcomingReservations, setUpcomingReservations] = useState<TeeTimeReservation[]>([]);
@@ -150,9 +152,9 @@ export default function TeeTimesScreen() {
     if (reservation.assistance_required) requestedItems.push('Assistance');
 
     return (
-      <View key={reservation.reservation_id} style={styles.reservationCard}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.courseName}>{reservation.course_name}</Text>
+      <View key={reservation.reservation_id} style={[styles.reservationCard, isDark && styles.reservationCardDark]}>
+        <View style={[styles.cardHeader, isDark && styles.cardHeaderDark]}>
+          <Text style={[styles.courseName, isDark && styles.courseNameDark]}>{reservation.course_name}</Text>
           <View style={[styles.statusBadge, { backgroundColor: statusColor }]}>
             <Text style={styles.statusText}>
               {reservation.booking_status?.toUpperCase() || 'UNKNOWN'}
@@ -162,8 +164,8 @@ export default function TeeTimesScreen() {
 
         <View style={styles.cardBody}>
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Date:</Text>
-            <Text style={styles.infoValue}>
+            <Text style={[styles.infoLabel, isDark && styles.infoLabelDark]}>Date:</Text>
+            <Text style={[styles.infoValue, isDark && styles.infoValueDark]}>
               {reservation.tee_date
                 ? format(parseISO(reservation.tee_date), 'EEEE, MMM d, yyyy')
                 : 'N/A'}
@@ -171,31 +173,31 @@ export default function TeeTimesScreen() {
           </View>
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Time:</Text>
-            <Text style={styles.infoValue}>
+            <Text style={[styles.infoLabel, isDark && styles.infoLabelDark]}>Time:</Text>
+            <Text style={[styles.infoValue, isDark && styles.infoValueDark]}>
               {reservation.tee_time ? reservation.tee_time.slice(0, 5) : 'N/A'}
             </Text>
           </View>
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Hole:</Text>
-            <Text style={styles.infoValue}>{reservation.hole || 'N/A'}</Text>
+            <Text style={[styles.infoLabel, isDark && styles.infoLabelDark]}>Hole:</Text>
+            <Text style={[styles.infoValue, isDark && styles.infoValueDark]}>{reservation.hole || 'N/A'}</Text>
           </View>
 
           {reservation.total_price && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Price:</Text>
-              <Text style={styles.infoValue}>${reservation.total_price.toFixed(2)}</Text>
+              <Text style={[styles.infoLabel, isDark && styles.infoLabelDark]}>Price:</Text>
+              <Text style={[styles.infoValue, isDark && styles.infoValueDark]}>${reservation.total_price.toFixed(2)}</Text>
             </View>
           )}
 
           {requestedItems.length > 0 && (
-            <View style={styles.requestedItemsContainer}>
-              <Text style={styles.requestedItemsLabel}>Requested:</Text>
+            <View style={[styles.requestedItemsContainer, isDark && styles.requestedItemsContainerDark]}>
+              <Text style={[styles.requestedItemsLabel, isDark && styles.requestedItemsLabelDark]}>Requested:</Text>
               <View style={styles.tagsContainer}>
                 {requestedItems.map((item) => (
-                  <View key={item} style={styles.tag}>
-                    <Text style={styles.tagText}>{item}</Text>
+                  <View key={item} style={[styles.tag, isDark && styles.tagDark]}>
+                    <Text style={[styles.tagText, isDark && styles.tagTextDark]}>{item}</Text>
                   </View>
                 ))}
               </View>
@@ -203,15 +205,15 @@ export default function TeeTimesScreen() {
           )}
 
           {reservation.notes && (
-            <View style={styles.notesContainer}>
-              <Text style={styles.notesLabel}>Notes:</Text>
-              <Text style={styles.notesText}>{reservation.notes}</Text>
+            <View style={[styles.notesContainer, isDark && styles.notesContainerDark]}>
+              <Text style={[styles.notesLabel, isDark && styles.notesLabelDark]}>Notes:</Text>
+              <Text style={[styles.notesText, isDark && styles.notesTextDark]}>{reservation.notes}</Text>
             </View>
           )}
 
           {reservation.booking_status !== 'cancelled' && (
             <TouchableOpacity
-              style={styles.cancelButton}
+              style={[styles.cancelButton, isDark && styles.cancelButtonDark]}
               onPress={() => handleCancelReservation(reservation)}
             >
               <Text style={styles.cancelButtonText}>Cancel Reservation</Text>
@@ -224,7 +226,7 @@ export default function TeeTimesScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={[styles.loadingContainer, isDark && styles.loadingContainerDark]}>
         <ActivityIndicator size="large" color="#22c55e" />
       </View>
     );
@@ -232,14 +234,14 @@ export default function TeeTimesScreen() {
 
   return (
     <ScrollView
-      style={styles.container}
+      style={[styles.container, isDark && styles.containerDark]}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Upcoming Reservations</Text>
+        <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Upcoming Reservations</Text>
         {upcomingReservations.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>No upcoming reservations</Text>
+          <View style={[styles.emptyState, isDark && styles.emptyStateDark]}>
+            <Text style={[styles.emptyText, isDark && styles.emptyTextDark]}>No upcoming reservations</Text>
           </View>
         ) : (
           upcomingReservations.map(renderReservation)
@@ -247,10 +249,10 @@ export default function TeeTimesScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Past Reservations</Text>
+        <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Past Reservations</Text>
         {pastReservations.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>No past reservations</Text>
+          <View style={[styles.emptyState, isDark && styles.emptyStateDark]}>
+            <Text style={[styles.emptyText, isDark && styles.emptyTextDark]}>No past reservations</Text>
           </View>
         ) : (
           pastReservations.map(renderReservation)
@@ -406,5 +408,62 @@ const styles = StyleSheet.create({
     color: '#dc2626',
     fontSize: 14,
     fontWeight: '600',
+  },
+  // Dark mode styles
+  containerDark: {
+    backgroundColor: '#111827',
+  },
+  loadingContainerDark: {
+    backgroundColor: '#111827',
+  },
+  sectionTitleDark: {
+    color: '#f9fafb',
+  },
+  reservationCardDark: {
+    backgroundColor: '#1f2937',
+  },
+  cardHeaderDark: {
+    borderBottomColor: '#374151',
+  },
+  courseNameDark: {
+    color: '#f9fafb',
+  },
+  infoLabelDark: {
+    color: '#9ca3af',
+  },
+  infoValueDark: {
+    color: '#f9fafb',
+  },
+  emptyStateDark: {
+    backgroundColor: '#1f2937',
+  },
+  emptyTextDark: {
+    color: '#9ca3af',
+  },
+  requestedItemsContainerDark: {
+    borderTopColor: '#374151',
+  },
+  requestedItemsLabelDark: {
+    color: '#9ca3af',
+  },
+  tagDark: {
+    backgroundColor: '#1f2937',
+    borderColor: '#374151',
+  },
+  tagTextDark: {
+    color: '#22c55e',
+  },
+  notesContainerDark: {
+    borderTopColor: '#374151',
+  },
+  notesLabelDark: {
+    color: '#9ca3af',
+  },
+  notesTextDark: {
+    color: '#9ca3af',
+  },
+  cancelButtonDark: {
+    backgroundColor: '#7f1d1d',
+    borderColor: '#991b1b',
   },
 });
