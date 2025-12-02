@@ -13,6 +13,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/lib/supabaseClient';
 import { Database } from '@/types/supabase';
 import { formatDistanceToNow, parseISO } from 'date-fns';
+import { Bell, CheckCircle, Circle } from 'lucide-react-native';
 
 type Notification = Database['public']['Tables']['notifications']['Row'];
 type FilterType = 'all' | 'unread' | 'read';
@@ -58,7 +59,6 @@ export default function NotificationsScreen() {
         .order('created_at', { ascending: false })
         .range(from, to);
 
-      // Apply filter at database level
       if (filter === 'unread') {
         query = query.eq('read', false);
       } else if (filter === 'read') {
@@ -106,7 +106,6 @@ export default function NotificationsScreen() {
 
       if (error) throw error;
 
-      // Update local state
       setNotifications((prev) =>
         prev.map((notif) => (notif.id === notificationId ? { ...notif, read: true } : notif))
       );
@@ -129,12 +128,19 @@ export default function NotificationsScreen() {
           !item.read && isDark && styles.unreadCardDark,
         ]}
         onPress={() => !item.read && markAsRead(item.id)}
+        activeOpacity={0.7}
       >
         <View style={styles.notificationHeader}>
-          <Text style={[styles.notificationTitle, isDark && styles.notificationTitleDark]}>
-            {item.title}
-          </Text>
-          {!item.read && <View style={styles.unreadDot} />}
+          <View style={styles.titleRow}>
+            {item.read ? (
+              <CheckCircle size={18} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={2} />
+            ) : (
+              <Circle size={18} color="#2d7a4e" strokeWidth={2} fill="#2d7a4e" />
+            )}
+            <Text style={[styles.notificationTitle, isDark && styles.notificationTitleDark]}>
+              {item.title}
+            </Text>
+          </View>
         </View>
 
         {item.body && (
@@ -152,6 +158,7 @@ export default function NotificationsScreen() {
 
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
+      <Bell size={48} color={isDark ? '#868e96' : '#adb5bd'} strokeWidth={1.5} />
       <Text style={[styles.emptyText, isDark && styles.emptyTextDark]}>
         {filter === 'unread'
           ? 'No unread notifications'
@@ -166,7 +173,7 @@ export default function NotificationsScreen() {
     if (!loadingMore) return null;
     return (
       <View style={styles.footerLoader}>
-        <ActivityIndicator size="small" color="#22c55e" />
+        <ActivityIndicator size="small" color="#2d7a4e" />
       </View>
     );
   };
@@ -174,7 +181,7 @@ export default function NotificationsScreen() {
   if (loading) {
     return (
       <View style={[styles.loadingContainer, isDark && styles.loadingContainerDark]}>
-        <ActivityIndicator size="large" color="#22c55e" />
+        <ActivityIndicator size="large" color="#2d7a4e" />
       </View>
     );
   }
@@ -261,12 +268,13 @@ export default function NotificationsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8f9fa',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#f8f9fa',
   },
   listContent: {
     padding: 16,
@@ -278,53 +286,51 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
     elevation: 2,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
   },
   unreadCard: {
-    backgroundColor: '#f0fdf4',
+    backgroundColor: '#f0f9f4',
     borderLeftWidth: 4,
-    borderLeftColor: '#22c55e',
+    borderLeftColor: '#2d7a4e',
   },
   notificationHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     marginBottom: 8,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   notificationTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#111827',
+    color: '#212529',
     flex: 1,
-  },
-  unreadDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#22c55e',
-    marginLeft: 8,
   },
   notificationBody: {
     fontSize: 14,
-    color: '#4b5563',
+    color: '#495057',
     marginBottom: 8,
     lineHeight: 20,
   },
   notificationTime: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   emptyState: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 60,
+    gap: 16,
   },
   emptyText: {
     fontSize: 16,
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   filterContainer: {
     flexDirection: 'row',
@@ -333,23 +339,23 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     gap: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: '#d1d6db',
   },
   filterTab: {
     flex: 1,
-    paddingVertical: 8,
+    paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 8,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: '#e9ecef',
     alignItems: 'center',
   },
   filterTabActive: {
-    backgroundColor: '#22c55e',
+    backgroundColor: '#2d7a4e',
   },
   filterText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: '#868e96',
   },
   filterTextActive: {
     color: '#fff',
@@ -360,38 +366,39 @@ const styles = StyleSheet.create({
   },
   // Dark mode styles
   containerDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
   },
   loadingContainerDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
   },
   notificationCardDark: {
-    backgroundColor: '#1f2937',
+    backgroundColor: '#2b3137',
+    borderColor: '#343a40',
   },
   unreadCardDark: {
-    backgroundColor: '#1f2937',
-    borderLeftColor: '#22c55e',
+    backgroundColor: '#133224',
+    borderLeftColor: '#2d7a4e',
   },
   notificationTitleDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   notificationBodyDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   notificationTimeDark: {
-    color: '#9ca3af',
+    color: '#868e96',
   },
   emptyTextDark: {
-    color: '#9ca3af',
+    color: '#868e96',
   },
   filterContainerDark: {
-    backgroundColor: '#1f2937',
-    borderBottomColor: '#374151',
+    backgroundColor: '#2b3137',
+    borderBottomColor: '#343a40',
   },
   filterTabDark: {
-    backgroundColor: '#374151',
+    backgroundColor: '#343a40',
   },
   filterTextDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
 });

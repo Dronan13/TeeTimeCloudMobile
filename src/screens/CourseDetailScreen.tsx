@@ -18,6 +18,7 @@ import { RouteProp } from '@react-navigation/native';
 import { CoursesStackParamList, CourseWithDetails, CourseEvent } from '@/types';
 import { coursesService } from '@/services/courses';
 import { useTheme } from '@/contexts/ThemeContext';
+import { Phone, Mail, Globe, Clock, Flag, MapPin, Calendar, DollarSign, X, Star, Facebook, Instagram } from 'lucide-react-native';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -100,7 +101,6 @@ export default function CourseDetailScreen({
   }, []);
 
   const handleEventPress = useCallback((event: CourseEvent) => {
-    // Could navigate to event details or open registration URL
     if (event.registration_url) {
       Linking.openURL(event.registration_url);
     }
@@ -166,16 +166,25 @@ export default function CourseDetailScreen({
           <Text style={[styles.eventTitle, isDark && styles.eventTitleDark]} numberOfLines={2}>
             {item.title}
           </Text>
-          <Text style={[styles.eventDate, isDark && styles.eventDateDark]}>
-            📅 {formattedDate} at {formattedTime}
-          </Text>
-          {item.location && (
-            <Text style={[styles.eventLocation, isDark && styles.eventLocationDark]} numberOfLines={1}>
-              📍 {item.location}
+          <View style={styles.eventRow}>
+            <Calendar size={12} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={2} />
+            <Text style={[styles.eventDate, isDark && styles.eventDateDark]}>
+              {formattedDate} at {formattedTime}
             </Text>
+          </View>
+          {item.location && (
+            <View style={styles.eventRow}>
+              <MapPin size={12} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={2} />
+              <Text style={[styles.eventLocation, isDark && styles.eventLocationDark]} numberOfLines={1}>
+                {item.location}
+              </Text>
+            </View>
           )}
           {item.price !== null && item.price > 0 && (
-            <Text style={styles.eventPrice}>💰 ${item.price.toFixed(2)}</Text>
+            <View style={styles.eventRow}>
+              <DollarSign size={12} color="#2d7a4e" strokeWidth={2} />
+              <Text style={styles.eventPrice}>${item.price.toFixed(2)}</Text>
+            </View>
           )}
         </View>
       </TouchableOpacity>
@@ -183,8 +192,8 @@ export default function CourseDetailScreen({
   };
 
   const renderAmenity = (amenity: string, index: number) => (
-    <View key={index} style={styles.amenityChip}>
-      <Text style={styles.amenityText}>{amenity}</Text>
+    <View key={index} style={[styles.amenityChip, isDark && styles.amenityChipDark]}>
+      <Text style={[styles.amenityText, isDark && styles.amenityTextDark]}>{amenity}</Text>
     </View>
   );
 
@@ -192,7 +201,6 @@ export default function CourseDetailScreen({
     if (!operatingHours) return 'Hours not available';
     if (typeof operatingHours === 'string') return operatingHours;
     if (typeof operatingHours === 'object') {
-      // Try to format common structures
       const today = new Date()
         .toLocaleDateString('en-US', { weekday: 'long' })
         .toLowerCase();
@@ -207,7 +215,7 @@ export default function CourseDetailScreen({
   if (loading) {
     return (
       <View style={[styles.centerContainer, isDark && styles.centerContainerDark]}>
-        <ActivityIndicator size="large" color="#22c55e" />
+        <ActivityIndicator size="large" color="#2d7a4e" />
         <Text style={[styles.loadingText, isDark && styles.loadingTextDark]}>Loading course details...</Text>
       </View>
     );
@@ -216,8 +224,8 @@ export default function CourseDetailScreen({
   if (error || !course) {
     return (
       <View style={[styles.centerContainer, isDark && styles.centerContainerDark]}>
-        <Text style={styles.errorIcon}>⚠️</Text>
-        <Text style={styles.errorText}>{error || 'Course not found'}</Text>
+        <Flag size={64} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={1.5} />
+        <Text style={[styles.errorText, isDark && styles.errorTextDark]}>{error || 'Course not found'}</Text>
         <TouchableOpacity style={styles.retryButton} onPress={fetchCourseDetails}>
           <Text style={styles.retryButtonText}>Retry</Text>
         </TouchableOpacity>
@@ -272,15 +280,26 @@ export default function CourseDetailScreen({
           {/* Rating */}
           {course.rating !== null && course.rating > 0 && (
             <View style={styles.ratingContainer}>
-              <Text style={styles.ratingStars}>
-                {'⭐'.repeat(Math.round(course.rating))}
-              </Text>
+              {[...Array(5)].map((_, index) => (
+                <Star
+                  key={index}
+                  size={16}
+                  color={index < Math.round(course.rating!) ? '#f59e0b' : '#d1d6db'}
+                  fill={index < Math.round(course.rating!) ? '#f59e0b' : 'transparent'}
+                  strokeWidth={2}
+                />
+              ))}
               <Text style={[styles.ratingText, isDark && styles.ratingTextDark]}>{course.rating.toFixed(1)}</Text>
             </View>
           )}
 
           {/* Holes Info */}
-          {course.holes && <Text style={[styles.holesInfo, isDark && styles.holesInfoDark]}>🏌️ {course.holes} Holes</Text>}
+          {course.holes && (
+            <View style={styles.holesRow}>
+              <Flag size={16} color={isDark ? '#adb5bd' : '#495057'} strokeWidth={2} />
+              <Text style={[styles.holesInfo, isDark && styles.holesInfoDark]}>{course.holes} Holes</Text>
+            </View>
+          )}
         </View>
 
         {/* Reserve Button */}
@@ -290,7 +309,8 @@ export default function CourseDetailScreen({
             onPress={handleReserveTeeTime}
             activeOpacity={0.8}
           >
-            <Text style={styles.reserveButtonText}>⛳ Reserve Tee Time</Text>
+            <Flag size={20} color="#fff" strokeWidth={2} />
+            <Text style={styles.reserveButtonText}>Reserve Tee Time</Text>
           </TouchableOpacity>
         </View>
 
@@ -321,7 +341,7 @@ export default function CourseDetailScreen({
               style={[styles.contactItem, isDark && styles.contactItemDark]}
               onPress={() => handlePhonePress(course.phone!)}
             >
-              <Text style={styles.contactIcon}>📞</Text>
+              <Phone size={20} color="#2d7a4e" strokeWidth={2} />
               <Text style={[styles.contactText, isDark && styles.contactTextDark]}>{course.phone}</Text>
             </TouchableOpacity>
           )}
@@ -331,7 +351,7 @@ export default function CourseDetailScreen({
               style={[styles.contactItem, isDark && styles.contactItemDark]}
               onPress={() => handleEmailPress(course.email!)}
             >
-              <Text style={styles.contactIcon}>✉️</Text>
+              <Mail size={20} color="#2d7a4e" strokeWidth={2} />
               <Text style={[styles.contactText, isDark && styles.contactTextDark]}>{course.email}</Text>
             </TouchableOpacity>
           )}
@@ -341,7 +361,7 @@ export default function CourseDetailScreen({
               style={[styles.contactItem, isDark && styles.contactItemDark]}
               onPress={() => handleWebsitePress(course.site_url!)}
             >
-              <Text style={styles.contactIcon}>🌐</Text>
+              <Globe size={20} color="#2d7a4e" strokeWidth={2} />
               <Text style={[styles.contactText, isDark && styles.contactTextDark]}>Visit Website</Text>
             </TouchableOpacity>
           )}
@@ -349,7 +369,7 @@ export default function CourseDetailScreen({
           {/* Operating Hours */}
           {course.operating_hours && (
             <View style={[styles.contactItem, isDark && styles.contactItemDark]}>
-              <Text style={styles.contactIcon}>🕒</Text>
+              <Clock size={20} color="#2d7a4e" strokeWidth={2} />
               <Text style={[styles.contactText, isDark && styles.contactTextDark]}>
                 {getOperatingHoursText(course.operating_hours)}
               </Text>
@@ -364,18 +384,20 @@ export default function CourseDetailScreen({
             <View style={styles.socialContainer}>
               {course.facebook && (
                 <TouchableOpacity
-                  style={[styles.socialButton, isDark && styles.socialButtonDark]}
+                  style={[styles.socialButton, styles.facebookButton, isDark && styles.socialButtonDark]}
                   onPress={() => handleWebsitePress(course.facebook!)}
                 >
-                  <Text style={[styles.socialButtonText, isDark && styles.socialButtonTextDark]}>📘 Facebook</Text>
+                  <Facebook size={18} color={isDark ? '#f8f9fa' : '#212529'} strokeWidth={2} />
+                  <Text style={[styles.socialButtonText, isDark && styles.socialButtonTextDark]}>Facebook</Text>
                 </TouchableOpacity>
               )}
               {course.instagram && (
                 <TouchableOpacity
-                  style={[styles.socialButton, isDark && styles.socialButtonDark]}
+                  style={[styles.socialButton, styles.instagramButton, isDark && styles.socialButtonDark]}
                   onPress={() => handleWebsitePress(course.instagram!)}
                 >
-                  <Text style={[styles.socialButtonText, isDark && styles.socialButtonTextDark]}>📷 Instagram</Text>
+                  <Instagram size={18} color={isDark ? '#f8f9fa' : '#212529'} strokeWidth={2} />
+                  <Text style={[styles.socialButtonText, isDark && styles.socialButtonTextDark]}>Instagram</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -410,7 +432,7 @@ export default function CourseDetailScreen({
             onPress={handleCloseImageModal}
             activeOpacity={0.8}
           >
-            <Text style={styles.modalCloseText}>✕</Text>
+            <X size={24} color="#fff" strokeWidth={2} />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -435,23 +457,20 @@ export default function CourseDetailScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8f9fa',
   },
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8f9fa',
+    gap: 16,
   },
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#6b7280',
-  },
-  errorIcon: {
-    fontSize: 64,
-    marginBottom: 16,
+    color: '#868e96',
   },
   errorText: {
     fontSize: 16,
@@ -460,7 +479,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   retryButton: {
-    backgroundColor: '#22c55e',
+    backgroundColor: '#2d7a4e',
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
@@ -504,42 +523,47 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: '#d1d6db',
   },
   courseName: {
     fontSize: 24,
-    fontWeight: '700',
-    color: '#111827',
+    fontWeight: '600',
+    color: '#212529',
     marginBottom: 8,
   },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 8,
-  },
-  ratingStars: {
-    fontSize: 16,
-    marginRight: 8,
+    gap: 4,
   },
   ratingText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#111827',
+    color: '#212529',
+    marginLeft: 8,
+  },
+  holesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
   },
   holesInfo: {
     fontSize: 15,
-    color: '#6b7280',
-    marginTop: 4,
+    color: '#495057',
   },
   reserveSection: {
     padding: 16,
     backgroundColor: '#fff',
   },
   reserveButton: {
-    backgroundColor: '#22c55e',
+    backgroundColor: '#2d7a4e',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -549,7 +573,7 @@ const styles = StyleSheet.create({
   reserveButtonText: {
     color: '#fff',
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: '600',
   },
   section: {
     padding: 20,
@@ -558,13 +582,13 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '700',
-    color: '#111827',
+    fontWeight: '600',
+    color: '#212529',
     marginBottom: 12,
   },
   description: {
     fontSize: 15,
-    color: '#4b5563',
+    color: '#495057',
     lineHeight: 24,
   },
   amenitiesContainer: {
@@ -573,16 +597,18 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   amenityChip: {
-    backgroundColor: '#e0f2e9',
+    backgroundColor: '#f0f9f4',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
     marginRight: 8,
     marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#daf1e4',
   },
   amenityText: {
     fontSize: 13,
-    color: '#22c55e',
+    color: '#2d7a4e',
     fontWeight: '600',
   },
   contactItem: {
@@ -590,16 +616,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
-  },
-  contactIcon: {
-    fontSize: 20,
-    marginRight: 12,
-    width: 30,
+    borderBottomColor: '#e9ecef',
+    gap: 12,
   },
   contactText: {
     fontSize: 15,
-    color: '#111827',
+    color: '#212529',
     flex: 1,
   },
   socialContainer: {
@@ -608,56 +630,81 @@ const styles = StyleSheet.create({
   },
   socialButton: {
     flex: 1,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: '#e9ecef',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  facebookButton: {
+    backgroundColor: '#e9ecef',
+  },
+  instagramButton: {
+    backgroundColor: '#e9ecef',
+  },
+  socialIconContainer: {
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+    backgroundColor: '#1877f2',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  socialIcon: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#fff',
   },
   socialButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#111827',
+    color: '#212529',
   },
   eventCard: {
     flexDirection: 'row',
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8f9fa',
     borderRadius: 12,
     marginBottom: 12,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: '#d1d6db',
   },
   eventImage: {
     width: 100,
     height: 100,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: '#d1d6db',
   },
   eventInfo: {
     flex: 1,
     padding: 12,
     justifyContent: 'center',
+    gap: 4,
   },
   eventTitle: {
     fontSize: 15,
-    fontWeight: '700',
-    color: '#111827',
+    fontWeight: '600',
+    color: '#212529',
     marginBottom: 4,
+  },
+  eventRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   eventDate: {
     fontSize: 13,
-    color: '#6b7280',
-    marginBottom: 2,
+    color: '#868e96',
   },
   eventLocation: {
     fontSize: 13,
-    color: '#6b7280',
-    marginBottom: 2,
+    color: '#868e96',
   },
   eventPrice: {
     fontSize: 13,
-    color: '#22c55e',
+    color: '#2d7a4e',
     fontWeight: '600',
-    marginTop: 4,
   },
   bottomSpacing: {
     height: 24,
@@ -680,11 +727,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  modalCloseText: {
-    color: '#fff',
-    fontSize: 28,
-    fontWeight: '300',
-  },
   modalImageContainer: {
     flex: 1,
     width: '100%',
@@ -697,62 +739,72 @@ const styles = StyleSheet.create({
   },
   // Dark mode styles
   containerDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
   },
   centerContainerDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
   },
   loadingTextDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
+  },
+  errorTextDark: {
+    color: '#ef4444',
   },
   headerSectionDark: {
-    backgroundColor: '#1f2937',
-    borderBottomColor: '#374151',
+    backgroundColor: '#2b3137',
+    borderBottomColor: '#343a40',
   },
   courseNameDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   ratingTextDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   holesInfoDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   reserveSectionDark: {
-    backgroundColor: '#1f2937',
+    backgroundColor: '#2b3137',
   },
   sectionDark: {
-    backgroundColor: '#1f2937',
+    backgroundColor: '#2b3137',
   },
   sectionTitleDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   descriptionDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
+  },
+  amenityChipDark: {
+    backgroundColor: '#133224',
+    borderColor: '#1d4d34',
+  },
+  amenityTextDark: {
+    color: '#2d7a4e',
   },
   contactItemDark: {
-    borderBottomColor: '#374151',
+    borderBottomColor: '#343a40',
   },
   contactTextDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   socialButtonDark: {
-    backgroundColor: '#374151',
+    backgroundColor: '#343a40',
   },
   socialButtonTextDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   eventCardDark: {
-    backgroundColor: '#1f2937',
-    borderColor: '#374151',
+    backgroundColor: '#2b3137',
+    borderColor: '#343a40',
   },
   eventTitleDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   eventDateDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   eventLocationDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
 });

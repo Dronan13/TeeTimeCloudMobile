@@ -2,44 +2,53 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Sun, Moon, Smartphone } from 'lucide-react-native';
 
 export default function ThemeToggle() {
   const { theme, setTheme, isDark } = useTheme();
   const { t } = useLanguage();
 
-  const options: Array<{ value: 'light' | 'dark' | 'system'; label: string; icon: string }> = [
-    { value: 'light', label: t('theme.light'), icon: '☀️' },
-    { value: 'dark', label: t('theme.dark'), icon: '🌙' },
-    { value: 'system', label: t('theme.system'), icon: '⚙️' },
+  const options: Array<{ value: 'light' | 'dark' | 'system'; label: string; Icon: any }> = [
+    { value: 'light', label: t('theme.light'), Icon: Sun },
+    { value: 'dark', label: t('theme.dark'), Icon: Moon },
+    { value: 'system', label: t('theme.system'), Icon: Smartphone },
   ];
 
   return (
     <View style={[styles.container, isDark && styles.containerDark]}>
       <Text style={[styles.title, isDark && styles.titleDark]}>{t('theme.title')}</Text>
       <View style={styles.optionsContainer}>
-        {options.map((option) => (
-          <TouchableOpacity
-            key={option.value}
-            style={[
-              styles.option,
-              isDark && styles.optionDark,
-              theme === option.value && styles.optionActive,
-              theme === option.value && isDark && styles.optionActiveDark,
-            ]}
-            onPress={() => setTheme(option.value)}
-          >
-            <Text style={styles.icon}>{option.icon}</Text>
-            <Text
+        {options.map((option) => {
+          const Icon = option.Icon;
+          const isActive = theme === option.value;
+          return (
+            <TouchableOpacity
+              key={option.value}
               style={[
-                styles.label,
-                isDark && styles.labelDark,
-                theme === option.value && styles.labelActive,
+                styles.option,
+                isDark && styles.optionDark,
+                isActive && styles.optionActive,
+                isActive && isDark && styles.optionActiveDark,
               ]}
+              onPress={() => setTheme(option.value)}
             >
-              {option.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              <Icon
+                size={18}
+                color={isActive ? '#2d7a4e' : (isDark ? '#adb5bd' : '#868e96')}
+                strokeWidth={2}
+              />
+              <Text
+                style={[
+                  styles.label,
+                  isDark && styles.labelDark,
+                  isActive && styles.labelActive,
+                ]}
+              >
+                {option.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
     </View>
   );
@@ -51,18 +60,21 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#d1d6db',
   },
   containerDark: {
-    backgroundColor: '#1f2937',
+    backgroundColor: '#2b3137',
+    borderColor: '#343a40',
   },
   title: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: '#212529',
     marginBottom: 12,
   },
   titleDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   optionsContainer: {
     flexDirection: 'row',
@@ -76,34 +88,31 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 8,
     borderRadius: 8,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8f9fa',
     borderWidth: 2,
     borderColor: 'transparent',
+    gap: 6,
   },
   optionDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
   },
   optionActive: {
-    backgroundColor: '#f0fdf4',
-    borderColor: '#22c55e',
+    backgroundColor: '#f0f9f4',
+    borderColor: '#2d7a4e',
   },
   optionActiveDark: {
-    backgroundColor: '#14532d',
-    borderColor: '#22c55e',
-  },
-  icon: {
-    fontSize: 20,
-    marginRight: 6,
+    backgroundColor: '#133224',
+    borderColor: '#2d7a4e',
   },
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: '#868e96',
   },
   labelDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   labelActive: {
-    color: '#22c55e',
+    color: '#2d7a4e',
   },
 });

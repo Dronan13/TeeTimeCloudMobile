@@ -16,6 +16,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ThemeToggle from '@/components/ThemeToggle';
 import LanguageSelector from '@/components/LanguageSelector';
+import { Edit3, Lock, MessageCircle, FileText, LogOut, ChevronRight } from 'lucide-react-native';
 
 export default function ProfileScreen() {
   const { user, profile, signOut } = useAuth();
@@ -113,13 +114,13 @@ export default function ProfileScreen() {
           activeOpacity={0.7}
         >
           <View style={[styles.menuIconContainer, isDark && styles.menuIconContainerDark]}>
-            <Text style={styles.menuIcon}>✏️</Text>
+            <Edit3 size={20} color="#2d7a4e" strokeWidth={2} />
           </View>
           <View style={styles.menuTextContainer}>
             <Text style={[styles.menuTitle, isDark && styles.menuTitleDark]}>{t('profile.editProfile')}</Text>
             <Text style={[styles.menuSubtitle, isDark && styles.menuSubtitleDark]}>{t('profile.updateProfileInfo')}</Text>
           </View>
-          <Text style={[styles.menuArrow, isDark && styles.menuArrowDark]}>›</Text>
+          <ChevronRight size={20} color={isDark ? '#868e96' : '#adb5bd'} strokeWidth={2} />
         </TouchableOpacity>
 
         {/* Update Password */}
@@ -129,13 +130,13 @@ export default function ProfileScreen() {
           activeOpacity={0.7}
         >
           <View style={[styles.menuIconContainer, isDark && styles.menuIconContainerDark]}>
-            <Text style={styles.menuIcon}>🔒</Text>
+            <Lock size={20} color="#2d7a4e" strokeWidth={2} />
           </View>
           <View style={styles.menuTextContainer}>
             <Text style={[styles.menuTitle, isDark && styles.menuTitleDark]}>{t('profile.updatePassword')}</Text>
             <Text style={[styles.menuSubtitle, isDark && styles.menuSubtitleDark]}>{t('profile.changePassword')}</Text>
           </View>
-          <Text style={[styles.menuArrow, isDark && styles.menuArrowDark]}>›</Text>
+          <ChevronRight size={20} color={isDark ? '#868e96' : '#adb5bd'} strokeWidth={2} />
         </TouchableOpacity>
 
         {/* Support */}
@@ -145,13 +146,13 @@ export default function ProfileScreen() {
           activeOpacity={0.7}
         >
           <View style={[styles.menuIconContainer, isDark && styles.menuIconContainerDark]}>
-            <Text style={styles.menuIcon}>💬</Text>
+            <MessageCircle size={20} color="#2d7a4e" strokeWidth={2} />
           </View>
           <View style={styles.menuTextContainer}>
             <Text style={[styles.menuTitle, isDark && styles.menuTitleDark]}>{t('profile.support')}</Text>
             <Text style={[styles.menuSubtitle, isDark && styles.menuSubtitleDark]}>{t('profile.getHelp')}</Text>
           </View>
-          <Text style={[styles.menuArrow, isDark && styles.menuArrowDark]}>›</Text>
+          <ChevronRight size={20} color={isDark ? '#868e96' : '#adb5bd'} strokeWidth={2} />
         </TouchableOpacity>
 
         {/* Terms of Use */}
@@ -161,13 +162,13 @@ export default function ProfileScreen() {
           activeOpacity={0.7}
         >
           <View style={[styles.menuIconContainer, isDark && styles.menuIconContainerDark]}>
-            <Text style={styles.menuIcon}>📄</Text>
+            <FileText size={20} color="#2d7a4e" strokeWidth={2} />
           </View>
           <View style={styles.menuTextContainer}>
             <Text style={[styles.menuTitle, isDark && styles.menuTitleDark]}>{t('profile.termsOfUse')}</Text>
             <Text style={[styles.menuSubtitle, isDark && styles.menuSubtitleDark]}>{t('profile.readTerms')}</Text>
           </View>
-          <Text style={[styles.menuArrow, isDark && styles.menuArrowDark]}>›</Text>
+          <ChevronRight size={20} color={isDark ? '#868e96' : '#adb5bd'} strokeWidth={2} />
         </TouchableOpacity>
       </View>
 
@@ -178,7 +179,7 @@ export default function ProfileScreen() {
           onPress={handleSignOut}
           activeOpacity={0.8}
         >
-          <Text style={styles.signOutIcon}>🚪</Text>
+          <LogOut size={20} color="#ef4444" strokeWidth={2} />
           <Text style={styles.signOutText}>{t('profile.signOut')}</Text>
         </TouchableOpacity>
       </View>
@@ -197,10 +198,10 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8f9fa',
   },
   containerDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
   },
   profileHeader: {
     backgroundColor: '#fff',
@@ -208,11 +209,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: '#d1d6db',
   },
   profileHeaderDark: {
-    backgroundColor: '#1f2937',
-    borderBottomColor: '#374151',
+    backgroundColor: '#2b3137',
+    borderBottomColor: '#343a40',
   },
   avatarContainer: {
     marginBottom: 16,
@@ -226,68 +227,69 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#22c55e',
+    backgroundColor: '#2d7a4e',
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarInitials: {
     fontSize: 36,
-    fontWeight: '700',
+    fontWeight: '600',
     color: '#fff',
   },
   profileName: {
     fontSize: 24,
-    fontWeight: '700',
-    color: '#111827',
+    fontWeight: '600',
+    color: '#212529',
     marginBottom: 4,
   },
   profileNameDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   profileEmail: {
     fontSize: 15,
-    color: '#6b7280',
+    color: '#868e96',
   },
   profileEmailDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   themeSection: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8f9fa',
     paddingHorizontal: 20,
     paddingTop: 16,
   },
   themeSectionDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
   },
   menuSection: {
     backgroundColor: '#fff',
     marginTop: 12,
     paddingHorizontal: 20,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#d1d6db',
   },
   menuSectionDark: {
-    backgroundColor: '#1f2937',
+    backgroundColor: '#2b3137',
+    borderColor: '#343a40',
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: '#e9ecef',
   },
   menuIconContainer: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: '#f0f9f4',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
   menuIconContainerDark: {
-    backgroundColor: '#374151',
-  },
-  menuIcon: {
-    fontSize: 20,
+    backgroundColor: '#343a40',
   },
   menuTextContainer: {
     flex: 1,
@@ -295,26 +297,18 @@ const styles = StyleSheet.create({
   menuTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#111827',
+    color: '#212529',
     marginBottom: 2,
   },
   menuTitleDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   menuSubtitle: {
     fontSize: 13,
-    color: '#6b7280',
+    color: '#868e96',
   },
   menuSubtitleDark: {
-    color: '#9ca3af',
-  },
-  menuArrow: {
-    fontSize: 24,
-    color: '#9ca3af',
-    fontWeight: '300',
-  },
-  menuArrowDark: {
-    color: '#6b7280',
+    color: '#adb5bd',
   },
   signOutSection: {
     paddingHorizontal: 20,
@@ -323,7 +317,7 @@ const styles = StyleSheet.create({
   signOutButton: {
     flexDirection: 'row',
     backgroundColor: '#fff',
-    paddingVertical: 16,
+    paddingVertical: 14,
     paddingHorizontal: 20,
     borderRadius: 12,
     alignItems: 'center',
@@ -335,13 +329,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
+    gap: 8,
   },
   signOutButtonDark: {
-    backgroundColor: '#1f2937',
-  },
-  signOutIcon: {
-    fontSize: 20,
-    marginRight: 8,
+    backgroundColor: '#2b3137',
   },
   signOutText: {
     fontSize: 16,
@@ -354,10 +345,10 @@ const styles = StyleSheet.create({
   },
   versionText: {
     fontSize: 13,
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   versionTextDark: {
-    color: '#6b7280',
+    color: '#868e96',
   },
   bottomSpacing: {
     height: 24,

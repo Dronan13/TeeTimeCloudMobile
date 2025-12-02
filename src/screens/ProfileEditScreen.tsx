@@ -15,11 +15,13 @@ import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabaseClient';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function ProfileEditScreen() {
   const { profile, user, refreshProfile } = useAuth();
   const navigation = useNavigation();
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
 
   // Form state
@@ -44,7 +46,7 @@ export default function ProfileEditScreen() {
 
   const handleSave = async () => {
     if (!user || !profile) {
-      Alert.alert('Error', 'User not authenticated');
+      Alert.alert(t('common.error'), t('profile.edit.errorAuth'));
       return;
     }
 
@@ -76,14 +78,14 @@ export default function ProfileEditScreen() {
       if (error) throw error;
 
       await refreshProfile();
-      Alert.alert('Success', 'Profile updated successfully', [
+      Alert.alert(t('profile.edit.successTitle'), t('profile.edit.successMessage'), [
         {
-          text: 'OK',
+          text: t('common.ok'),
           onPress: () => navigation.goBack(),
         },
       ]);
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to update profile');
+      Alert.alert(t('profile.edit.errorTitle'), error.message || t('profile.edit.errorMessage'));
     } finally {
       setLoading(false);
     }
@@ -100,14 +102,16 @@ export default function ProfileEditScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={[styles.section, isDark && styles.sectionDark]}>
-          <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Personal Information</Text>
+          <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>
+            {t('profile.edit.personalInfo')}
+          </Text>
 
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>Phone</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>{t('profile.edit.phone')}</Text>
             <TextInput
               style={[styles.input, isDark && styles.inputDark]}
-              placeholder="Enter your phone number"
-              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
+              placeholder={t('profile.edit.phonePlaceholder')}
+              placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
               value={formData.phone}
               onChangeText={(value) => handleInputChange('phone', value)}
               keyboardType="phone-pad"
@@ -115,22 +119,22 @@ export default function ProfileEditScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>Date of Birth</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>{t('profile.edit.dateOfBirth')}</Text>
             <TextInput
               style={[styles.input, isDark && styles.inputDark]}
-              placeholder="YYYY-MM-DD"
-              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
+              placeholder={t('profile.edit.dateOfBirthPlaceholder')}
+              placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
               value={formData.date_of_birth}
               onChangeText={(value) => handleInputChange('date_of_birth', value)}
             />
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>Gender</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>{t('profile.edit.gender')}</Text>
             <TextInput
               style={[styles.input, isDark && styles.inputDark]}
-              placeholder="Enter your gender"
-              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
+              placeholder={t('profile.edit.genderPlaceholder')}
+              placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
               value={formData.gender}
               onChangeText={(value) => handleInputChange('gender', value)}
               autoCapitalize="words"
@@ -139,14 +143,16 @@ export default function ProfileEditScreen() {
         </View>
 
         <View style={[styles.section, isDark && styles.sectionDark]}>
-          <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Location</Text>
+          <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>
+            {t('profile.edit.location')}
+          </Text>
 
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>City</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>{t('profile.edit.city')}</Text>
             <TextInput
               style={[styles.input, isDark && styles.inputDark]}
-              placeholder="Enter your city"
-              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
+              placeholder={t('profile.edit.cityPlaceholder')}
+              placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
               value={formData.city}
               onChangeText={(value) => handleInputChange('city', value)}
               autoCapitalize="words"
@@ -154,11 +160,11 @@ export default function ProfileEditScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>State</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>{t('profile.edit.state')}</Text>
             <TextInput
               style={[styles.input, isDark && styles.inputDark]}
-              placeholder="Enter your state"
-              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
+              placeholder={t('profile.edit.statePlaceholder')}
+              placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
               value={formData.state}
               onChangeText={(value) => handleInputChange('state', value)}
               autoCapitalize="words"
@@ -166,11 +172,11 @@ export default function ProfileEditScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>Country</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>{t('profile.edit.country')}</Text>
             <TextInput
               style={[styles.input, isDark && styles.inputDark]}
-              placeholder="Enter your country"
-              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
+              placeholder={t('profile.edit.countryPlaceholder')}
+              placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
               value={formData.country}
               onChangeText={(value) => handleInputChange('country', value)}
               autoCapitalize="words"
@@ -178,11 +184,11 @@ export default function ProfileEditScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>Zip Code</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>{t('profile.edit.zipCode')}</Text>
             <TextInput
               style={[styles.input, isDark && styles.inputDark]}
-              placeholder="Enter your zip code"
-              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
+              placeholder={t('profile.edit.zipCodePlaceholder')}
+              placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
               value={formData.zip_code}
               onChangeText={(value) => handleInputChange('zip_code', value)}
               keyboardType="number-pad"
@@ -191,14 +197,16 @@ export default function ProfileEditScreen() {
         </View>
 
         <View style={[styles.section, isDark && styles.sectionDark]}>
-          <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Golf Information</Text>
+          <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>
+            {t('profile.edit.golfInfo')}
+          </Text>
 
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>Handicap Index</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>{t('profile.edit.handicap')}</Text>
             <TextInput
               style={[styles.input, isDark && styles.inputDark]}
-              placeholder="Enter your handicap index"
-              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
+              placeholder={t('profile.edit.handicapPlaceholder')}
+              placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
               value={formData.handicap_index}
               onChangeText={(value) => handleInputChange('handicap_index', value)}
               keyboardType="decimal-pad"
@@ -206,11 +214,11 @@ export default function ProfileEditScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>GHIN ID</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>{t('profile.edit.ghinId')}</Text>
             <TextInput
               style={[styles.input, isDark && styles.inputDark]}
-              placeholder="Enter your GHIN ID"
-              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
+              placeholder={t('profile.edit.ghinIdPlaceholder')}
+              placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
               value={formData.ghin_id}
               onChangeText={(value) => handleInputChange('ghin_id', value)}
               keyboardType="number-pad"
@@ -218,11 +226,11 @@ export default function ProfileEditScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>Average Score</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>{t('profile.edit.averageScore')}</Text>
             <TextInput
               style={[styles.input, isDark && styles.inputDark]}
-              placeholder="Enter your average score"
-              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
+              placeholder={t('profile.edit.averageScorePlaceholder')}
+              placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
               value={formData.average_score}
               onChangeText={(value) => handleInputChange('average_score', value)}
               keyboardType="decimal-pad"
@@ -230,11 +238,11 @@ export default function ProfileEditScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>Average Drive (yards)</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>{t('profile.edit.averageDrive')}</Text>
             <TextInput
               style={[styles.input, isDark && styles.inputDark]}
-              placeholder="Enter average drive distance"
-              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
+              placeholder={t('profile.edit.averageDrivePlaceholder')}
+              placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
               value={formData.average_drive_yards}
               onChangeText={(value) => handleInputChange('average_drive_yards', value)}
               keyboardType="number-pad"
@@ -242,11 +250,11 @@ export default function ProfileEditScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>Playing Frequency</Text>
+            <Text style={[styles.label, isDark && styles.labelDark]}>{t('profile.edit.playingFrequency')}</Text>
             <TextInput
               style={[styles.input, isDark && styles.inputDark]}
-              placeholder="e.g., Weekly, Monthly"
-              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
+              placeholder={t('profile.edit.playingFrequencyPlaceholder')}
+              placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
               value={formData.playing_frequency}
               onChangeText={(value) => handleInputChange('playing_frequency', value)}
               autoCapitalize="words"
@@ -262,7 +270,7 @@ export default function ProfileEditScreen() {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.saveButtonText}>Save Changes</Text>
+            <Text style={styles.saveButtonText}>{t('profile.edit.saveChanges')}</Text>
           )}
         </TouchableOpacity>
 
@@ -275,16 +283,16 @@ export default function ProfileEditScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8f9fa',
   },
   containerDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
   },
   scrollView: {
     flex: 1,
   },
   scrollViewDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
   },
   scrollContent: {
     paddingHorizontal: 20,
@@ -300,20 +308,21 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
+    borderWidth: 1,
+    borderColor: '#d1d6db',
   },
   sectionDark: {
-    backgroundColor: '#1f2937',
-    borderColor: '#374151',
-    borderWidth: 1,
+    backgroundColor: '#2b3137',
+    borderColor: '#343a40',
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '700',
-    color: '#111827',
+    fontWeight: '600',
+    color: '#212529',
     marginBottom: 16,
   },
   sectionTitleDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   inputContainer: {
     marginBottom: 16,
@@ -321,29 +330,29 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
+    color: '#495057',
     marginBottom: 8,
   },
   labelDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: '#d1d6db',
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 16,
     fontSize: 16,
     backgroundColor: '#fff',
-    color: '#111827',
+    color: '#212529',
   },
   inputDark: {
-    backgroundColor: '#374151',
-    borderColor: '#4b5563',
-    color: '#f9fafb',
+    backgroundColor: '#343a40',
+    borderColor: '#495057',
+    color: '#f8f9fa',
   },
   saveButton: {
-    backgroundColor: '#22c55e',
+    backgroundColor: '#2d7a4e',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
@@ -355,7 +364,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   saveButtonDisabled: {
-    backgroundColor: '#9ca3af',
+    backgroundColor: '#adb5bd',
   },
   saveButtonText: {
     color: '#fff',

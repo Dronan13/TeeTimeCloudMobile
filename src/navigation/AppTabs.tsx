@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { AppTabParamList, CoursesStackParamList, ProfileStackParamList } from '@/types';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Home, Flag, Calendar, Bell, User } from 'lucide-react-native';
 
 // Import screens
 import HomeScreen from '@/screens/HomeScreen';
@@ -19,9 +20,6 @@ import UpdatePasswordScreen from '@/screens/UpdatePasswordScreen';
 import SupportScreen from '@/screens/SupportScreen';
 import TermsOfUseScreen from '@/screens/TermsOfUseScreen';
 
-// Icons (using text for now, you can replace with icon library later)
-import { Text } from 'react-native';
-
 const Tab = createBottomTabNavigator<AppTabParamList>();
 const CoursesStack = createStackNavigator<CoursesStackParamList>();
 const ProfileStack = createStackNavigator<ProfileStackParamList>();
@@ -34,11 +32,11 @@ function CoursesStackNavigator() {
     <CoursesStack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: isDark ? '#1f2937' : '#22c55e',
+          backgroundColor: isDark ? '#2b3137' : '#2d7a4e',
         },
         headerTintColor: '#fff',
         headerTitleStyle: {
-          fontWeight: 'bold',
+          fontWeight: '600',
         },
       }}
     >
@@ -74,11 +72,11 @@ function ProfileStackNavigator() {
     <ProfileStack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: isDark ? '#1f2937' : '#22c55e',
+          backgroundColor: isDark ? '#2b3137' : '#2d7a4e',
         },
         headerTintColor: '#fff',
         headerTitleStyle: {
-          fontWeight: 'bold',
+          fontWeight: '600',
         },
       }}
     >
@@ -118,21 +116,26 @@ export default function AppTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: '#22c55e',
-        tabBarInactiveTintColor: isDark ? '#9ca3af' : '#6b7280',
+        tabBarActiveTintColor: '#2d7a4e',
+        tabBarInactiveTintColor: isDark ? '#adb5bd' : '#868e96',
         tabBarStyle: {
-          backgroundColor: isDark ? '#1f2937' : '#ffffff',
-          borderTopColor: isDark ? '#374151' : '#e5e7eb',
-          paddingBottom: 5,
-          paddingTop: 5,
-          height: 60,
+          backgroundColor: isDark ? '#2b3137' : '#ffffff',
+          borderTopColor: isDark ? '#343a40' : '#d1d6db',
+          paddingBottom: 8,
+          paddingTop: 8,
+          height: 65,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '600',
+          marginTop: 4,
         },
         headerStyle: {
-          backgroundColor: isDark ? '#1f2937' : '#22c55e',
+          backgroundColor: isDark ? '#2b3137' : '#2d7a4e',
         },
         headerTintColor: '#fff',
         headerTitleStyle: {
-          fontWeight: 'bold',
+          fontWeight: '600',
         },
       }}
     >
@@ -140,7 +143,13 @@ export default function AppTabs() {
         name="Home"
         component={HomeScreen}
         options={{
-          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 24 }}>🏠</Text>,
+          tabBarIcon: ({ color, focused }) => (
+            <Home
+              size={24}
+              color={color}
+              strokeWidth={focused ? 2.5 : 2}
+            />
+          ),
           title: t('navigation.home'),
         }}
       />
@@ -148,7 +157,13 @@ export default function AppTabs() {
         name="Courses"
         component={CoursesStackNavigator}
         options={{
-          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 24 }}>⛳</Text>,
+          tabBarIcon: ({ color, focused }) => (
+            <Flag
+              size={24}
+              color={color}
+              strokeWidth={focused ? 2.5 : 2}
+            />
+          ),
           title: t('navigation.courses'),
           headerShown: false,
         }}
@@ -157,7 +172,13 @@ export default function AppTabs() {
         name="TeeTimes"
         component={TeeTimesScreen}
         options={{
-          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 24 }}>📅</Text>,
+          tabBarIcon: ({ color, focused }) => (
+            <Calendar
+              size={24}
+              color={color}
+              strokeWidth={focused ? 2.5 : 2}
+            />
+          ),
           title: t('teeTimes.title'),
         }}
       />
@@ -165,7 +186,13 @@ export default function AppTabs() {
         name="Notifications"
         component={NotificationsScreen}
         options={{
-          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 24 }}>🔔</Text>,
+          tabBarIcon: ({ color, focused }) => (
+            <Bell
+              size={24}
+              color={color}
+              strokeWidth={focused ? 2.5 : 2}
+            />
+          ),
           title: t('navigation.notifications'),
         }}
       />
@@ -173,7 +200,13 @@ export default function AppTabs() {
         name="Profile"
         component={ProfileStackNavigator}
         options={{
-          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 24 }}>👤</Text>,
+          tabBarIcon: ({ color, focused }) => (
+            <User
+              size={24}
+              color={color}
+              strokeWidth={focused ? 2.5 : 2}
+            />
+          ),
           title: t('navigation.profile'),
           headerShown: false,
         }}

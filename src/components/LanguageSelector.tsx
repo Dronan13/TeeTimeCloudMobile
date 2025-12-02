@@ -2,43 +2,50 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Globe } from 'lucide-react-native';
 
 export default function LanguageSelector() {
   const { isDark } = useTheme();
   const { language, setLanguage, t } = useLanguage();
 
-  const options: Array<{ value: 'en' | 'es'; label: string; icon: string }> = [
-    { value: 'en', label: t('language.english'), icon: '🇺🇸' },
-    { value: 'es', label: t('language.spanish'), icon: '🇪🇸' },
+  const options: Array<{ value: 'en' | 'es'; label: string; flag: string }> = [
+    { value: 'en', label: t('language.english'), flag: '🇺🇸' },
+    { value: 'es', label: t('language.spanish'), flag: '🇪🇸' },
   ];
 
   return (
     <View style={[styles.container, isDark && styles.containerDark]}>
-      <Text style={[styles.title, isDark && styles.titleDark]}>{t('language.title')}</Text>
+      <View style={styles.titleRow}>
+        <Globe size={18} color={isDark ? '#f8f9fa' : '#212529'} strokeWidth={2} />
+        <Text style={[styles.title, isDark && styles.titleDark]}>{t('language.title')}</Text>
+      </View>
       <View style={styles.optionsContainer}>
-        {options.map((option) => (
-          <TouchableOpacity
-            key={option.value}
-            style={[
-              styles.option,
-              isDark && styles.optionDark,
-              language === option.value && styles.optionActive,
-              language === option.value && isDark && styles.optionActiveDark,
-            ]}
-            onPress={() => setLanguage(option.value)}
-          >
-            <Text style={styles.icon}>{option.icon}</Text>
-            <Text
+        {options.map((option) => {
+          const isActive = language === option.value;
+          return (
+            <TouchableOpacity
+              key={option.value}
               style={[
-                styles.label,
-                isDark && styles.labelDark,
-                language === option.value && styles.labelActive,
+                styles.option,
+                isDark && styles.optionDark,
+                isActive && styles.optionActive,
+                isActive && isDark && styles.optionActiveDark,
               ]}
+              onPress={() => setLanguage(option.value)}
             >
-              {option.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              <Text style={styles.flag}>{option.flag}</Text>
+              <Text
+                style={[
+                  styles.label,
+                  isDark && styles.labelDark,
+                  isActive && styles.labelActive,
+                ]}
+              >
+                {option.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
     </View>
   );
@@ -50,18 +57,26 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#d1d6db',
   },
   containerDark: {
-    backgroundColor: '#1f2937',
+    backgroundColor: '#2b3137',
+    borderColor: '#343a40',
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
   },
   title: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
-    marginBottom: 12,
+    color: '#212529',
   },
   titleDark: {
-    color: '#f9fafb',
+    color: '#f8f9fa',
   },
   optionsContainer: {
     flexDirection: 'row',
@@ -75,34 +90,34 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 8,
     borderRadius: 8,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8f9fa',
     borderWidth: 2,
     borderColor: 'transparent',
+    gap: 6,
   },
   optionDark: {
-    backgroundColor: '#111827',
+    backgroundColor: '#1a1d21',
   },
   optionActive: {
-    backgroundColor: '#f0fdf4',
-    borderColor: '#22c55e',
+    backgroundColor: '#f0f9f4',
+    borderColor: '#2d7a4e',
   },
   optionActiveDark: {
-    backgroundColor: '#14532d',
-    borderColor: '#22c55e',
+    backgroundColor: '#133224',
+    borderColor: '#2d7a4e',
   },
-  icon: {
-    fontSize: 20,
-    marginRight: 6,
+  flag: {
+    fontSize: 18,
   },
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: '#868e96',
   },
   labelDark: {
-    color: '#9ca3af',
+    color: '#adb5bd',
   },
   labelActive: {
-    color: '#22c55e',
+    color: '#2d7a4e',
   },
 });
