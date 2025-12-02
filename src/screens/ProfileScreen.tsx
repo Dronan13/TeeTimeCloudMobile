@@ -12,9 +12,12 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { ProfileStackParamList } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from '@/contexts/ThemeContext';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export default function ProfileScreen() {
   const { user, profile, signOut } = useAuth();
+  const { isDark } = useTheme();
   const navigation = useNavigation<StackNavigationProp<ProfileStackParamList>>();
 
   const handleEditProfile = () => {
@@ -70,9 +73,9 @@ export default function ProfileScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView style={[styles.container, isDark && styles.containerDark]} showsVerticalScrollIndicator={false}>
       {/* Profile Header */}
-      <View style={styles.profileHeader}>
+      <View style={[styles.profileHeader, isDark && styles.profileHeaderDark]}>
         <View style={styles.avatarContainer}>
           {profile?.avatar_url ? (
             <Image
@@ -88,26 +91,31 @@ export default function ProfileScreen() {
             </View>
           )}
         </View>
-        <Text style={styles.profileName}>{getDisplayName()}</Text>
-        <Text style={styles.profileEmail}>{user?.email}</Text>
+        <Text style={[styles.profileName, isDark && styles.profileNameDark]}>{getDisplayName()}</Text>
+        <Text style={[styles.profileEmail, isDark && styles.profileEmailDark]}>{user?.email}</Text>
+      </View>
+
+      {/* Theme Toggle */}
+      <View style={[styles.themeSection, isDark && styles.themeSectionDark]}>
+        <ThemeToggle />
       </View>
 
       {/* Menu Section */}
-      <View style={styles.menuSection}>
+      <View style={[styles.menuSection, isDark && styles.menuSectionDark]}>
         {/* Edit Profile */}
         <TouchableOpacity
           style={styles.menuItem}
           onPress={handleEditProfile}
           activeOpacity={0.7}
         >
-          <View style={styles.menuIconContainer}>
+          <View style={[styles.menuIconContainer, isDark && styles.menuIconContainerDark]}>
             <Text style={styles.menuIcon}>✏️</Text>
           </View>
           <View style={styles.menuTextContainer}>
-            <Text style={styles.menuTitle}>Edit Profile</Text>
-            <Text style={styles.menuSubtitle}>Update your personal information</Text>
+            <Text style={[styles.menuTitle, isDark && styles.menuTitleDark]}>Edit Profile</Text>
+            <Text style={[styles.menuSubtitle, isDark && styles.menuSubtitleDark]}>Update your personal information</Text>
           </View>
-          <Text style={styles.menuArrow}>›</Text>
+          <Text style={[styles.menuArrow, isDark && styles.menuArrowDark]}>›</Text>
         </TouchableOpacity>
 
         {/* Update Password */}
@@ -116,14 +124,14 @@ export default function ProfileScreen() {
           onPress={handleUpdatePassword}
           activeOpacity={0.7}
         >
-          <View style={styles.menuIconContainer}>
+          <View style={[styles.menuIconContainer, isDark && styles.menuIconContainerDark]}>
             <Text style={styles.menuIcon}>🔒</Text>
           </View>
           <View style={styles.menuTextContainer}>
-            <Text style={styles.menuTitle}>Update Password</Text>
-            <Text style={styles.menuSubtitle}>Change your account password</Text>
+            <Text style={[styles.menuTitle, isDark && styles.menuTitleDark]}>Update Password</Text>
+            <Text style={[styles.menuSubtitle, isDark && styles.menuSubtitleDark]}>Change your account password</Text>
           </View>
-          <Text style={styles.menuArrow}>›</Text>
+          <Text style={[styles.menuArrow, isDark && styles.menuArrowDark]}>›</Text>
         </TouchableOpacity>
 
         {/* Support */}
@@ -132,14 +140,14 @@ export default function ProfileScreen() {
           onPress={handleSupport}
           activeOpacity={0.7}
         >
-          <View style={styles.menuIconContainer}>
+          <View style={[styles.menuIconContainer, isDark && styles.menuIconContainerDark]}>
             <Text style={styles.menuIcon}>💬</Text>
           </View>
           <View style={styles.menuTextContainer}>
-            <Text style={styles.menuTitle}>Support</Text>
-            <Text style={styles.menuSubtitle}>Get help and contact us</Text>
+            <Text style={[styles.menuTitle, isDark && styles.menuTitleDark]}>Support</Text>
+            <Text style={[styles.menuSubtitle, isDark && styles.menuSubtitleDark]}>Get help and contact us</Text>
           </View>
-          <Text style={styles.menuArrow}>›</Text>
+          <Text style={[styles.menuArrow, isDark && styles.menuArrowDark]}>›</Text>
         </TouchableOpacity>
 
         {/* Terms of Use */}
@@ -148,21 +156,21 @@ export default function ProfileScreen() {
           onPress={handleTermsOfUse}
           activeOpacity={0.7}
         >
-          <View style={styles.menuIconContainer}>
+          <View style={[styles.menuIconContainer, isDark && styles.menuIconContainerDark]}>
             <Text style={styles.menuIcon}>📄</Text>
           </View>
           <View style={styles.menuTextContainer}>
-            <Text style={styles.menuTitle}>Terms of Use</Text>
-            <Text style={styles.menuSubtitle}>Read our terms and conditions</Text>
+            <Text style={[styles.menuTitle, isDark && styles.menuTitleDark]}>Terms of Use</Text>
+            <Text style={[styles.menuSubtitle, isDark && styles.menuSubtitleDark]}>Read our terms and conditions</Text>
           </View>
-          <Text style={styles.menuArrow}>›</Text>
+          <Text style={[styles.menuArrow, isDark && styles.menuArrowDark]}>›</Text>
         </TouchableOpacity>
       </View>
 
       {/* Sign Out Button */}
       <View style={styles.signOutSection}>
         <TouchableOpacity
-          style={styles.signOutButton}
+          style={[styles.signOutButton, isDark && styles.signOutButtonDark]}
           onPress={handleSignOut}
           activeOpacity={0.8}
         >
@@ -173,7 +181,7 @@ export default function ProfileScreen() {
 
       {/* App Version */}
       <View style={styles.versionContainer}>
-        <Text style={styles.versionText}>TeeTime Cloud v1.0.0</Text>
+        <Text style={[styles.versionText, isDark && styles.versionTextDark]}>TeeTime Cloud v1.0.0</Text>
       </View>
 
       {/* Bottom Spacing */}
@@ -187,6 +195,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f9fafb',
   },
+  containerDark: {
+    backgroundColor: '#111827',
+  },
   profileHeader: {
     backgroundColor: '#fff',
     paddingVertical: 32,
@@ -194,6 +205,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#e5e7eb',
+  },
+  profileHeaderDark: {
+    backgroundColor: '#1f2937',
+    borderBottomColor: '#374151',
   },
   avatarContainer: {
     marginBottom: 16,
@@ -222,14 +237,31 @@ const styles = StyleSheet.create({
     color: '#111827',
     marginBottom: 4,
   },
+  profileNameDark: {
+    color: '#f9fafb',
+  },
   profileEmail: {
     fontSize: 15,
     color: '#6b7280',
+  },
+  profileEmailDark: {
+    color: '#9ca3af',
+  },
+  themeSection: {
+    backgroundColor: '#f9fafb',
+    paddingHorizontal: 20,
+    paddingTop: 16,
+  },
+  themeSectionDark: {
+    backgroundColor: '#111827',
   },
   menuSection: {
     backgroundColor: '#fff',
     marginTop: 12,
     paddingHorizontal: 20,
+  },
+  menuSectionDark: {
+    backgroundColor: '#1f2937',
   },
   menuItem: {
     flexDirection: 'row',
@@ -247,6 +279,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 12,
   },
+  menuIconContainerDark: {
+    backgroundColor: '#374151',
+  },
   menuIcon: {
     fontSize: 20,
   },
@@ -259,14 +294,23 @@ const styles = StyleSheet.create({
     color: '#111827',
     marginBottom: 2,
   },
+  menuTitleDark: {
+    color: '#f9fafb',
+  },
   menuSubtitle: {
     fontSize: 13,
     color: '#6b7280',
+  },
+  menuSubtitleDark: {
+    color: '#9ca3af',
   },
   menuArrow: {
     fontSize: 24,
     color: '#9ca3af',
     fontWeight: '300',
+  },
+  menuArrowDark: {
+    color: '#6b7280',
   },
   signOutSection: {
     paddingHorizontal: 20,
@@ -288,6 +332,9 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
   },
+  signOutButtonDark: {
+    backgroundColor: '#1f2937',
+  },
   signOutIcon: {
     fontSize: 20,
     marginRight: 8,
@@ -304,6 +351,9 @@ const styles = StyleSheet.create({
   versionText: {
     fontSize: 13,
     color: '#9ca3af',
+  },
+  versionTextDark: {
+    color: '#6b7280',
   },
   bottomSpacing: {
     height: 24,
