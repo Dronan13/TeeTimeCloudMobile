@@ -1,6 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { RootStackParamList } from '@/types';
+import { useTheme } from '@/contexts/ThemeContext';
 
 // Import screens (to be created)
 import LandingScreen from '@/screens/LandingScreen';
@@ -11,11 +12,13 @@ import UpdatePasswordScreen from '@/screens/UpdatePasswordScreen';
 const Stack = createStackNavigator<RootStackParamList>();
 
 export default function AuthStack() {
+  const { isDark } = useTheme();
+
   return (
     <Stack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#22c55e',
+          backgroundColor: isDark ? '#1f2937' : '#22c55e',
         },
         headerTintColor: '#fff',
         headerTitleStyle: {

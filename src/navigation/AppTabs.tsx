@@ -2,6 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { AppTabParamList, CoursesStackParamList, ProfileStackParamList } from '@/types';
+import { useTheme } from '@/contexts/ThemeContext';
 
 // Import screens
 import HomeScreen from '@/screens/HomeScreen';
@@ -25,11 +26,13 @@ const CoursesStack = createStackNavigator<CoursesStackParamList>();
 const ProfileStack = createStackNavigator<ProfileStackParamList>();
 
 function CoursesStackNavigator() {
+  const { isDark } = useTheme();
+
   return (
     <CoursesStack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#22c55e',
+          backgroundColor: isDark ? '#1f2937' : '#22c55e',
         },
         headerTintColor: '#fff',
         headerTitleStyle: {
@@ -62,11 +65,13 @@ function CoursesStackNavigator() {
 }
 
 function ProfileStackNavigator() {
+  const { isDark } = useTheme();
+
   return (
     <ProfileStack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#22c55e',
+          backgroundColor: isDark ? '#1f2937' : '#22c55e',
         },
         headerTintColor: '#fff',
         headerTitleStyle: {
@@ -104,18 +109,22 @@ function ProfileStackNavigator() {
 }
 
 export default function AppTabs() {
+  const { isDark } = useTheme();
+
   return (
     <Tab.Navigator
       screenOptions={{
         tabBarActiveTintColor: '#22c55e',
-        tabBarInactiveTintColor: '#6b7280',
+        tabBarInactiveTintColor: isDark ? '#9ca3af' : '#6b7280',
         tabBarStyle: {
+          backgroundColor: isDark ? '#1f2937' : '#ffffff',
+          borderTopColor: isDark ? '#374151' : '#e5e7eb',
           paddingBottom: 5,
           paddingTop: 5,
           height: 60,
         },
         headerStyle: {
-          backgroundColor: '#22c55e',
+          backgroundColor: isDark ? '#1f2937' : '#22c55e',
         },
         headerTintColor: '#fff',
         headerTitleStyle: {
