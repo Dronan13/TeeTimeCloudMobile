@@ -32,6 +32,7 @@
     "courses": "Campos",
     "teeTimes": "Horarios",
     "tournaments": "Torneos",
+    "rounds": "Rondas",
     "articles": "Artículos",
     "notifications": "Notificaciones",
     "profile": "Perfil"
@@ -109,6 +110,7 @@
     "quickActions": "Acciones Rápidas",
     "upcomingEvents": "Próximos Eventos",
     "recentNotifications": "Notificaciones Recientes",
+    "recentRounds": "Rondas Recientes",
     "bookTeeTime": "Reservar Horario",
     "nearbyCourses": "Campos Cercanos",
     "myTeeTimes": "Mis Horarios",
