@@ -122,7 +122,11 @@
       "viewProfile": "View Profile →"
     },
     "teeTimeCard": {
-      "holes": "Holes"
+      "holes": "Holes",
+      "date": "Date",
+      "time": "Time",
+      "course": "Course",
+      "hole": "Hole"
     }
   },
   "courses": {

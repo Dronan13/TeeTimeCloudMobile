@@ -23,7 +23,7 @@ import { reservationsService } from '@/services/reservations';
 import { notificationsService } from '@/services/notifications';
 import { coursesService } from '@/services/courses';
 import { weatherService } from '@/services/weather';
-import { ReservationWithDetails, Notification, CourseEvent, AppTabParamList, CoursesStackParamList } from '@/types';
+import { ReservationWithDetails, CourseEvent, AppTabParamList, CoursesStackParamList, Database } from '@/types';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { Flag, MapPin, Calendar, Bell, Thermometer, Wind, Droplets, CloudSun, Clock, X, Newspaper } from 'lucide-react-native';
@@ -45,7 +45,7 @@ export default function HomeScreen() {
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [nextTeeTime, setNextTeeTime] = useState<ReservationWithDetails | null>(null);
+  const [nextTeeTime, setNextTeeTime] = useState<Database['public']['Views']['tee_time_reservations_with_slot']['Row'] | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const [upcomingEvents, setUpcomingEvents] = useState<CourseEvent[]>([]);
   const [weather, setWeather] = useState<any>(null);
@@ -91,6 +91,7 @@ export default function HomeScreen() {
       }
 
       const nextRes = await reservationsService.fetchNextReservation(user.id);
+      console.log('nextRes', nextRes);
       if (nextRes.data) {
         setNextTeeTime(nextRes.data);
       }
@@ -205,32 +206,33 @@ export default function HomeScreen() {
       )}
 
       {/* Next Tee Time / Book CTA */}
-      <View style={[homeStyles.section, isDark && homeStyles.sectionDark]}>
+      
         {nextTeeTime && (
+          <View style={[homeStyles.section, isDark && homeStyles.sectionDark]}>
           <View style={[homeStyles.nextTeeTimeCard, isDark && homeStyles.nextTeeTimeCardDark]}>
             <Text style={[homeStyles.sectionTitle, isDark && homeStyles.sectionTitleDark]}>{t('home.nextTeeTime')}</Text>
             <View style={homeStyles.teeTimeDetails}>
               <View style={homeStyles.teeTimeRow}>
                 <Calendar size={16} color={isDark ? '#f8f9fa' : '#212529'} strokeWidth={2} />
                 <Text style={[homeStyles.teeTimeDate, isDark && homeStyles.teeTimeDateDark]}>
-                  {dayjs(nextTeeTime.slot?.tee_date).format('dddd, MMMM D, YYYY')}
+                  {dayjs(nextTeeTime.tee_date).format('dddd, MMMM D, YYYY')}
                 </Text>
               </View>
               <View style={homeStyles.teeTimeRow}>
                 <Clock size={16} color={isDark ? '#f8f9fa' : '#212529'} strokeWidth={2} />
                 <Text style={[homeStyles.teeTimeTime, isDark && homeStyles.teeTimeTimeDark]}>
-                  {dayjs(nextTeeTime.slot?.tee_date).format('h:mm A')}
+                  {dayjs(nextTeeTime.tee_time).format('h:mm A')}
                 </Text>
               </View>
               <View style={homeStyles.teeTimeRow}>
                 <Flag size={16} color={isDark ? '#adb5bd' : '#495057'} strokeWidth={2} />
                 <Text style={[homeStyles.teeTimeCourse, isDark && homeStyles.teeTimeCourseDark]}>
-                  {nextTeeTime.course?.name || 'Golf Course'}
+                  {nextTeeTime.course_name || 'Golf Course'}
                 </Text>
               </View>
               <View style={homeStyles.teeTimeRow}>
                 <Text style={[homeStyles.teeTimeHoles, isDark && homeStyles.teeTimeHolesDark]}>
-                  {nextTeeTime.holes} {t('home.teeTimeCard.holes')}
+                  {nextTeeTime.hole} {t('home.teeTimeCard.holes')}
                 </Text>
               </View>
               {nextTeeTime.booking_status && (
@@ -248,8 +250,9 @@ export default function HomeScreen() {
               <Text style={homeStyles.buttonText}>{t('common.viewDetails')}</Text>
             </TouchableOpacity>
           </View>
+         </View>
         )}
-      </View>
+     
 
       {/* Quick Actions Row */}
       <View style={[homeStyles.section, isDark && homeStyles.sectionDark]}>
@@ -273,13 +276,6 @@ export default function HomeScreen() {
           >
             <Flag size={24} color="#2d7a4e" strokeWidth={2} />
             <Text style={[homeStyles.quickActionText, isDark && homeStyles.quickActionTextDark]}>{t('home.bookTeeTime')}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[homeStyles.quickActionButton, isDark && homeStyles.quickActionButtonDark]}
-            onPress={() => navigation.navigate('Courses')}
-          >
-            <MapPin size={24} color="#2d7a4e" strokeWidth={2} />
-            <Text style={[homeStyles.quickActionText, isDark && homeStyles.quickActionTextDark]}>{t('home.nearbyCourses')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[homeStyles.quickActionButton, isDark && homeStyles.quickActionButtonDark]}
@@ -569,9 +565,10 @@ const homeStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     flexWrap: 'wrap',
+    gap: 8,
   },
   quickActionButton: {
-    width: '23%',
+    width: '18.5%',
     aspectRatio: 1,
     backgroundColor: '#f8f9fa',
     borderRadius: 12,

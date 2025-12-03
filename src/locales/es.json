@@ -122,7 +122,11 @@
       "viewProfile": "Ver Perfil →"
     },
     "teeTimeCard": {
-      "holes": "Hoyos"
+      "holes": "Hoyos",
+      "date": "Fecha",
+      "time": "Hora",
+      "course": "Campo",
+      "hole": "Hoyo"
     }
   },
   "courses": {

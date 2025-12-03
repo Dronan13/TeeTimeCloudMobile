@@ -55,15 +55,16 @@ export const reservationsService = {
 
       // First fetch all upcoming reservations
       const { data, error } = await supabase
-        .from('tee_time_reservations')
+        .from('tee_time_reservations_with_slot')
         .select(`
-          *,
-          slot:tee_time_slots(*),
-          course:tee_time_slots(course_id, courses(*))
+          *
         `)
         .eq('user_id', userId)
         .eq('booking_status', 'confirmed')
-        .order('created_at', { ascending: false });
+        .gte('tee_date', now)
+        .order('reservation_created_at', { ascending: false })
+        .order('tee_date', { ascending: true })
+        .order('tee_time', { ascending: true });
 
       if (error) throw error;
 
@@ -71,16 +72,7 @@ export const reservationsService = {
       const upcoming = (data || [])
         .map((reservation: any) => ({
           ...reservation,
-          slot: reservation.slot,
-          course: reservation.course?.courses,
-        }))
-        .filter((reservation: any) =>
-          reservation.slot?.tee_date &&
-          new Date(reservation.slot.tee_date) >= new Date(now)
-        )
-        .sort((a: any, b: any) =>
-          new Date(a.slot.tee_date).getTime() - new Date(b.slot.tee_date).getTime()
-        );
+        }));
 
       if (upcoming.length === 0) {
         return { data: null, error: null };
