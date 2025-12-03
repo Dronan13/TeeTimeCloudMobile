@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { Medal } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
+import DisputeFlagBadge from './DisputeFlagBadge';
 
 interface LeaderboardCardProps {
   place: number;
@@ -19,6 +20,10 @@ interface LeaderboardCardProps {
   vsPar: number;
   holesComplete: number;
   isCurrentUser?: boolean;
+  disputeFlag?: {
+    status: 'pending' | 'approved' | 'dismissed';
+    reason?: string;
+  } | null;
   onPress?: () => void;
 }
 
@@ -32,6 +37,7 @@ export default function LeaderboardCard({
   vsPar,
   holesComplete,
   isCurrentUser = false,
+  disputeFlag,
   onPress,
 }: LeaderboardCardProps) {
   const { isDark } = useTheme();
@@ -156,6 +162,16 @@ export default function LeaderboardCard({
           {scoreDisplay}
         </Text>
       </View>
+
+      {/* Dispute Flag Badge */}
+      {disputeFlag && (
+        <View style={styles.disputeBadgeContainer}>
+          <DisputeFlagBadge
+            status={disputeFlag.status}
+            reason={disputeFlag.reason}
+          />
+        </View>
+      )}
     </TouchableOpacity>
   );
 }
@@ -309,5 +325,10 @@ const styles = StyleSheet.create({
   scoreVsPar: {
     fontSize: 12,
     fontWeight: '600',
+  },
+  disputeBadgeContainer: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
   },
 });

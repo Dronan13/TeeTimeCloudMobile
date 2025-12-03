@@ -18,6 +18,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import ScoreInput from '@/components/ScoreInput';
 import ScorecardGrid from '@/components/ScorecardGrid';
+import DisputeButton from '@/components/DisputeButton';
 import {
   loadScorecardFromStorage,
   saveScorecardToStorage,
@@ -43,6 +44,8 @@ export default function ScorecardScreen({ route, navigation }: Props) {
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [courseHandicap, setCourseHandicap] = useState(0);
+  const [isDisputeFlagged, setIsDisputeFlagged] = useState(false);
+  const [submitingDispute, setSubmittingDispute] = useState(false);
 
   // Load scorecard on mount
   useEffect(() => {
@@ -101,10 +104,29 @@ export default function ScorecardScreen({ route, navigation }: Props) {
       }
 
       setScorecard(localScorecard);
+
+      // Check if this round has a dispute flag
+      const { data: hasDispute } = await tournamentsService.checkDisputeFlag(roundId);
+      if (hasDispute) {
+        setIsDisputeFlagged(true);
+      }
     } catch (err) {
       Alert.alert(t('common.error'), t('errors.unknown'));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDisputeSubmit = async (reason: string) => {
+    try {
+      setSubmittingDispute(true);
+      const { data, error } = await tournamentsService.submitDisputeRequest(roundId, reason);
+
+      if (error) throw error;
+
+      setIsDisputeFlagged(true);
+    } finally {
+      setSubmittingDispute(false);
     }
   };
 
@@ -440,6 +462,16 @@ export default function ScorecardScreen({ route, navigation }: Props) {
           back9Total={scorecard.back9Score}
           totalScore={scorecard.grossScore}
         />
+
+        {/* Dispute Button - Show after scorecard is complete */}
+        {scorecard.isComplete && (
+          <DisputeButton
+            roundId={roundId}
+            isDisputeFlagged={isDisputeFlagged}
+            onDisputeSubmit={handleDisputeSubmit}
+            loading={submitingDispute}
+          />
+        )}
 
         {/* Finish Button */}
         <TouchableOpacity

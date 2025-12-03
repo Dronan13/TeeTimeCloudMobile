@@ -338,4 +338,56 @@ export const tournamentsService = {
       return { data: null, error: error as Error };
     }
   },
+
+  /**
+   * Submit a dispute request for a tournament round
+   */
+  async submitDisputeRequest(
+    roundId: string,
+    reason: string
+  ): Promise<ApiResponse<any>> {
+    try {
+      const { data, error } = await supabase
+        .from('tournament_disputes')
+        .insert({
+          round_id: roundId,
+          reason,
+          status: 'pending',
+          created_at: new Date().toISOString(),
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error submitting dispute request:', error);
+      return { data: null, error: error as Error };
+    }
+  },
+
+  /**
+   * Check if a round has a dispute flag
+   */
+  async checkDisputeFlag(roundId: string): Promise<ApiResponse<boolean>> {
+    try {
+      const { data, error } = await supabase
+        .from('tournament_disputes')
+        .select('id')
+        .eq('round_id', roundId)
+        .neq('status', 'dismissed')
+        .single();
+
+      if (error?.code === 'PGRST116') {
+        // No dispute found
+        return { data: false, error: null };
+      }
+
+      if (error) throw error;
+      return { data: !!data, error: null };
+    } catch (error) {
+      console.error('Error checking dispute flag:', error);
+      return { data: null, error: error as Error };
+    }
+  },
 };
