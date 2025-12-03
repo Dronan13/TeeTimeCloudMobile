@@ -8,11 +8,9 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import TournamentListScreen from '@/screens/tournaments/TournamentListScreen';
 import TournamentDetailScreen from '@/screens/tournaments/TournamentDetailScreen';
 import TournamentGroupListScreen from '@/screens/tournaments/TournamentGroupListScreen';
+import TournamentRegistrationScreen from '@/screens/tournaments/TournamentRegistrationScreen';
+import ScorecardScreen from '@/screens/tournaments/ScorecardScreen';
 import LeaderboardScreen from '@/screens/tournaments/LeaderboardScreen';
-
-// Placeholder screens for later implementation
-const TournamentRegistrationScreen = () => null;
-const ScorecardScreen = () => null;
 
 const TournamentsStack = createStackNavigator<TournamentsStackParamList>();
 
