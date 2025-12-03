@@ -4,18 +4,17 @@ import { TournamentsStackParamList } from '@/types';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-// Import screens (these will be created in Phase 2 onwards)
-// For now, we'll create placeholder screens
+// Import screens
+import TournamentListScreen from '@/screens/tournaments/TournamentListScreen';
+import TournamentDetailScreen from '@/screens/tournaments/TournamentDetailScreen';
+import TournamentGroupListScreen from '@/screens/tournaments/TournamentGroupListScreen';
+import LeaderboardScreen from '@/screens/tournaments/LeaderboardScreen';
 
-const TournamentsStack = createStackNavigator<TournamentsStackParamList>();
-
-// Placeholder screens
-const TournamentListScreen = () => null;
-const TournamentDetailScreen = () => null;
-const TournamentGroupListScreen = () => null;
+// Placeholder screens for later implementation
 const TournamentRegistrationScreen = () => null;
 const ScorecardScreen = () => null;
-const LeaderboardScreen = () => null;
+
+const TournamentsStack = createStackNavigator<TournamentsStackParamList>();
 
 export function TournamentsStackNavigator() {
   const { isDark } = useTheme();

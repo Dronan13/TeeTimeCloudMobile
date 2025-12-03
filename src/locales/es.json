@@ -24,7 +24,8 @@
     "viewAll": "Ver Todo →",
     "viewDetails": "Ver Detalles",
     "retry": "Reintentar",
-    "refresh": "Actualizar"
+    "refresh": "Actualizar",
+    "players": "Jugadores"
   },
   "navigation": {
     "home": "Inicio",
