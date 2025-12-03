@@ -15,6 +15,8 @@ export type Tournament = Tables<'tournaments'>;
 export type TournamentGroup = Tables<'tournament_groups'>;
 export type TournamentRound = Tables<'tournament_rounds'>;
 export type TournamentLeaderboard = Tables<'tournament_leaderboard_dense_rank'>;
+export type GolfRound = Tables<'golf_rounds'>;
+export type GolfRoundHole = Tables<'golf_round_holes'>;
 
 // Custom types for UI
 export interface TeeTimeSlotWithAvailability extends TeeTimeSlot {
@@ -54,6 +56,7 @@ export type AppTabParamList = {
   Courses: NavigatorScreenParams<CoursesStackParamList> | undefined;
   TeeTimes: undefined;
   Tournaments: NavigatorScreenParams<TournamentsStackParamList> | undefined;
+  Rounds: NavigatorScreenParams<RoundsStackParamList> | undefined;
   RSSArticles: undefined;
   Profile: NavigatorScreenParams<ProfileStackParamList> | undefined;
 };
@@ -72,6 +75,13 @@ export type TournamentsStackParamList = {
   TournamentRegistration: { tournamentId: string };
   Scorecard: { roundId: string };
   Leaderboard: { tournamentId: string };
+};
+
+export type RoundsStackParamList = {
+  RoundsList: undefined;
+  NewRound: undefined;
+  PersonalScorecard: { roundId: string; isEditing?: boolean };
+  RoundDetail: { roundId: string };
 };
 
 export type ProfileStackParamList = {

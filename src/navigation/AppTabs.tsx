@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { AppTabParamList, CoursesStackParamList, ProfileStackParamList } from '@/types';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Home, Flag, Calendar, Bell, User, Newspaper, Trophy } from 'lucide-react-native';
+import { Home, Flag, Calendar, Bell, User, Newspaper, Trophy, RotateCcw } from 'lucide-react-native';
 
 // Import screens
 import HomeScreen from '@/screens/HomeScreen';
@@ -21,6 +21,7 @@ import SupportScreen from '@/screens/SupportScreen';
 import TermsOfUseScreen from '@/screens/TermsOfUseScreen';
 import RSSArticlesScreen from '@/screens/RSSArticlesScreen';
 import { TournamentsStackNavigator } from '@/navigation/TournamentsStack';
+import { RoundsStackNavigator } from '@/navigation/RoundsStack';
 
 const Tab = createBottomTabNavigator<AppTabParamList>();
 const CoursesStack = createStackNavigator<CoursesStackParamList>();
@@ -201,6 +202,21 @@ export default function AppTabs() {
             />
           ),
           title: t('navigation.tournaments') || 'Tournaments',
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name="Rounds"
+        component={RoundsStackNavigator}
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <RotateCcw
+              size={24}
+              color={color}
+              strokeWidth={focused ? 2.5 : 2}
+            />
+          ),
+          title: t('navigation.rounds') || 'Rounds',
           headerShown: false,
         }}
       />

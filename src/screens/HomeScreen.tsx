@@ -24,11 +24,12 @@ import { notificationsService } from '@/services/notifications';
 import { coursesService } from '@/services/courses';
 import { weatherService } from '@/services/weather';
 import { tournamentsService } from '@/services/tournaments';
+import { golfRoundsService } from '@/services/golfRounds';
 import { ReservationWithDetails, CourseEvent, AppTabParamList, CoursesStackParamList, Database } from '@/types';
 import MyTournamentCard from '@/components/MyTournamentCard';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { Flag, MapPin, Calendar, Bell, Thermometer, Wind, Droplets, CloudSun, Clock, X, Newspaper } from 'lucide-react-native';
+import { Flag, MapPin, Calendar, Bell, Thermometer, Wind, Droplets, CloudSun, Clock, X, Newspaper, RotateCcw, ChevronRight } from 'lucide-react-native';
 
 dayjs.extend(relativeTime);
 
@@ -55,6 +56,7 @@ export default function HomeScreen() {
   const [fullscreenImageUrl, setFullscreenImageUrl] = useState<string | null>(null);
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
   const [activeTournaments, setActiveTournaments] = useState<any[]>([]);
+  const [recentRounds, setRecentRounds] = useState<any[]>([]);
 
   useEffect(() => {
     loadHomeData();
@@ -108,6 +110,12 @@ export default function HomeScreen() {
       const tournamentsRes = await tournamentsService.fetchUserActiveTournaments(user.id);
       if (tournamentsRes.data) {
         setActiveTournaments(tournamentsRes.data);
+      }
+
+      // Fetch recent personal rounds (last 3)
+      const roundsRes = await golfRoundsService.fetchRecentGolfRounds(user.id, 3);
+      if (roundsRes.data) {
+        setRecentRounds(roundsRes.data);
       }
     } catch (error) {
       console.error('Error loading home data:', error);
@@ -374,8 +382,94 @@ export default function HomeScreen() {
               </View>
             )}
           </TouchableOpacity>
+          <TouchableOpacity
+            style={[homeStyles.quickActionButton, isDark && homeStyles.quickActionButtonDark]}
+            onPress={() => navigation.navigate('Rounds', { screen: 'RoundsList' })}
+          >
+            <RotateCcw size={24} color="#2d7a4e" strokeWidth={2} />
+            <Text style={[homeStyles.quickActionText, isDark && homeStyles.quickActionTextDark]}>{t('navigation.rounds') || 'Rounds'}</Text>
+          </TouchableOpacity>
         </View>
       </View>
+
+      {/* Recent Rounds */}
+      {recentRounds.length > 0 && (
+        <View style={[homeStyles.section, isDark && homeStyles.sectionDark]}>
+          <View style={homeStyles.sectionHeader}>
+            <Text style={[homeStyles.sectionTitle, isDark && homeStyles.sectionTitleDark]}>
+              {t('home.recentRounds') || 'Recent Rounds'}
+            </Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Rounds', { screen: 'RoundsList' })}
+            >
+              <Text style={homeStyles.viewAllLink}>{t('common.viewAll') || 'View All'}</Text>
+            </TouchableOpacity>
+          </View>
+          {recentRounds.map((round) => {
+            const isGood = round.score_to_par <= 0;
+            const scoreBgColor = isGood
+              ? isDark
+                ? '#1e4620'
+                : '#d4edda'
+              : isDark
+              ? '#4a2626'
+              : '#f8d7da';
+            const scoreTextColor = isGood
+              ? isDark
+                ? '#90ee90'
+                : '#155724'
+              : isDark
+              ? '#f8a5a5'
+              : '#721c24';
+
+            return (
+              <TouchableOpacity
+                key={round.id}
+                onPress={() => navigation.navigate('Rounds', { screen: 'RoundDetail', params: { roundId: round.id } })}
+                style={[homeStyles.recentRoundCard, isDark && homeStyles.recentRoundCardDark]}
+              >
+                <View style={homeStyles.recentRoundHeader}>
+                  <View>
+                    <Text style={[homeStyles.recentRoundCourse, isDark && homeStyles.recentRoundCourseDark]}>
+                      {round.course_name}
+                    </Text>
+                    <Text style={[homeStyles.recentRoundDate, isDark && homeStyles.recentRoundDateDark]}>
+                      {new Date(round.round_date).toLocaleDateString()}
+                    </Text>
+                  </View>
+                  {round.tee_box_color && (
+                    <View
+                      style={[homeStyles.teeBoxIndicator, { backgroundColor: round.tee_box_color }]}
+                    />
+                  )}
+                </View>
+                <View style={homeStyles.recentRoundStats}>
+                  <View style={homeStyles.statItem}>
+                    <Text style={[homeStyles.statLabel, isDark && homeStyles.statLabelDark]}>Score</Text>
+                    <Text style={[homeStyles.statValue, isDark && homeStyles.statValueDark]}>
+                      {round.total_score}
+                    </Text>
+                  </View>
+                  <View
+                    style={[homeStyles.statItem, { backgroundColor: scoreBgColor, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4 }]}
+                  >
+                    <Text style={[homeStyles.statLabel, { color: scoreTextColor, fontSize: 11 }]}>vs Par</Text>
+                    <Text style={[homeStyles.statValue, { color: scoreTextColor }]}>
+                      {round.score_to_par > 0 ? '+' : ''}{round.score_to_par}
+                    </Text>
+                  </View>
+                  <View style={homeStyles.statItem}>
+                    <Text style={[homeStyles.statLabel, isDark && homeStyles.statLabelDark]}>GIR</Text>
+                    <Text style={[homeStyles.statValue, isDark && homeStyles.statValueDark]}>
+                      {round.greens_in_regulation || '0'}
+                    </Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
 
       {/* Upcoming Course Events */}
       {upcomingEvents.length > 0 && (
@@ -839,5 +933,74 @@ const homeStyles = StyleSheet.create({
   },
   eventLocationDark: {
     color: '#adb5bd',
+  },
+
+  // Recent Rounds
+  recentRoundCard: {
+    backgroundColor: '#f8f9fa',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+  },
+  recentRoundCardDark: {
+    backgroundColor: '#1a1d21',
+    borderColor: '#343a40',
+  },
+  recentRoundHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  recentRoundCourse: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#212529',
+  },
+  recentRoundCourseDark: {
+    color: '#f8f9fa',
+  },
+  recentRoundDate: {
+    fontSize: 13,
+    color: '#868e96',
+    marginTop: 2,
+  },
+  recentRoundDateDark: {
+    color: '#adb5bd',
+  },
+  teeBoxIndicator: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+  },
+  recentRoundStats: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  statItem: {
+    flex: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  statLabel: {
+    fontSize: 11,
+    color: '#868e96',
+    marginBottom: 2,
+  },
+  statLabelDark: {
+    color: '#adb5bd',
+  },
+  statValue: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#212529',
+  },
+  statValueDark: {
+    color: '#f8f9fa',
   },
 });
