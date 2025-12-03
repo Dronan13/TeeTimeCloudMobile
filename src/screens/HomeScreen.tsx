@@ -23,7 +23,9 @@ import { reservationsService } from '@/services/reservations';
 import { notificationsService } from '@/services/notifications';
 import { coursesService } from '@/services/courses';
 import { weatherService } from '@/services/weather';
+import { tournamentsService } from '@/services/tournaments';
 import { ReservationWithDetails, CourseEvent, AppTabParamList, CoursesStackParamList, Database } from '@/types';
+import MyTournamentCard from '@/components/MyTournamentCard';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { Flag, MapPin, Calendar, Bell, Thermometer, Wind, Droplets, CloudSun, Clock, X, Newspaper } from 'lucide-react-native';
@@ -52,6 +54,7 @@ export default function HomeScreen() {
   const [homeCourseName, setHomeCourseName] = useState<string>('');
   const [fullscreenImageUrl, setFullscreenImageUrl] = useState<string | null>(null);
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
+  const [activeTournaments, setActiveTournaments] = useState<any[]>([]);
 
   useEffect(() => {
     loadHomeData();
@@ -99,6 +102,12 @@ export default function HomeScreen() {
       const unreadRes = await notificationsService.fetchUnreadCount(user.id);
       if (unreadRes.data !== null) {
         setUnreadCount(unreadRes.data);
+      }
+
+      // Fetch active tournaments for current user
+      const tournamentsRes = await tournamentsService.fetchUserActiveTournaments(user.id);
+      if (tournamentsRes.data) {
+        setActiveTournaments(tournamentsRes.data);
       }
     } catch (error) {
       console.error('Error loading home data:', error);
@@ -252,7 +261,69 @@ export default function HomeScreen() {
           </View>
          </View>
         )}
-     
+
+      {/* My Active Tournaments */}
+      {activeTournaments.length > 0 && (
+        <View style={[homeStyles.section, isDark && homeStyles.sectionDark]}>
+          <Text style={[homeStyles.sectionTitle, isDark && homeStyles.sectionTitleDark]}>
+            {t('home.myTournaments') || 'My Tournaments'}
+          </Text>
+          {activeTournaments.map((tournament) => {
+            const holesCompleted = [
+              tournament.hole_1,
+              tournament.hole_2,
+              tournament.hole_3,
+              tournament.hole_4,
+              tournament.hole_5,
+              tournament.hole_6,
+              tournament.hole_7,
+              tournament.hole_8,
+              tournament.hole_9,
+              tournament.hole_10,
+              tournament.hole_11,
+              tournament.hole_12,
+              tournament.hole_13,
+              tournament.hole_14,
+              tournament.hole_15,
+              tournament.hole_16,
+              tournament.hole_17,
+              tournament.hole_18,
+            ].filter((score) => score !== null).length;
+
+            const tournamentData = tournament.tournament_groups?.[0]?.tournaments?.[0];
+
+            return (
+              <MyTournamentCard
+                key={tournament.id}
+                tournamentName={tournamentData?.name || 'Tournament'}
+                groupName={tournament.tournament_groups?.[0]?.name || 'Group'}
+                courseName={undefined}
+                startDateTime={tournament.start_datetime}
+                holesComplete={holesCompleted}
+                status={tournament.is_complete ? 'active' : 'active'}
+                onPress={() => {
+                  // Navigate to tournament detail
+                  navigation.navigate('Tournaments', {
+                    screen: 'TournamentDetail',
+                    params: {
+                      tournamentId: tournament.tournament_id,
+                    },
+                  });
+                }}
+                onScorePress={() => {
+                  // Navigate to scorecard
+                  navigation.navigate('Tournaments', {
+                    screen: 'Scorecard',
+                    params: {
+                      roundId: tournament.id,
+                    },
+                  });
+                }}
+              />
+            );
+          })}
+        </View>
+      )}
 
       {/* Quick Actions Row */}
       <View style={[homeStyles.section, isDark && homeStyles.sectionDark]}>

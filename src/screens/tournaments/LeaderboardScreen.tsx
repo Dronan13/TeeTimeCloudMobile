@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -6,12 +6,17 @@ import {
   ActivityIndicator,
   StyleSheet,
   RefreshControl,
+  TouchableOpacity,
+  SafeAreaView,
 } from 'react-native';
+import { ChevronDown } from 'lucide-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { TournamentsStackParamList } from '@/types';
 import { tournamentsService } from '@/services/tournaments';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/hooks/useAuth';
+import LeaderboardCard from '@/components/LeaderboardCard';
 
 type Props = NativeStackScreenProps<TournamentsStackParamList, 'Leaderboard'>;
 
@@ -25,16 +30,52 @@ interface LeaderboardEntry {
   net_score: number | null;
   score_vs_par: number | null;
   group_name: string;
+  user_id?: string;
 }
 
 export default function LeaderboardScreen({ route }: Props) {
   const { tournamentId } = route.params;
   const { isDark } = useTheme();
   const { t } = useLanguage();
+  const { user } = useAuth();
 
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [scoreType, setScoreType] = useState<'net' | 'gross'>('net');
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
+
+  const uniqueGroups = useMemo(() => {
+    const groups = new Set(leaderboard.map((item) => item.group_name));
+    return Array.from(groups);
+  }, [leaderboard]);
+
+  const filteredLeaderboard = useMemo(() => {
+    let filtered = leaderboard;
+
+    // Filter by group if selected
+    if (selectedGroup) {
+      filtered = filtered.filter((item) => item.group_name === selectedGroup);
+    }
+
+    // Sort by selected score type
+    return filtered.sort((a, b) => {
+      const scoreA = scoreType === 'net' ? a.net_score : a.gross_score;
+      const scoreB = scoreType === 'net' ? b.net_score : b.gross_score;
+
+      if (scoreA === null) return 1;
+      if (scoreB === null) return -1;
+      return scoreA - scoreB;
+    });
+  }, [leaderboard, scoreType, selectedGroup]);
+
+  const userPosition = useMemo(() => {
+    if (!user?.id) return null;
+    const index = filteredLeaderboard.findIndex(
+      (item) => item.user_id === user.id
+    );
+    return index !== -1 ? filteredLeaderboard[index] : null;
+  }, [filteredLeaderboard, user?.id]);
 
   const fetchLeaderboard = async () => {
     try {
@@ -58,30 +99,24 @@ export default function LeaderboardScreen({ route }: Props) {
     fetchLeaderboard();
   };
 
-  const renderLeaderboardItem = ({ item }: { item: LeaderboardEntry }) => (
-    <View style={[styles.leaderboardRow, isDark && styles.leaderboardRowDark]}>
-      <Text style={[styles.placement, isDark && styles.placementDark]}>
-        {item.place}
-      </Text>
-      <View style={styles.playerInfo}>
-        <Text style={[styles.playerName, isDark && styles.playerNameDark]}>
-          {item.first_name} {item.last_name}
-        </Text>
-        <Text style={[styles.groupName, isDark && styles.groupNameDark]}>
-          {item.group_name}
-        </Text>
-      </View>
-      <View style={styles.scoreInfo}>
-        <Text style={[styles.netScore, isDark && styles.netScoreDark]}>
-          {item.net_score ?? '—'}
-        </Text>
-        <Text style={[styles.parInfo, isDark && styles.parInfoDark]}>
-          {item.score_vs_par !== null && item.score_vs_par >= 0 ? '+' : ''}
-          {item.score_vs_par}
-        </Text>
-      </View>
-    </View>
-  );
+  const renderLeaderboardItem = ({ item }: { item: LeaderboardEntry }) => {
+    const score = scoreType === 'net' ? item.net_score : item.gross_score;
+    const isCurrentUser = user?.id === item.user_id;
+
+    return (
+      <LeaderboardCard
+        place={item.place}
+        firstName={item.first_name}
+        lastName={item.last_name}
+        avatarUrl={item.avatar_url}
+        groupName={item.group_name}
+        score={score ?? 0}
+        vsPar={item.score_vs_par ?? 0}
+        holesComplete={score ? 18 : 0}
+        isCurrentUser={isCurrentUser}
+      />
+    );
+  };
 
   if (loading) {
     return (
@@ -92,9 +127,104 @@ export default function LeaderboardScreen({ route }: Props) {
   }
 
   return (
-    <View style={[styles.container, isDark && styles.containerDark]}>
+    <SafeAreaView style={[styles.container, isDark && styles.containerDark]}>
+      {/* Filter Bar */}
+      <View style={[styles.filterBar, isDark && styles.filterBarDark]}>
+        {/* Score Type Toggle */}
+        <View style={styles.toggleGroup}>
+          <TouchableOpacity
+            style={[
+              styles.toggleButton,
+              scoreType === 'net' && styles.toggleButtonActive,
+              isDark && scoreType === 'net' && styles.toggleButtonActiveDark,
+            ]}
+            onPress={() => setScoreType('net')}
+          >
+            <Text
+              style={[
+                styles.toggleButtonText,
+                scoreType === 'net' && styles.toggleButtonTextActive,
+              ]}
+            >
+              {t('tournament.leaderboard.netScore')}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.toggleButton,
+              scoreType === 'gross' && styles.toggleButtonActive,
+              isDark && scoreType === 'gross' && styles.toggleButtonActiveDark,
+            ]}
+            onPress={() => setScoreType('gross')}
+          >
+            <Text
+              style={[
+                styles.toggleButtonText,
+                scoreType === 'gross' && styles.toggleButtonTextActive,
+              ]}
+            >
+              {t('tournament.leaderboard.grossScore')}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Group Filter */}
+        {uniqueGroups.length > 1 && (
+          <TouchableOpacity
+            style={[styles.filterButton, isDark && styles.filterButtonDark]}
+            onPress={() =>
+              setSelectedGroup(selectedGroup ? null : uniqueGroups[0])
+            }
+          >
+            <Text
+              style={[
+                styles.filterButtonText,
+                isDark && styles.filterButtonTextDark,
+              ]}
+            >
+              {selectedGroup || t('tournament.leaderboard.allFlights')}
+            </Text>
+            <ChevronDown size={16} color={isDark ? '#ffffff' : '#1a1d21'} />
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {/* User Position Highlight */}
+      {userPosition && (
+        <View style={[styles.userPositionSection, isDark && styles.userPositionSectionDark]}>
+          <Text
+            style={[
+              styles.userPositionLabel,
+              isDark && styles.userPositionLabelDark,
+            ]}
+          >
+            {t('tournament.leaderboard.yourPosition')}
+          </Text>
+          <LeaderboardCard
+            place={userPosition.place}
+            firstName={userPosition.first_name}
+            lastName={userPosition.last_name}
+            avatarUrl={userPosition.avatar_url}
+            groupName={userPosition.group_name}
+            score={
+              scoreType === 'net'
+                ? userPosition.net_score ?? 0
+                : userPosition.gross_score ?? 0
+            }
+            vsPar={userPosition.score_vs_par ?? 0}
+            holesComplete={
+              scoreType === 'net'
+                ? userPosition.net_score ? 18 : 0
+                : userPosition.gross_score ? 18 : 0
+            }
+            isCurrentUser={true}
+          />
+        </View>
+      )}
+
+      {/* Leaderboard List */}
       <FlatList
-        data={leaderboard}
+        data={filteredLeaderboard}
         renderItem={renderLeaderboardItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
@@ -113,7 +243,7 @@ export default function LeaderboardScreen({ route }: Props) {
           />
         }
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -125,73 +255,95 @@ const styles = StyleSheet.create({
   containerDark: {
     backgroundColor: '#1a1d21',
   },
-  listContent: {
-    padding: 16,
+  filterBar: {
+    backgroundColor: '#ffffff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 12,
   },
-  leaderboardRow: {
+  filterBarDark: {
+    backgroundColor: '#2b3137',
+    borderBottomColor: '#495057',
+  },
+  toggleGroup: {
+    flexDirection: 'row',
+    gap: 8,
+    borderRadius: 8,
+    backgroundColor: '#f3f4f6',
+    padding: 4,
+  },
+  toggleButton: {
+    flex: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 6,
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  toggleButtonActive: {
+    backgroundColor: '#2d7a4e',
+  },
+  toggleButtonActiveDark: {
+    backgroundColor: '#22c55e',
+  },
+  toggleButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#6b7280',
+  },
+  toggleButtonTextActive: {
+    color: '#ffffff',
+  },
+  filterButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
+    justifyContent: 'space-between',
     paddingHorizontal: 12,
-    paddingVertical: 12,
-    marginBottom: 8,
+    paddingVertical: 10,
+    backgroundColor: '#f3f4f6',
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: '#e5e7eb',
   },
-  leaderboardRowDark: {
-    backgroundColor: '#2b3137',
+  filterButtonDark: {
+    backgroundColor: '#1a1d21',
     borderColor: '#495057',
   },
-  placement: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#2d7a4e',
-    marginRight: 12,
-    minWidth: 30,
-    textAlign: 'center',
+  filterButtonText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#1a1d21',
   },
-  placementDark: {
+  filterButtonTextDark: {
+    color: '#ffffff',
+  },
+  userPositionSection: {
+    backgroundColor: '#f0fdf4',
+    borderBottomWidth: 2,
+    borderBottomColor: '#22c55e',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  userPositionSectionDark: {
+    backgroundColor: '#1a3a1a',
+    borderBottomColor: '#22c55e',
+  },
+  userPositionLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#2d7a4e',
+    marginBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  userPositionLabelDark: {
     color: '#86efac',
   },
-  playerInfo: {
-    flex: 1,
-  },
-  playerName: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1a1d21',
-    marginBottom: 4,
-  },
-  playerNameDark: {
-    color: '#ffffff',
-  },
-  groupName: {
-    fontSize: 12,
-    color: '#6b7280',
-  },
-  groupNameDark: {
-    color: '#d1d5db',
-  },
-  scoreInfo: {
-    alignItems: 'flex-end',
-  },
-  netScore: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1a1d21',
-    marginBottom: 2,
-  },
-  netScoreDark: {
-    color: '#ffffff',
-  },
-  parInfo: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#6b7280',
-  },
-  parInfoDark: {
-    color: '#d1d5db',
+  listContent: {
+    padding: 16,
   },
   centerContainer: {
     flex: 1,
