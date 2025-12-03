@@ -413,8 +413,8 @@
       "emptyLeaderboard": "No hay puntuaciones aún"
     },
     "format": {
-      "strokePlay": "Juego por Golpes",
-      "matchPlay": "Juego por Hoyos",
+      "stroke_play": "Juego por Golpes",
+      "match_play": "Juego por Hoyos",
       "stableford": "Stableford"
     },
     "status": {

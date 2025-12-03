@@ -47,7 +47,7 @@ export const tournamentsService = {
         .from('tournaments')
         .select(`
           *,
-          courses(id, name, city),
+          courses(id, name, location),
           tournament_groups(
             id,
             name,

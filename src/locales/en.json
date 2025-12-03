@@ -413,8 +413,8 @@
       "emptyLeaderboard": "No scores posted yet"
     },
     "format": {
-      "strokePlay": "Stroke Play",
-      "matchPlay": "Match Play",
+      "stroke_play": "Stroke Play",
+      "match_play": "Match Play",
       "stableford": "Stableford"
     },
     "status": {
