@@ -96,6 +96,26 @@ export const coursesService = {
   },
 
   /**
+   * Fetch tee boxes for a specific course
+   */
+  async fetchCourseTeeBoxes(courseId: string): Promise<ApiResponse<any[]>> {
+    try {
+      const { data, error } = await supabase
+        .from('tee_boxes')
+        .select('*')
+        .eq('course_id', courseId)
+        .order('name', { ascending: true });
+
+      if (error) throw error;
+
+      return { data: data || [], error: null };
+    } catch (error) {
+      console.error('Error fetching tee boxes:', error);
+      return { data: null, error: error as Error };
+    }
+  },
+
+  /**
    * Search courses by name
    */
   async searchCourses(searchTerm: string): Promise<ApiResponse<Course[]>> {
