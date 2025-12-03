@@ -4,10 +4,10 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
-  ScrollView,
+  SafeAreaView,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { Flag, MapPin, BarChart3, Moon, Sun, Globe } from 'lucide-react-native';
 import { RootStackParamList } from '@/types';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -17,154 +17,250 @@ type LandingScreenProps = {
 };
 
 export default function LandingScreen({ navigation }: LandingScreenProps) {
-  const { isDark } = useTheme();
-  const { t } = useLanguage();
+  const { isDark, theme, setTheme } = useTheme();
+  const { t, language, setLanguage } = useLanguage();
+
+  const iconColor = '#22c55e';
+  const textColorPrimary = isDark ? '#f9fafb' : '#111827';
+  const textColorSecondary = isDark ? '#9ca3af' : '#6b7280';
+  const backgroundColor = isDark ? '#111827' : '#fff';
+  const headerBackground = isDark ? '#0f172a' : '#fff';
+  const cardBackgroundColor = isDark ? '#1f2937' : '#f9fafb';
+  const borderColor = isDark ? '#374151' : '#e5e7eb';
+  const buttonBackground = isDark ? '#1f2937' : '#f3f4f6';
+
+  const toggleTheme = async () => {
+    const newTheme = theme === 'dark' ? 'light' : theme === 'light' ? 'dark' : isDark ? 'light' : 'dark';
+    await setTheme(newTheme as 'light' | 'dark' | 'system');
+  };
+
+  const toggleLanguage = () => {
+    setLanguage(language === 'en' ? 'es' : 'en');
+  };
 
   return (
-    <ScrollView style={[styles.container, isDark && styles.containerDark]}>
-      <View style={[styles.content, isDark && styles.contentDark]}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.logo}>{t('landing.logo')}</Text>
-          <Text style={[styles.tagline, isDark && styles.taglineDark]}>{t('landing.tagline')}</Text>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor }]}>
+      {/* Header */}
+      <View style={[styles.header, { backgroundColor: headerBackground, borderBottomColor: borderColor }]}>
+        <View style={styles.headerLeft}>
+          <Text style={[styles.headerLogo, { color: iconColor }]}>⛳</Text>
         </View>
-
-        {/* Features */}
-        <View style={styles.features}>
-          <View style={styles.feature}>
-            <Text style={styles.featureIcon}>🏌️</Text>
-            <Text style={[styles.featureTitle, isDark && styles.featureTitleDark]}>{t('landing.features.bookTeeTimes.title')}</Text>
-            <Text style={[styles.featureText, isDark && styles.featureTextDark]}>
-              {t('landing.features.bookTeeTimes.description')}
+        <View style={styles.headerControls}>
+          <TouchableOpacity
+            style={[styles.headerButton, { backgroundColor: buttonBackground }]}
+            onPress={toggleTheme}
+            activeOpacity={0.7}
+          >
+            {isDark ? (
+              <Sun color={iconColor} width={18} height={18} strokeWidth={2} />
+            ) : (
+              <Moon color={iconColor} width={18} height={18} strokeWidth={2} />
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.headerButton, { backgroundColor: buttonBackground }]}
+            onPress={toggleLanguage}
+            activeOpacity={0.7}
+          >
+            <Globe color={iconColor} width={18} height={18} strokeWidth={2} />
+            <Text style={[styles.languageText, { color: textColorPrimary }]}>
+              {language === 'en' ? 'EN' : 'ES'}
             </Text>
-          </View>
-
-          <View style={styles.feature}>
-            <Text style={styles.featureIcon}>📍</Text>
-            <Text style={[styles.featureTitle, isDark && styles.featureTitleDark]}>{t('landing.features.findCourses.title')}</Text>
-            <Text style={[styles.featureText, isDark && styles.featureTextDark]}>
-              {t('landing.features.findCourses.description')}
-            </Text>
-          </View>
-
-          <View style={styles.feature}>
-            <Text style={styles.featureIcon}>📱</Text>
-            <Text style={[styles.featureTitle, isDark && styles.featureTitleDark]}>{t('landing.features.manageBookings.title')}</Text>
-            <Text style={[styles.featureText, isDark && styles.featureTextDark]}>
-              {t('landing.features.manageBookings.description')}
-            </Text>
-          </View>
-        </View>
-
-        {/* CTA Button */}
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('SignIn')}
-        >
-          <Text style={styles.buttonText}>{t('landing.getStarted')}</Text>
-        </TouchableOpacity>
-
-        <View style={styles.footer}>
-          <Text style={[styles.footerText, isDark && styles.footerTextDark]}>
-            {t('landing.alreadyHaveAccount')}{' '}
-            <Text style={styles.link} onPress={() => navigation.navigate('SignIn')}>
-              {t('landing.signIn')}
-            </Text>
-          </Text>
+          </TouchableOpacity>
         </View>
       </View>
-    </ScrollView>
+
+      {/* Main Content - All in one view */}
+      <View style={[styles.container, { backgroundColor }]}>
+        {/* Hero Section - Compact */}
+        <View style={styles.heroSection}>
+          <Text style={[styles.brandName, { color: textColorPrimary }]}>
+            TeeTime Cloud
+          </Text>
+          <Text style={[styles.heroTagline, { color: textColorSecondary }]}>
+            {t('landing.tagline')}
+          </Text>
+        </View>
+
+        {/* Features Grid - 3 columns, compact */}
+        <View style={styles.featuresGrid}>
+          {/* Feature 1 */}
+          <View style={[styles.featureItem, { backgroundColor: cardBackgroundColor }]}>
+            <View style={[styles.featureIconSmall, { backgroundColor: '#dcfce7' }]}>
+              <Flag color={iconColor} width={20} height={20} strokeWidth={1.5} />
+            </View>
+            <Text style={[styles.featureTitle, { color: textColorPrimary }]}>
+              {t('landing.features.bookTeeTimes.title')}
+            </Text>
+          </View>
+
+          {/* Feature 2 */}
+          <View style={[styles.featureItem, { backgroundColor: cardBackgroundColor }]}>
+            <View style={[styles.featureIconSmall, { backgroundColor: '#dcfce7' }]}>
+              <MapPin color={iconColor} width={20} height={20} strokeWidth={1.5} />
+            </View>
+            <Text style={[styles.featureTitle, { color: textColorPrimary }]}>
+              {t('landing.features.findCourses.title')}
+            </Text>
+          </View>
+
+          {/* Feature 3 */}
+          <View style={[styles.featureItem, { backgroundColor: cardBackgroundColor }]}>
+            <View style={[styles.featureIconSmall, { backgroundColor: '#dcfce7' }]}>
+              <BarChart3 color={iconColor} width={20} height={20} strokeWidth={1.5} />
+            </View>
+            <Text style={[styles.featureTitle, { color: textColorPrimary }]}>
+              {t('landing.features.manageBookings.title')}
+            </Text>
+          </View>
+        </View>
+
+        {/* CTA Section */}
+        <View style={styles.ctaSection}>
+          <TouchableOpacity
+            style={[styles.primaryButton, { backgroundColor: '#22c55e' }]}
+            onPress={() => navigation.navigate('SignIn')}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.primaryButtonText}>
+              {t('landing.getStarted')}
+            </Text>
+          </TouchableOpacity>
+
+          <View style={styles.signInPrompt}>
+            <Text style={[styles.signInPromptText, { color: textColorSecondary }]}>
+              {t('landing.alreadyHaveAccount')}
+            </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+              <Text style={[styles.signInLink, { color: '#22c55e' }]}>
+                {t('landing.signIn')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
-  content: {
-    flex: 1,
-    padding: 24,
-    paddingTop: 60,
+    paddingHorizontal: 20,
+    justifyContent: 'space-between',
+    paddingVertical: 20,
   },
   header: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 48,
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
   },
-  logo: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#22c55e',
+  headerLeft: {
+    justifyContent: 'center',
+  },
+  headerLogo: {
+    fontSize: 24,
+    fontWeight: '600',
+  },
+  headerControls: {
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+  },
+  headerButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  languageText: {
+    fontSize: 9,
+    fontWeight: '600',
+    marginTop: -2,
+  },
+  heroSection: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 8,
+  },
+  brandName: {
+    fontSize: 28,
+    fontWeight: '700',
+    letterSpacing: -0.5,
+    marginBottom: 6,
+  },
+  heroTagline: {
+    fontSize: 14,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  featuresGrid: {
+    flexDirection: 'row',
+    gap: 10,
+    justifyContent: 'space-between',
+  },
+  featureItem: {
+    flex: 1,
+    borderRadius: 12,
+    padding: 12,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  featureIconSmall: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 8,
-  },
-  tagline: {
-    fontSize: 18,
-    color: '#6b7280',
-  },
-  features: {
-    marginBottom: 48,
-  },
-  feature: {
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  featureIcon: {
-    fontSize: 48,
-    marginBottom: 12,
   },
   featureTitle: {
-    fontSize: 20,
+    fontSize: 12,
     fontWeight: '600',
-    color: '#111827',
-    marginBottom: 8,
-  },
-  featureText: {
-    fontSize: 16,
-    color: '#6b7280',
     textAlign: 'center',
+    lineHeight: 16,
+  },
+  ctaSection: {
+    gap: 12,
+    paddingBottom: 8,
+  },
+  primaryButton: {
+    paddingVertical: 14,
     paddingHorizontal: 24,
-  },
-  button: {
-    backgroundColor: '#22c55e',
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: 'center',
-    marginBottom: 24,
+    justifyContent: 'center',
+    shadowColor: '#22c55e',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 4,
   },
-  buttonText: {
+  primaryButtonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: '600',
+    letterSpacing: 0.2,
   },
-  footer: {
+  signInPrompt: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
   },
-  footerText: {
-    fontSize: 14,
-    color: '#6b7280',
+  signInPromptText: {
+    fontSize: 13,
   },
-  link: {
-    color: '#22c55e',
+  signInLink: {
+    fontSize: 13,
     fontWeight: '600',
-  },
-  // Dark mode styles
-  containerDark: {
-    backgroundColor: '#111827',
-  },
-  contentDark: {
-    backgroundColor: '#111827',
-  },
-  taglineDark: {
-    color: '#9ca3af',
-  },
-  featureTitleDark: {
-    color: '#f9fafb',
-  },
-  featureTextDark: {
-    color: '#9ca3af',
-  },
-  footerTextDark: {
-    color: '#9ca3af',
+    textDecorationLine: 'underline',
   },
 });

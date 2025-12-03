@@ -9,8 +9,10 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  SafeAreaView,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { Eye, EyeOff, Mail } from 'lucide-react-native';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -23,10 +25,19 @@ type SignInScreenProps = {
 export default function SignInScreen({ navigation }: SignInScreenProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
   const { isDark } = useTheme();
   const { t } = useLanguage();
+
+  const textColorPrimary = isDark ? '#f9fafb' : '#111827';
+  const textColorSecondary = isDark ? '#9ca3af' : '#6b7280';
+  const backgroundColor = isDark ? '#111827' : '#fff';
+  const inputBackground = isDark ? '#1f2937' : '#f9fafb';
+  const inputBorder = isDark ? '#374151' : '#e5e7eb';
+  const placeholderColor = isDark ? '#6b7280' : '#9ca3af';
+  const iconColor = '#22c55e';
 
   const handleSignIn = async () => {
     if (!email || !password) {
@@ -45,150 +56,206 @@ export default function SignInScreen({ navigation }: SignInScreenProps) {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={[styles.container, isDark && styles.containerDark]}
-    >
-      <View style={[styles.content, isDark && styles.contentDark]}>
-        <Text style={[styles.title, isDark && styles.titleDark]}>{t('auth.signIn.title')}</Text>
-        <Text style={[styles.subtitle, isDark && styles.subtitleDark]}>{t('auth.signIn.subtitle')}</Text>
-
-        <View style={styles.form}>
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>{t('auth.signIn.emailLabel')}</Text>
-            <TextInput
-              style={[styles.input, isDark && styles.inputDark]}
-              placeholder={t('auth.signIn.emailPlaceholder')}
-              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              autoComplete="email"
-            />
+    <SafeAreaView style={[styles.safeArea, { backgroundColor }]}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.container}
+      >
+        <View style={[styles.content, { backgroundColor }]}>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={[styles.title, { color: textColorPrimary }]}>
+              {t('auth.signIn.title')}
+            </Text>
+            <Text style={[styles.subtitle, { color: textColorSecondary }]}>
+              {t('auth.signIn.subtitle')}
+            </Text>
           </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>{t('auth.signIn.passwordLabel')}</Text>
-            <TextInput
-              style={[styles.input, isDark && styles.inputDark]}
-              placeholder={t('auth.signIn.passwordPlaceholder')}
-              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              autoComplete="password"
-            />
+          {/* Form */}
+          <View style={styles.form}>
+            {/* Email Input */}
+            <View style={styles.inputContainer}>
+              <Text style={[styles.label, { color: textColorPrimary }]}>
+                {t('auth.signIn.emailLabel')}
+              </Text>
+              <View style={[styles.inputWrapper, { backgroundColor: inputBackground, borderColor: inputBorder }]}>
+                <Mail color={iconColor} width={20} height={20} strokeWidth={1.5} style={styles.inputIcon} />
+                <TextInput
+                  style={[styles.input, { color: textColorPrimary }]}
+                  placeholder={t('auth.signIn.emailPlaceholder')}
+                  placeholderTextColor={placeholderColor}
+                  value={email}
+                  onChangeText={setEmail}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  autoComplete="email"
+                  editable={!loading}
+                />
+              </View>
+            </View>
+
+            {/* Password Input */}
+            <View style={styles.inputContainer}>
+              <Text style={[styles.label, { color: textColorPrimary }]}>
+                {t('auth.signIn.passwordLabel')}
+              </Text>
+              <View style={[styles.inputWrapper, { backgroundColor: inputBackground, borderColor: inputBorder }]}>
+                <TextInput
+                  style={[styles.input, { color: textColorPrimary, flex: 1 }]}
+                  placeholder={t('auth.signIn.passwordPlaceholder')}
+                  placeholderTextColor={placeholderColor}
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                  autoComplete="password"
+                  editable={!loading}
+                />
+                <TouchableOpacity
+                  onPress={() => setShowPassword(!showPassword)}
+                  style={styles.passwordToggle}
+                  disabled={loading}
+                >
+                  {showPassword ? (
+                    <EyeOff color={textColorSecondary} width={20} height={20} strokeWidth={1.5} />
+                  ) : (
+                    <Eye color={textColorSecondary} width={20} height={20} strokeWidth={1.5} />
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Forgot Password Link */}
+            <TouchableOpacity
+              onPress={() => navigation.navigate('ForgotPassword')}
+              disabled={loading}
+            >
+              <Text style={[styles.forgotPassword, { color: iconColor }]}>
+                {t('auth.signIn.forgotPassword')}
+              </Text>
+            </TouchableOpacity>
+
+            {/* Sign In Button */}
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: '#22c55e' }, loading && styles.buttonDisabled]}
+              onPress={handleSignIn}
+              disabled={loading}
+              activeOpacity={0.85}
+            >
+              {loading ? (
+                <ActivityIndicator color="#fff" size="small" />
+              ) : (
+                <Text style={styles.buttonText}>{t('auth.signIn.signInButton')}</Text>
+              )}
+            </TouchableOpacity>
           </View>
 
-          <TouchableOpacity
-            onPress={() => navigation.navigate('ForgotPassword')}
-          >
-            <Text style={[styles.forgotPassword, isDark && styles.forgotPasswordDark]}>{t('auth.signIn.forgotPassword')}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.button, loading && styles.buttonDisabled]}
-            onPress={handleSignIn}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.buttonText}>{t('auth.signIn.signInButton')}</Text>
-            )}
-          </TouchableOpacity>
+          {/* Footer */}
+          <View style={styles.footer}>
+            <Text style={[styles.footerText, { color: textColorSecondary }]}>
+              {t('landing.alreadyHaveAccount')}{' '}
+            </Text>
+          </View>
         </View>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
-  containerDark: {
-    backgroundColor: '#111827',
   },
   content: {
     flex: 1,
-    padding: 24,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
     justifyContent: 'center',
   },
-  contentDark: {
-    backgroundColor: '#111827',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 8,
-  },
-  titleDark: {
-    color: '#f9fafb',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#6b7280',
+  header: {
     marginBottom: 32,
   },
-  subtitleDark: {
-    color: '#9ca3af',
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+    letterSpacing: -0.5,
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 15,
+    fontWeight: '500',
+    lineHeight: 22,
   },
   form: {
-    width: '100%',
+    gap: 20,
   },
   inputContainer: {
-    marginBottom: 20,
+    gap: 8,
   },
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
-    marginBottom: 8,
+    letterSpacing: 0.2,
   },
-  labelDark: {
-    color: '#9ca3af',
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    height: 48,
+    gap: 10,
+  },
+  inputIcon: {
+    marginRight: 4,
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    flex: 1,
     fontSize: 16,
-    backgroundColor: '#fff',
-    color: '#111827',
+    fontWeight: '500',
   },
-  inputDark: {
-    backgroundColor: '#374151',
-    color: '#f9fafb',
-    borderColor: '#4b5563',
+  passwordToggle: {
+    padding: 8,
   },
   forgotPassword: {
-    color: '#22c55e',
     fontSize: 14,
     fontWeight: '600',
     textAlign: 'right',
-    marginBottom: 24,
-  },
-  forgotPasswordDark: {
-    color: '#22c55e',
+    paddingVertical: 8,
+    paddingHorizontal: 4,
   },
   button: {
-    backgroundColor: '#22c55e',
-    paddingVertical: 16,
-    borderRadius: 8,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 12,
     alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#22c55e',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 4,
+    minHeight: 48,
+    marginTop: 8,
   },
   buttonDisabled: {
-    backgroundColor: '#9ca3af',
+    opacity: 0.6,
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
+    letterSpacing: 0.3,
+  },
+  footer: {
+    marginTop: 24,
+    alignItems: 'center',
+  },
+  footerText: {
+    fontSize: 14,
+    fontWeight: '500',
   },
 });

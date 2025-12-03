@@ -2,7 +2,8 @@
   "expo": {
     "name": "TeeTime Cloud",
     "slug": "teetime-cloud",
-    "version": "1.0.0",
+    "version": "2.0.0",
+    "sdkVersion": "52.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -13,16 +14,26 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yourcompany.teetimecloud"
+      "bundleIdentifier": "com.mycompany.teetimecloud",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#22c55e"
       },
-      "package": "com.yourcompany.teetimecloud"
+      "package": "com.mycompany.teetimecloud"
     },
     "scheme": "teetimecloud",
-    "plugins": []
+    "plugins": [
+      "expo-asset"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "79ff8e83-5220-4519-8166-55c0720ca3ee"
+      }
+    }
   }
 }
