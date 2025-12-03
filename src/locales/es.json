@@ -30,6 +30,7 @@
     "home": "Inicio",
     "courses": "Campos",
     "teeTimes": "Horarios",
+    "tournaments": "Torneos",
     "articles": "Artículos",
     "notifications": "Notificaciones",
     "profile": "Perfil"
@@ -324,6 +325,110 @@
     "english": "Inglés",
     "spanish": "Español",
     "selectLanguage": "Seleccionar Idioma"
+  },
+  "tournament": {
+    "title": "Torneos",
+    "upcoming": "Próximos",
+    "past": "Torneos Pasados",
+    "details": "Detalles del Torneo",
+    "register": "Registrarse",
+    "registered": "Registrado",
+    "viewDetails": "Ver Detalles",
+    "viewResults": "Ver Resultados",
+    "browseAll": "Ver Todos los Torneos →",
+    "list": {
+      "emptyUpcoming": "No hay torneos próximos",
+      "emptyPast": "No hay torneos pasados",
+      "playersCount": "{{count}} / {{max}} jugadores",
+      "filter": "Filtrar"
+    },
+    "detail": {
+      "title": "Detalles del Torneo",
+      "description": "Descripción",
+      "format": "Formato",
+      "handicapAllowance": "Bonificación de Handicap",
+      "registrationOpen": "Registro Abierto Hasta",
+      "groupsFlights": "Grupos y Vuelos",
+      "leaderboard": "Tabla de Posiciones",
+      "viewLiveLeaderboard": "Ver Tabla en Vivo →",
+      "startRound": "Iniciar Ronda",
+      "viewScorecard": "Ver Mi Tarjeta",
+      "courseLocation": "Campo"
+    },
+    "groupList": {
+      "title": "Jugadores del Grupo",
+      "players": "Jugadores",
+      "handicap": "Handicap",
+      "status": "Estado",
+      "viewDetails": "Ver Detalles →"
+    },
+    "registration": {
+      "title": "Registrarse en Torneo",
+      "yourInfo": "Tu Información",
+      "selectFlight": "Seleccionar Vuelo",
+      "preferences": "Preferencias",
+      "preferredTeeTime": "Horario Preferido",
+      "cartRequired": "Carrito Requerido",
+      "agreement": "Acuerdo",
+      "agreeToRules": "Acepto las reglas del torneo",
+      "confirmButton": "Confirmar Registro",
+      "successTitle": "Registro Exitoso",
+      "successMessage": "Estás registrado para {{tournamentName}}",
+      "errorTitle": "Error en Registro",
+      "errorMessage": "Error al registrarse. Por favor intenta de nuevo.",
+      "errorFullFlight": "Este vuelo está lleno",
+      "errorGroupClosed": "Este grupo está cerrado",
+      "errorAlreadyRegistered": "Ya estás registrado en este torneo",
+      "errorInvalidHandicap": "No tienes un handicap válido"
+    },
+    "scorecard": {
+      "title": "Tarjeta de Puntuación",
+      "enterScore": "Ingresar Puntuación",
+      "notes": "Notas (opcional)",
+      "summary": "Resumen de Puntuación",
+      "front9": "Primeros 9",
+      "back9": "Últimos 9",
+      "total": "Total",
+      "prevHole": "Hoyo Anterior",
+      "nextHole": "Próximo Hoyo",
+      "finishRound": "Terminar Ronda",
+      "finishConfirm": "¿Estás seguro de que quieres terminar esta ronda? No podrás editar puntuaciones después.",
+      "syncStatus": {
+        "synced": "Sincronizado",
+        "offline": "Sin conexión - se sincronizará cuando conectes",
+        "syncing": "Sincronizando..."
+      },
+      "continueRound": "Continuar Ronda →",
+      "holesCompleted": "{{completed}}/{{total}} hoyos"
+    },
+    "leaderboard": {
+      "title": "Tabla de Posiciones",
+      "allFlights": "Todos los Vuelos",
+      "grossScore": "Puntuación Bruta",
+      "netScore": "Puntuación Neta",
+      "yourPosition": "Tu Posición",
+      "thru": "A Través de {{holes}}",
+      "scoreToPar": "{{score}} vs par",
+      "emptyLeaderboard": "No hay puntuaciones aún"
+    },
+    "format": {
+      "strokePlay": "Juego por Golpes",
+      "matchPlay": "Juego por Hoyos",
+      "stableford": "Stableford"
+    },
+    "status": {
+      "draft": "Borrador",
+      "active": "Activo",
+      "completed": "Completado",
+      "cancelled": "Cancelado",
+      "notStarted": "No Iniciado",
+      "inProgress": "En Progreso"
+    },
+    "myTournaments": {
+      "title": "Mis Torneos",
+      "noActiveTournaments": "Sin torneos activos",
+      "activeTournament": "Torneo Activo"
+    }
   },
   "rssArticles": {
     "title": "Noticias y Artículos de Golf",

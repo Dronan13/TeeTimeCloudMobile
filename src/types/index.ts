@@ -11,6 +11,10 @@ export type Notification = Tables<'notifications'>;
 export type CourseEvent = Tables<'course_events'>;
 export type CourseGallery = Tables<'course_gallery'>;
 export type TeeBox = Tables<'tee_boxes'>;
+export type Tournament = Tables<'tournaments'>;
+export type TournamentGroup = Tables<'tournament_groups'>;
+export type TournamentRound = Tables<'tournament_rounds'>;
+export type TournamentLeaderboard = Tables<'tournament_leaderboard_dense_rank'>;
 
 // Custom types for UI
 export interface TeeTimeSlotWithAvailability extends TeeTimeSlot {
@@ -49,6 +53,7 @@ export type AppTabParamList = {
   Home: undefined;
   Courses: NavigatorScreenParams<CoursesStackParamList> | undefined;
   TeeTimes: undefined;
+  Tournaments: NavigatorScreenParams<TournamentsStackParamList> | undefined;
   RSSArticles: undefined;
   Profile: NavigatorScreenParams<ProfileStackParamList> | undefined;
 };
@@ -58,6 +63,15 @@ export type CoursesStackParamList = {
   CourseDetail: { courseId: string };
   CourseTeeTimesScreen: { courseId: string; courseName: string };
   ReservationScreen: { slotId: string; courseId: string };
+};
+
+export type TournamentsStackParamList = {
+  TournamentsList: undefined;
+  TournamentDetail: { tournamentId: string };
+  TournamentGroupList: { groupId: string; groupName: string };
+  TournamentRegistration: { tournamentId: string };
+  Scorecard: { roundId: string };
+  Leaderboard: { tournamentId: string };
 };
 
 export type ProfileStackParamList = {

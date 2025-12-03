@@ -91,7 +91,7 @@ export default function HomeScreen() {
       }
 
       const nextRes = await reservationsService.fetchNextReservation(user.id);
-      console.log('nextRes', nextRes);
+
       if (nextRes.data) {
         setNextTeeTime(nextRes.data);
       }

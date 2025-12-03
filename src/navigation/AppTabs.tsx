@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { AppTabParamList, CoursesStackParamList, ProfileStackParamList } from '@/types';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Home, Flag, Calendar, Bell, User, Newspaper } from 'lucide-react-native';
+import { Home, Flag, Calendar, Bell, User, Newspaper, Trophy } from 'lucide-react-native';
 
 // Import screens
 import HomeScreen from '@/screens/HomeScreen';
@@ -20,6 +20,7 @@ import UpdatePasswordScreen from '@/screens/UpdatePasswordScreen';
 import SupportScreen from '@/screens/SupportScreen';
 import TermsOfUseScreen from '@/screens/TermsOfUseScreen';
 import RSSArticlesScreen from '@/screens/RSSArticlesScreen';
+import { TournamentsStackNavigator } from '@/navigation/TournamentsStack';
 
 const Tab = createBottomTabNavigator<AppTabParamList>();
 const CoursesStack = createStackNavigator<CoursesStackParamList>();
@@ -186,6 +187,21 @@ export default function AppTabs() {
             />
           ),
           title: t('teeTimes.title'),
+        }}
+      />
+      <Tab.Screen
+        name="Tournaments"
+        component={TournamentsStackNavigator}
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <Trophy
+              size={24}
+              color={color}
+              strokeWidth={focused ? 2.5 : 2}
+            />
+          ),
+          title: t('navigation.tournaments') || 'Tournaments',
+          headerShown: false,
         }}
       />
       <Tab.Screen

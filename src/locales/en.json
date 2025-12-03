@@ -30,6 +30,7 @@
     "home": "Home",
     "courses": "Courses",
     "teeTimes": "Tee Times",
+    "tournaments": "Tournaments",
     "articles": "Articles",
     "notifications": "Notifications",
     "profile": "Profile"
@@ -324,6 +325,110 @@
     "english": "English",
     "spanish": "Spanish",
     "selectLanguage": "Select Language"
+  },
+  "tournament": {
+    "title": "Tournaments",
+    "upcoming": "Upcoming",
+    "past": "Past Tournaments",
+    "details": "Tournament Details",
+    "register": "Register",
+    "registered": "Registered",
+    "viewDetails": "View Details",
+    "viewResults": "View Results",
+    "browseAll": "Browse All Tournaments →",
+    "list": {
+      "emptyUpcoming": "No upcoming tournaments",
+      "emptyPast": "No past tournaments",
+      "playersCount": "{{count}} / {{max}} players",
+      "filter": "Filter"
+    },
+    "detail": {
+      "title": "Tournament Details",
+      "description": "Description",
+      "format": "Format",
+      "handicapAllowance": "Handicap Allowance",
+      "registrationOpen": "Registration Open Until",
+      "groupsFlights": "Groups & Flights",
+      "leaderboard": "Leaderboard",
+      "viewLiveLeaderboard": "View Live Leaderboard →",
+      "startRound": "Start Round",
+      "viewScorecard": "View My Scorecard",
+      "courseLocation": "Course"
+    },
+    "groupList": {
+      "title": "Group Players",
+      "players": "Players",
+      "handicap": "Handicap",
+      "status": "Status",
+      "viewDetails": "View Details →"
+    },
+    "registration": {
+      "title": "Register for Tournament",
+      "yourInfo": "Your Information",
+      "selectFlight": "Select Flight",
+      "preferences": "Preferences",
+      "preferredTeeTime": "Preferred Tee Time",
+      "cartRequired": "Cart Required",
+      "agreement": "Agreement",
+      "agreeToRules": "I agree to tournament rules",
+      "confirmButton": "Confirm Registration",
+      "successTitle": "Registration Successful",
+      "successMessage": "You're registered for {{tournamentName}}",
+      "errorTitle": "Registration Failed",
+      "errorMessage": "Failed to register. Please try again.",
+      "errorFullFlight": "This flight is full",
+      "errorGroupClosed": "This group is closed",
+      "errorAlreadyRegistered": "You're already registered for this tournament",
+      "errorInvalidHandicap": "You don't have a valid handicap"
+    },
+    "scorecard": {
+      "title": "Scorecard",
+      "enterScore": "Enter Score",
+      "notes": "Notes (optional)",
+      "summary": "Score Summary",
+      "front9": "Front 9",
+      "back9": "Back 9",
+      "total": "Total",
+      "prevHole": "Previous Hole",
+      "nextHole": "Next Hole",
+      "finishRound": "Finish Round",
+      "finishConfirm": "Are you sure you want to finish this round? You cannot edit scores after completion.",
+      "syncStatus": {
+        "synced": "Synced",
+        "offline": "Offline - will sync when online",
+        "syncing": "Syncing..."
+      },
+      "continueRound": "Continue Round →",
+      "holesCompleted": "{{completed}}/{{total}} holes"
+    },
+    "leaderboard": {
+      "title": "Leaderboard",
+      "allFlights": "All Flights",
+      "grossScore": "Gross Score",
+      "netScore": "Net Score",
+      "yourPosition": "Your Position",
+      "thru": "Thru {{holes}}",
+      "scoreToPar": "{{score}} to par",
+      "emptyLeaderboard": "No scores posted yet"
+    },
+    "format": {
+      "strokePlay": "Stroke Play",
+      "matchPlay": "Match Play",
+      "stableford": "Stableford"
+    },
+    "status": {
+      "draft": "Draft",
+      "active": "Active",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "notStarted": "Not Started",
+      "inProgress": "In Progress"
+    },
+    "myTournaments": {
+      "title": "My Tournaments",
+      "noActiveTournaments": "No active tournaments",
+      "activeTournament": "Active Tournament"
+    }
   },
   "rssArticles": {
     "title": "Golf News & Articles",
