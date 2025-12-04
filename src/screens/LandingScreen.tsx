@@ -45,86 +45,77 @@ export default function LandingScreen({ navigation }: LandingScreenProps) {
         <SafeAreaView style={styles.safeArea}>
           {/* Header */}
           <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <View style={styles.logoContainer}>
-              <Text style={styles.logoIcon}>⛳</Text>
+            <View style={styles.headerLeft}>
+              <View style={styles.logoContainer}>
+                <Text style={styles.logoIcon}>⛳</Text>
+              </View>
+              <Text style={[styles.logoText, { color: textPrimary }]}>TeeTimeCloud</Text>
             </View>
-            <Text style={[styles.logoText, { color: textPrimary }]}>TeeTimeCloud</Text>
           </View>
-          <TouchableOpacity
-            style={[styles.signInButton, { borderColor: buttonBorder }]}
-            onPress={() => navigation.navigate('SignIn')}
-            activeOpacity={0.8}
-          >
-            <Text style={[styles.signInButtonText, { color: textPrimary }]}>
-              {t('landing.signIn')}
-            </Text>
-          </TouchableOpacity>
-        </View>
 
           {/* Main Content */}
           <View style={styles.contentContainer}>
-          {/* Hero Section */}
-          <View style={styles.heroSection}>
-            <Text style={[styles.heroTitle, { color: textPrimary }]}>
-              {t('landing.heroTitle')}
-            </Text>
-            <Text style={[styles.heroSubtext, { color: textSecondary }]}>
-              {t('landing.heroSubtext')}
-            </Text>
-          </View>
-
-          {/* Feature Highlights */}
-          <View style={styles.featuresSection}>
-            <View style={styles.featureItem}>
-              <View style={styles.featureIconWrapper}>
-                <Clock color={iconColor} width={22} height={22} strokeWidth={1.5} />
-              </View>
-              <Text style={[styles.featureText, { color: textPrimary }]}>
-                {t('landing.features.teeTimeAccess')}
+            {/* Hero Section */}
+            <View style={styles.heroSection}>
+              <Text style={[styles.heroTitle, { color: textPrimary }]}>
+                {t('landing.heroTitle')}
+              </Text>
+              <Text style={[styles.heroSubtext, { color: textSecondary }]}>
+                {t('landing.heroSubtext')}
               </Text>
             </View>
 
-            <View style={styles.featureItem}>
-              <View style={styles.featureIconWrapper}>
-                <Trophy color={iconColor} width={22} height={22} strokeWidth={1.5} />
+            {/* Feature Highlights */}
+            <View style={styles.featuresSection}>
+              <View style={styles.featureItem}>
+                <View style={styles.featureIconWrapper}>
+                  <Clock color={iconColor} width={22} height={22} strokeWidth={1.5} />
+                </View>
+                <Text style={[styles.featureText, { color: textPrimary }]}>
+                  {t('landing.features.teeTimeAccess')}
+                </Text>
               </View>
-              <Text style={[styles.featureText, { color: textPrimary }]}>
-                {t('landing.features.tournaments')}
-              </Text>
+
+              <View style={styles.featureItem}>
+                <View style={styles.featureIconWrapper}>
+                  <Trophy color={iconColor} width={22} height={22} strokeWidth={1.5} />
+                </View>
+                <Text style={[styles.featureText, { color: textPrimary }]}>
+                  {t('landing.features.tournaments')}
+                </Text>
+              </View>
+
+              <View style={styles.featureItem}>
+                <View style={styles.featureIconWrapper}>
+                  <CreditCard color={iconColor} width={22} height={22} strokeWidth={1.5} />
+                </View>
+                <Text style={[styles.featureText, { color: textPrimary }]}>
+                  {t('landing.features.nfcCards')}
+                </Text>
+              </View>
             </View>
 
-            <View style={styles.featureItem}>
-              <View style={styles.featureIconWrapper}>
-                <CreditCard color={iconColor} width={22} height={22} strokeWidth={1.5} />
-              </View>
-              <Text style={[styles.featureText, { color: textPrimary }]}>
-                {t('landing.features.nfcCards')}
-              </Text>
-            </View>
-          </View>
-
-          {/* CTA Button */}
-          <TouchableOpacity
-            style={[styles.ctaButton, { backgroundColor: ctaBackground }]}
-            onPress={() => navigation.navigate('SignIn')}
-            activeOpacity={0.9}
-          >
-            <Text style={styles.ctaButtonText}>{t('landing.getStarted')}</Text>
-          </TouchableOpacity>
-
-          {/* Footer */}
-          <View style={styles.footer}>
-            <Text style={[styles.footerText, { color: textSecondary }]}>
-              {t('landing.new')}{' '}
-            </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-              <Text style={[styles.footerLink, { color: footerLinkColor }]}>
-                {t('landing.createAccount')}
-              </Text>
+            {/* CTA Button */}
+            <TouchableOpacity
+              style={[styles.ctaButton, { backgroundColor: ctaBackground }]}
+              onPress={() => navigation.navigate('SignIn')}
+              activeOpacity={0.9}
+            >
+              <Text style={styles.ctaButtonText}>{t('landing.signIn')}</Text>
             </TouchableOpacity>
+
+            {/* Footer */}
+            <View style={styles.footer}>
+              <Text style={[styles.footerText, { color: textSecondary }]}>
+                {t('landing.new')}{' '}
+              </Text>
+              <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+                <Text style={[styles.footerLink, { color: footerLinkColor }]}>
+                  {t('landing.createAccount')}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
 
           {/* Decorative Bottom Wave */}
           <View style={styles.decorativeWave} />

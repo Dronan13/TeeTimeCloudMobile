@@ -63,7 +63,7 @@ export default function SignInScreen({ navigation }: SignInScreenProps) {
   };
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: gradientColors[0] }]}>
+    <View style={[styles.outerContainer, { backgroundColor: gradientColors[2] }]}>
       <LinearGradient
         colors={gradientColors}
         locations={[0, 0.5, 1]}
@@ -71,10 +71,11 @@ export default function SignInScreen({ navigation }: SignInScreenProps) {
         end={{ x: 1, y: 1 }}
         style={styles.gradient}
       >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.container}
-        >
+        <SafeAreaView style={styles.safeArea}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.container}
+          >
           <ScrollView
             contentContainerStyle={styles.scrollContent}
             keyboardShouldPersistTaps="handled"
@@ -91,9 +92,7 @@ export default function SignInScreen({ navigation }: SignInScreenProps) {
 
             {/* Header */}
             <View style={styles.header}>
-              <View style={styles.logoContainer}>
-                <Text style={styles.logoIcon}>⛳</Text>
-              </View>
+
               <Text style={[styles.title, { color: textColorPrimary }]}>
                 {t('auth.signIn.title')}
               </Text>
@@ -180,13 +179,17 @@ export default function SignInScreen({ navigation }: SignInScreenProps) {
             </TouchableOpacity>
           </View>
           </ScrollView>
-        </KeyboardAvoidingView>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
       </LinearGradient>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  outerContainer: {
+    flex: 1,
+  },
   safeArea: {
     flex: 1,
   },

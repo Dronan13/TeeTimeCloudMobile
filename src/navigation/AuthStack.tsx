@@ -34,17 +34,17 @@ export default function AuthStack() {
       <Stack.Screen
         name="SignIn"
         component={SignInScreen}
-        options={{ title: 'Sign In' }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="ForgotPassword"
         component={ForgotPasswordScreen}
-        options={{ title: 'Forgot Password' }}
+        options={{ headerShown: false  }}
       />
       <Stack.Screen
         name="UpdatePassword"
         component={UpdatePasswordScreen}
-        options={{ title: 'Update Password' }}
+        options={{ headerShown: false  }}
       />
     </Stack.Navigator>
   );

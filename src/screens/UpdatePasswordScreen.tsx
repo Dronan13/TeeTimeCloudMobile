@@ -10,38 +10,55 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  SafeAreaView,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Eye, EyeOff, ArrowLeft } from 'lucide-react-native';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { RootStackParamList } from '@/types';
 
-export default function UpdatePasswordScreen() {
+type UpdatePasswordScreenProps = {
+  navigation: StackNavigationProp<RootStackParamList, 'UpdatePassword'>;
+};
+
+export default function UpdatePasswordScreen({ navigation }: UpdatePasswordScreenProps) {
   const { updatePassword } = useAuth();
   const { isDark } = useTheme();
-  const navigation = useNavigation();
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     newPassword: '',
     confirmPassword: '',
   });
 
+  // Theme colors - matching landing screen
+  const gradientColors: [string, string, string] = isDark
+    ? ['#0a0a0a', '#0B3D2E', '#1FAA59']
+    : ['#E8FFF5', '#A8C3B0', '#1FAA59'];
+
+  const textColorPrimary = isDark ? '#F7F7F7' : '#0B3D2E';
+  const textColorSecondary = isDark ? '#A8C3B0' : '#0B3D2E';
+  const inputBackground = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(11, 61, 46, 0.05)';
+  const inputBorder = isDark ? '#A8C3B0' : '#0B3D2E';
+  const placeholderColor = isDark ? '#6b7280' : '#0B3D2E';
+  const iconColor = isDark ? '#1FAA59' : '#0B3D2E';
+  const ctaBackground = '#1FAA59';
+  const requirementsBg = isDark ? 'rgba(31, 170, 89, 0.1)' : 'rgba(31, 170, 89, 0.08)';
+  const requirementsBorder = isDark ? 'rgba(31, 170, 89, 0.3)' : 'rgba(31, 170, 89, 0.2)';
+
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const validatePassword = (password: string): string | null => {
-    if (password.length < 8) {
-      return 'Password must be at least 8 characters long';
-    }
-    if (!/[A-Z]/.test(password)) {
-      return 'Password must contain at least one uppercase letter';
-    }
-    if (!/[a-z]/.test(password)) {
-      return 'Password must contain at least one lowercase letter';
-    }
-    if (!/[0-9]/.test(password)) {
-      return 'Password must contain at least one number';
+    if (password.length < 6) {
+      return t('auth.updatePassword.errorPasswordLength');
     }
     return null;
   };
@@ -50,18 +67,18 @@ export default function UpdatePasswordScreen() {
     const { newPassword, confirmPassword } = formData;
 
     if (!newPassword || !confirmPassword) {
-      Alert.alert('Error', 'Please fill in all fields');
+      Alert.alert(t('common.error'), t('auth.updatePassword.errorAllFields'));
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
+      Alert.alert(t('common.error'), t('auth.updatePassword.errorPasswordMismatch'));
       return;
     }
 
     const validationError = validatePassword(newPassword);
     if (validationError) {
-      Alert.alert('Invalid Password', validationError);
+      Alert.alert(t('common.error'), validationError);
       return;
     }
 
@@ -69,257 +86,268 @@ export default function UpdatePasswordScreen() {
     try {
       await updatePassword(newPassword);
       Alert.alert(
-        'Success',
-        'Your password has been updated successfully',
+        t('auth.updatePassword.successTitle'),
+        t('auth.updatePassword.successMessage'),
         [
           {
-            text: 'OK',
+            text: t('common.ok'),
             onPress: () => navigation.goBack(),
           },
         ]
       );
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to update password');
+      Alert.alert(t('common.error'), error.message || 'Failed to update password');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={[styles.container, isDark && styles.containerDark]}
-    >
-      <ScrollView
-        style={[styles.scrollView, isDark && styles.scrollViewDark]}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
+    <View style={[styles.outerContainer, { backgroundColor: gradientColors[2] }]}>
+      <LinearGradient
+        colors={gradientColors}
+        locations={[0, 0.5, 1]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.gradient}
       >
-        <View style={[styles.header, isDark && styles.headerDark]}>
-          <Text style={[styles.title, isDark && styles.titleDark]}>Update Password</Text>
-          <Text style={[styles.subtitle, isDark && styles.subtitleDark]}>
-            Choose a strong password to keep your account secure
-          </Text>
-        </View>
+        <SafeAreaView style={styles.safeArea}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.container}
+          >
+            <ScrollView
+              contentContainerStyle={styles.scrollContent}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+            >
+              {/* Back Button */}
+              <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => navigation.goBack()}
+                disabled={loading}
+              >
+                <ArrowLeft color={textColorPrimary} width={24} height={24} strokeWidth={1.5} />
+              </TouchableOpacity>
 
-        <View style={[styles.section, isDark && styles.sectionDark]}>
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>New Password</Text>
-            <TextInput
-              style={[styles.input, isDark && styles.inputDark]}
-              placeholder="Enter new password"
-              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
-              value={formData.newPassword}
-              onChangeText={(value) => handleInputChange('newPassword', value)}
-              secureTextEntry
-              autoCapitalize="none"
-              autoComplete="password-new"
-            />
-          </View>
+              {/* Header */}
+              <View style={styles.header}>
+                <View style={styles.logoContainer}>
+                  <Text style={styles.logoIcon}>⛳</Text>
+                </View>
+                <Text style={[styles.title, { color: textColorPrimary }]}>
+                  {t('auth.updatePassword.title')}
+                </Text>
+                <Text style={[styles.subtitle, { color: textColorSecondary }]}>
+                  {t('auth.updatePassword.subtitle')}
+                </Text>
+              </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>Confirm New Password</Text>
-            <TextInput
-              style={[styles.input, isDark && styles.inputDark]}
-              placeholder="Confirm new password"
-              placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
-              value={formData.confirmPassword}
-              onChangeText={(value) => handleInputChange('confirmPassword', value)}
-              secureTextEntry
-              autoCapitalize="none"
-              autoComplete="password-new"
-            />
-          </View>
-        </View>
+              {/* Form */}
+              <View style={styles.form}>
+                {/* New Password Input */}
+                <View style={styles.inputContainer}>
+                  <Text style={[styles.label, { color: textColorPrimary }]}>
+                    {t('auth.updatePassword.newPasswordLabel')}
+                  </Text>
+                  <View style={[styles.inputWrapper, { backgroundColor: inputBackground, borderColor: inputBorder }]}>
+                    <TextInput
+                      style={[styles.input, { color: textColorPrimary, flex: 1 }]}
+                      placeholder={t('auth.updatePassword.newPasswordPlaceholder')}
+                      placeholderTextColor={placeholderColor}
+                      value={formData.newPassword}
+                      onChangeText={(value) => handleInputChange('newPassword', value)}
+                      secureTextEntry={!showNewPassword}
+                      autoCapitalize="none"
+                      autoComplete="password-new"
+                      editable={!loading}
+                    />
+                    <TouchableOpacity
+                      onPress={() => setShowNewPassword(!showNewPassword)}
+                      style={styles.passwordToggle}
+                      disabled={loading}
+                    >
+                      {showNewPassword ? (
+                        <EyeOff color={textColorSecondary} width={20} height={20} strokeWidth={1.5} />
+                      ) : (
+                        <Eye color={textColorSecondary} width={20} height={20} strokeWidth={1.5} />
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                </View>
 
-        <View style={[styles.requirementsSection, isDark && styles.requirementsSectionDark]}>
-          <Text style={[styles.requirementsTitle, isDark && styles.requirementsTitleDark]}>Password Requirements:</Text>
-          <View style={styles.requirementsList}>
-            <View style={styles.requirementItem}>
-              <Text style={[styles.requirementBullet, isDark && styles.requirementBulletDark]}>•</Text>
-              <Text style={[styles.requirementText, isDark && styles.requirementTextDark]}>At least 8 characters long</Text>
-            </View>
-            <View style={styles.requirementItem}>
-              <Text style={[styles.requirementBullet, isDark && styles.requirementBulletDark]}>•</Text>
-              <Text style={[styles.requirementText, isDark && styles.requirementTextDark]}>Contains uppercase letter (A-Z)</Text>
-            </View>
-            <View style={styles.requirementItem}>
-              <Text style={[styles.requirementBullet, isDark && styles.requirementBulletDark]}>•</Text>
-              <Text style={[styles.requirementText, isDark && styles.requirementTextDark]}>Contains lowercase letter (a-z)</Text>
-            </View>
-            <View style={styles.requirementItem}>
-              <Text style={[styles.requirementBullet, isDark && styles.requirementBulletDark]}>•</Text>
-              <Text style={[styles.requirementText, isDark && styles.requirementTextDark]}>Contains number (0-9)</Text>
-            </View>
-          </View>
-        </View>
+                {/* Confirm Password Input */}
+                <View style={styles.inputContainer}>
+                  <Text style={[styles.label, { color: textColorPrimary }]}>
+                    {t('auth.updatePassword.confirmPasswordLabel')}
+                  </Text>
+                  <View style={[styles.inputWrapper, { backgroundColor: inputBackground, borderColor: inputBorder }]}>
+                    <TextInput
+                      style={[styles.input, { color: textColorPrimary, flex: 1 }]}
+                      placeholder={t('auth.updatePassword.confirmPasswordPlaceholder')}
+                      placeholderTextColor={placeholderColor}
+                      value={formData.confirmPassword}
+                      onChangeText={(value) => handleInputChange('confirmPassword', value)}
+                      secureTextEntry={!showConfirmPassword}
+                      autoCapitalize="none"
+                      autoComplete="password-new"
+                      editable={!loading}
+                    />
+                    <TouchableOpacity
+                      onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                      style={styles.passwordToggle}
+                      disabled={loading}
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff color={textColorSecondary} width={20} height={20} strokeWidth={1.5} />
+                      ) : (
+                        <Eye color={textColorSecondary} width={20} height={20} strokeWidth={1.5} />
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                </View>
 
-        <TouchableOpacity
-          style={[styles.updateButton, loading && styles.updateButtonDisabled]}
-          onPress={handleUpdatePassword}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.updateButtonText}>Update Password</Text>
-          )}
-        </TouchableOpacity>
+                {/* Password Requirements */}
+                <View style={[styles.requirementsSection, { backgroundColor: requirementsBg, borderColor: requirementsBorder }]}>
+                  <Text style={[styles.requirementsTitle, { color: iconColor }]}>
+                    Password must be at least 6 characters
+                  </Text>
+                </View>
 
-        <View style={styles.bottomSpacing} />
-      </ScrollView>
-    </KeyboardAvoidingView>
+                {/* Update Button */}
+                <TouchableOpacity
+                  style={[styles.button, { backgroundColor: ctaBackground }, loading && styles.buttonDisabled]}
+                  onPress={handleUpdatePassword}
+                  disabled={loading}
+                  activeOpacity={0.9}
+                >
+                  {loading ? (
+                    <ActivityIndicator color="#fff" size="small" />
+                  ) : (
+                    <Text style={styles.buttonText}>{t('auth.updatePassword.updateButton')}</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
+      </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  outerContainer: {
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
+  },
+  gradient: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
-  },
-  containerDark: {
-    backgroundColor: '#111827',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollViewDark: {
-    backgroundColor: '#111827',
   },
   scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
+    flexGrow: 1,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    paddingBottom: 40,
+  },
+  backButton: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+    marginLeft: -8,
+  },
+  logoContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 16,
+    backgroundColor: 'rgba(31, 170, 89, 0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+  },
+  logoIcon: {
+    fontSize: 32,
   },
   header: {
-    marginBottom: 24,
-  },
-  headerDark: {
-    marginBottom: 24,
+    marginBottom: 40,
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '700',
-    color: '#111827',
+    letterSpacing: -0.8,
     marginBottom: 8,
-  },
-  titleDark: {
-    color: '#f9fafb',
   },
   subtitle: {
-    fontSize: 15,
-    color: '#6b7280',
-    lineHeight: 22,
+    fontSize: 16,
+    fontWeight: '500',
+    lineHeight: 24,
   },
-  subtitleDark: {
-    color: '#9ca3af',
-  },
-  section: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  sectionDark: {
-    backgroundColor: '#1f2937',
+  form: {
+    gap: 24,
   },
   inputContainer: {
-    marginBottom: 16,
+    gap: 10,
   },
   label: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '600',
-    color: '#374151',
-    marginBottom: 8,
+    letterSpacing: 0.2,
   },
-  labelDark: {
-    color: '#9ca3af',
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    height: 56,
+    gap: 12,
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    flex: 1,
     fontSize: 16,
-    backgroundColor: '#fff',
-    color: '#111827',
+    fontWeight: '500',
   },
-  inputDark: {
-    backgroundColor: '#374151',
-    color: '#f9fafb',
-    borderColor: '#4b5563',
+  passwordToggle: {
+    padding: 8,
   },
   requirementsSection: {
-    backgroundColor: '#eff6ff',
     borderRadius: 12,
     padding: 16,
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: '#dbeafe',
-  },
-  requirementsSectionDark: {
-    backgroundColor: '#1e3a5f',
-    borderColor: '#2563eb',
+    borderWidth: 1.5,
   },
   requirementsTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1e40af',
-    marginBottom: 12,
-  },
-  requirementsTitleDark: {
-    color: '#93c5fd',
-  },
-  requirementsList: {
-    gap: 8,
-  },
-  requirementItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  requirementBullet: {
-    fontSize: 14,
-    color: '#3b82f6',
-    marginRight: 8,
-    fontWeight: '700',
-  },
-  requirementBulletDark: {
-    color: '#bfdbfe',
-  },
-  requirementText: {
-    fontSize: 14,
-    color: '#1e40af',
-    flex: 1,
     lineHeight: 20,
   },
-  requirementTextDark: {
-    color: '#bfdbfe',
-  },
-  updateButton: {
-    backgroundColor: '#22c55e',
-    paddingVertical: 16,
-    borderRadius: 12,
+  button: {
+    paddingVertical: 18,
+    paddingHorizontal: 24,
+    borderRadius: 14,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    justifyContent: 'center',
+    shadowColor: '#1FAA59',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 8,
+    minHeight: 56,
+    marginTop: 8,
   },
-  updateButtonDisabled: {
-    backgroundColor: '#9ca3af',
+  buttonDisabled: {
+    opacity: 0.6,
   },
-  updateButtonText: {
+  buttonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  bottomSpacing: {
-    height: 32,
+    fontSize: 17,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
 });

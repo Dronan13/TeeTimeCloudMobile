@@ -366,6 +366,13 @@ export default function HomeScreen() {
           </TouchableOpacity> */}
           <TouchableOpacity
             style={[homeStyles.quickActionButton, isDark && homeStyles.quickActionButtonDark]}
+            onPress={() => navigation.navigate('Rounds', { screen: 'RoundsList' })}
+          >
+            <RotateCcw size={24} color="#2d7a4e" strokeWidth={2} />
+            <Text style={[homeStyles.quickActionText, isDark && homeStyles.quickActionTextDark]}>{t('navigation.rounds') || 'Rounds'}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[homeStyles.quickActionButton, isDark && homeStyles.quickActionButtonDark]}
             onPress={() => navigation.navigate('Profile', { screen: 'Notifications' })}
           >
             <Bell size={24} color="#2d7a4e" strokeWidth={2} />
@@ -375,13 +382,6 @@ export default function HomeScreen() {
                 <Text style={homeStyles.badgeText}>{unreadCount}</Text>
               </View>
             )}
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[homeStyles.quickActionButton, isDark && homeStyles.quickActionButtonDark]}
-            onPress={() => navigation.navigate('Rounds', { screen: 'RoundsList' })}
-          >
-            <RotateCcw size={24} color="#2d7a4e" strokeWidth={2} />
-            <Text style={[homeStyles.quickActionText, isDark && homeStyles.quickActionTextDark]}>{t('navigation.rounds') || 'Rounds'}</Text>
           </TouchableOpacity>
         </View>
       </View>
