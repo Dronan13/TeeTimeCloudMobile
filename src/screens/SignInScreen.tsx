@@ -10,9 +10,11 @@ import {
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
+  ScrollView,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Eye, EyeOff, Mail } from 'lucide-react-native';
+import { Eye, EyeOff, Mail, ArrowLeft } from 'lucide-react-native';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -31,13 +33,18 @@ export default function SignInScreen({ navigation }: SignInScreenProps) {
   const { isDark } = useTheme();
   const { t } = useLanguage();
 
-  const textColorPrimary = isDark ? '#f9fafb' : '#111827';
-  const textColorSecondary = isDark ? '#9ca3af' : '#6b7280';
-  const backgroundColor = isDark ? '#111827' : '#fff';
-  const inputBackground = isDark ? '#1f2937' : '#f9fafb';
-  const inputBorder = isDark ? '#374151' : '#e5e7eb';
-  const placeholderColor = isDark ? '#6b7280' : '#9ca3af';
-  const iconColor = '#22c55e';
+  // Theme colors - matching landing screen
+  const gradientColors: [string, string, string] = isDark
+    ? ['#0a0a0a', '#0B3D2E', '#1FAA59']
+    : ['#E8FFF5', '#A8C3B0', '#1FAA59'];
+
+  const textColorPrimary = isDark ? '#F7F7F7' : '#0B3D2E';
+  const textColorSecondary = isDark ? '#A8C3B0' : '#0B3D2E';
+  const inputBackground = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(11, 61, 46, 0.05)';
+  const inputBorder = isDark ? '#A8C3B0' : '#0B3D2E';
+  const placeholderColor = isDark ? '#6b7280' : '#0B3D2E';
+  const iconColor = isDark ? '#1FAA59' : '#0B3D2E';
+  const ctaBackground = '#1FAA59';
 
   const handleSignIn = async () => {
     if (!email || !password) {
@@ -56,21 +63,44 @@ export default function SignInScreen({ navigation }: SignInScreenProps) {
   };
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor }]}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.container}
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: gradientColors[0] }]}>
+      <LinearGradient
+        colors={gradientColors}
+        locations={[0, 0.5, 1]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.gradient}
       >
-        <View style={[styles.content, { backgroundColor }]}>
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={[styles.title, { color: textColorPrimary }]}>
-              {t('auth.signIn.title')}
-            </Text>
-            <Text style={[styles.subtitle, { color: textColorSecondary }]}>
-              {t('auth.signIn.subtitle')}
-            </Text>
-          </View>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.container}
+        >
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Back Button */}
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+              disabled={loading}
+            >
+              <ArrowLeft color={textColorPrimary} width={24} height={24} strokeWidth={1.5} />
+            </TouchableOpacity>
+
+            {/* Header */}
+            <View style={styles.header}>
+              <View style={styles.logoContainer}>
+                <Text style={styles.logoIcon}>⛳</Text>
+              </View>
+              <Text style={[styles.title, { color: textColorPrimary }]}>
+                {t('auth.signIn.title')}
+              </Text>
+              <Text style={[styles.subtitle, { color: textColorSecondary }]}>
+                {t('auth.signIn.subtitle')}
+              </Text>
+            </View>
 
           {/* Form */}
           <View style={styles.form}>
@@ -137,10 +167,10 @@ export default function SignInScreen({ navigation }: SignInScreenProps) {
 
             {/* Sign In Button */}
             <TouchableOpacity
-              style={[styles.button, { backgroundColor: '#22c55e' }, loading && styles.buttonDisabled]}
+              style={[styles.button, { backgroundColor: ctaBackground }, loading && styles.buttonDisabled]}
               onPress={handleSignIn}
               disabled={loading}
-              activeOpacity={0.85}
+              activeOpacity={0.9}
             >
               {loading ? (
                 <ActivityIndicator color="#fff" size="small" />
@@ -149,15 +179,9 @@ export default function SignInScreen({ navigation }: SignInScreenProps) {
               )}
             </TouchableOpacity>
           </View>
-
-          {/* Footer */}
-          <View style={styles.footer}>
-            <Text style={[styles.footerText, { color: textColorSecondary }]}>
-              {t('landing.alreadyHaveAccount')}{' '}
-            </Text>
-          </View>
-        </View>
-      </KeyboardAvoidingView>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </LinearGradient>
     </SafeAreaView>
   );
 }
@@ -166,48 +190,71 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
+  gradient: {
+    flex: 1,
+  },
   container: {
     flex: 1,
   },
-  content: {
-    flex: 1,
-    paddingHorizontal: 20,
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: 24,
     paddingVertical: 16,
+    paddingBottom: 40,
+  },
+  backButton: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 16,
+    marginLeft: -8,
+  },
+  logoContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 16,
+    backgroundColor: 'rgba(31, 170, 89, 0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+  },
+  logoIcon: {
+    fontSize: 32,
   },
   header: {
-    marginBottom: 32,
+    marginBottom: 40,
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '700',
-    letterSpacing: -0.5,
+    letterSpacing: -0.8,
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '500',
-    lineHeight: 22,
+    lineHeight: 24,
   },
   form: {
-    gap: 20,
+    gap: 24,
   },
   inputContainer: {
-    gap: 8,
+    gap: 10,
   },
   label: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '600',
     letterSpacing: 0.2,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    height: 48,
-    gap: 10,
+    borderWidth: 1.5,
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    height: 56,
+    gap: 12,
   },
   inputIcon: {
     marginRight: 4,
@@ -228,17 +275,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   button: {
-    paddingVertical: 14,
+    paddingVertical: 18,
     paddingHorizontal: 24,
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#22c55e',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 4,
-    minHeight: 48,
+    shadowColor: '#1FAA59',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 8,
+    minHeight: 56,
     marginTop: 8,
   },
   buttonDisabled: {
@@ -246,16 +293,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontSize: 15,
-    fontWeight: '600',
-    letterSpacing: 0.3,
-  },
-  footer: {
-    marginTop: 24,
-    alignItems: 'center',
-  },
-  footerText: {
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 17,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
 });

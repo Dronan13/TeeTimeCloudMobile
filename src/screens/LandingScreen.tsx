@@ -34,7 +34,7 @@ export default function LandingScreen({ navigation }: LandingScreenProps) {
   const footerLinkColor = isDark ? '#E8FFF5' : '#0B3D2E';
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: gradientColors[0] }]}>
+    <View style={[styles.outerContainer, { backgroundColor: gradientColors[2] }]}>
       <LinearGradient
         colors={gradientColors}
         locations={[0, 0.5, 1]}
@@ -42,8 +42,9 @@ export default function LandingScreen({ navigation }: LandingScreenProps) {
         end={{ x: 1, y: 1 }}
         style={styles.gradient}
       >
-        {/* Header */}
-        <View style={styles.header}>
+        <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.header}>
           <View style={styles.headerLeft}>
             <View style={styles.logoContainer}>
               <Text style={styles.logoIcon}>⛳</Text>
@@ -61,8 +62,8 @@ export default function LandingScreen({ navigation }: LandingScreenProps) {
           </TouchableOpacity>
         </View>
 
-        {/* Main Content */}
-        <View style={styles.contentContainer}>
+          {/* Main Content */}
+          <View style={styles.contentContainer}>
           {/* Hero Section */}
           <View style={styles.heroSection}>
             <Text style={[styles.heroTitle, { color: textPrimary }]}>
@@ -125,14 +126,18 @@ export default function LandingScreen({ navigation }: LandingScreenProps) {
           </View>
         </View>
 
-        {/* Decorative Bottom Wave */}
-        <View style={styles.decorativeWave} />
+          {/* Decorative Bottom Wave */}
+          <View style={styles.decorativeWave} />
+        </SafeAreaView>
       </LinearGradient>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  outerContainer: {
+    flex: 1,
+  },
   safeArea: {
     flex: 1,
   },
