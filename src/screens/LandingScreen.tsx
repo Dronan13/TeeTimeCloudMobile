@@ -11,6 +11,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { Clock, Trophy, CreditCard } from 'lucide-react-native';
 import { RootStackParamList } from '@/types';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTheme } from '@/contexts/ThemeContext';
 
 type LandingScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Landing'>;
@@ -18,11 +19,24 @@ type LandingScreenProps = {
 
 export default function LandingScreen({ navigation }: LandingScreenProps) {
   const { t } = useLanguage();
+  const { isDark } = useTheme();
+
+  // Theme colors
+  const gradientColors: [string, string, string] = isDark
+    ? ['#0a0a0a', '#0B3D2E', '#1FAA59']
+    : ['#E8FFF5', '#A8C3B0', '#1FAA59'];
+
+  const textPrimary = isDark ? '#F7F7F7' : '#0B3D2E';
+  const textSecondary = isDark ? '#A8C3B0' : '#0B3D2E';
+  const iconColor = isDark ? '#1FAA59' : '#0B3D2E';
+  const buttonBorder = isDark ? '#A8C3B0' : '#0B3D2E';
+  const ctaBackground = '#1FAA59';
+  const footerLinkColor = isDark ? '#E8FFF5' : '#0B3D2E';
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: gradientColors[0] }]}>
       <LinearGradient
-        colors={['#0a0a0a', '#0B3D2E', '#1FAA59']}
+        colors={gradientColors}
         locations={[0, 0.5, 1]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -34,14 +48,16 @@ export default function LandingScreen({ navigation }: LandingScreenProps) {
             <View style={styles.logoContainer}>
               <Text style={styles.logoIcon}>⛳</Text>
             </View>
-            <Text style={styles.logoText}>TeeTimeCloud</Text>
+            <Text style={[styles.logoText, { color: textPrimary }]}>TeeTimeCloud</Text>
           </View>
           <TouchableOpacity
-            style={styles.signInButton}
+            style={[styles.signInButton, { borderColor: buttonBorder }]}
             onPress={() => navigation.navigate('SignIn')}
             activeOpacity={0.8}
           >
-            <Text style={styles.signInButtonText}>Sign In</Text>
+            <Text style={[styles.signInButtonText, { color: textPrimary }]}>
+              {t('landing.signIn')}
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -49,9 +65,11 @@ export default function LandingScreen({ navigation }: LandingScreenProps) {
         <View style={styles.contentContainer}>
           {/* Hero Section */}
           <View style={styles.heroSection}>
-            <Text style={styles.heroTitle}>Play Smarter.{'\n'}Golf Better.</Text>
-            <Text style={styles.heroSubtext}>
-              Manage tee times, track performance, and connect with your club — all in one app.
+            <Text style={[styles.heroTitle, { color: textPrimary }]}>
+              {t('landing.heroTitle')}
+            </Text>
+            <Text style={[styles.heroSubtext, { color: textSecondary }]}>
+              {t('landing.heroSubtext')}
             </Text>
           </View>
 
@@ -59,40 +77,50 @@ export default function LandingScreen({ navigation }: LandingScreenProps) {
           <View style={styles.featuresSection}>
             <View style={styles.featureItem}>
               <View style={styles.featureIconWrapper}>
-                <Clock color="#1FAA59" width={22} height={22} strokeWidth={1.5} />
+                <Clock color={iconColor} width={22} height={22} strokeWidth={1.5} />
               </View>
-              <Text style={styles.featureText}>Instant Tee Time Access</Text>
+              <Text style={[styles.featureText, { color: textPrimary }]}>
+                {t('landing.features.teeTimeAccess')}
+              </Text>
             </View>
 
             <View style={styles.featureItem}>
               <View style={styles.featureIconWrapper}>
-                <Trophy color="#1FAA59" width={22} height={22} strokeWidth={1.5} />
+                <Trophy color={iconColor} width={22} height={22} strokeWidth={1.5} />
               </View>
-              <Text style={styles.featureText}>Live Tournaments & Scorecards</Text>
+              <Text style={[styles.featureText, { color: textPrimary }]}>
+                {t('landing.features.tournaments')}
+              </Text>
             </View>
 
             <View style={styles.featureItem}>
               <View style={styles.featureIconWrapper}>
-                <CreditCard color="#1FAA59" width={22} height={22} strokeWidth={1.5} />
+                <CreditCard color={iconColor} width={22} height={22} strokeWidth={1.5} />
               </View>
-              <Text style={styles.featureText}>Digital NFC Business Cards</Text>
+              <Text style={[styles.featureText, { color: textPrimary }]}>
+                {t('landing.features.nfcCards')}
+              </Text>
             </View>
           </View>
 
           {/* CTA Button */}
           <TouchableOpacity
-            style={styles.ctaButton}
+            style={[styles.ctaButton, { backgroundColor: ctaBackground }]}
             onPress={() => navigation.navigate('SignIn')}
             activeOpacity={0.9}
           >
-            <Text style={styles.ctaButtonText}>Get Started</Text>
+            <Text style={styles.ctaButtonText}>{t('landing.getStarted')}</Text>
           </TouchableOpacity>
 
           {/* Footer */}
           <View style={styles.footer}>
-            <Text style={styles.footerText}>New? </Text>
+            <Text style={[styles.footerText, { color: textSecondary }]}>
+              {t('landing.new')}{' '}
+            </Text>
             <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-              <Text style={styles.footerLink}>Create Account</Text>
+              <Text style={[styles.footerLink, { color: footerLinkColor }]}>
+                {t('landing.createAccount')}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -107,7 +135,6 @@ export default function LandingScreen({ navigation }: LandingScreenProps) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
   },
   gradient: {
     flex: 1,
@@ -139,7 +166,6 @@ const styles = StyleSheet.create({
   logoText: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#F7F7F7',
     letterSpacing: -0.3,
   },
   signInButton: {
@@ -147,12 +173,10 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 8,
     borderWidth: 1.5,
-    borderColor: '#A8C3B0',
   },
   signInButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#F7F7F7',
   },
   contentContainer: {
     flex: 1,
@@ -167,7 +191,6 @@ const styles = StyleSheet.create({
   heroTitle: {
     fontSize: 40,
     fontWeight: '700',
-    color: '#F7F7F7',
     lineHeight: 48,
     marginBottom: 16,
     letterSpacing: -0.8,
@@ -175,7 +198,6 @@ const styles = StyleSheet.create({
   heroSubtext: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#A8C3B0',
     lineHeight: 24,
     maxWidth: '90%',
   },
@@ -197,11 +219,9 @@ const styles = StyleSheet.create({
   featureText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#F7F7F7',
     letterSpacing: 0.2,
   },
   ctaButton: {
-    backgroundColor: '#1FAA59',
     paddingVertical: 18,
     borderRadius: 14,
     alignItems: 'center',
@@ -227,12 +247,10 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 14,
-    color: '#A8C3B0',
   },
   footerLink: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#E8FFF5',
     textDecorationLine: 'underline',
   },
   decorativeWave: {

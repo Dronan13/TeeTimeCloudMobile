@@ -40,7 +40,12 @@
   "landing": {
     "logo": "⛳ TeeTime Cloud",
     "tagline": "Your Perfect Round Awaits",
+    "heroTitle": "Play Smarter.\nGolf Better.",
+    "heroSubtext": "Manage tee times, track performance, and connect with your club — all in one app.",
     "features": {
+      "teeTimeAccess": "Instant Tee Time Access",
+      "tournaments": "Live Tournaments & Scorecards",
+      "nfcCards": "Digital NFC Business Cards",
       "bookTeeTimes": {
         "title": "Book Tee Times",
         "description": "Reserve your spot at top golf courses with ease"
@@ -56,7 +61,9 @@
     },
     "getStarted": "Get Started",
     "alreadyHaveAccount": "Already have an account?",
-    "signIn": "Sign In"
+    "signIn": "Sign In",
+    "new": "New?",
+    "createAccount": "Create Account"
   },
   "auth": {
     "signIn": {
