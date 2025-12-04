@@ -11,7 +11,9 @@ import {
   Modal,
   StatusBar,
   Dimensions,
+  Button,
 } from 'react-native';
+import * as Sentry from '@sentry/react-native';
 import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { CompositeNavigationProp } from '@react-navigation/native';
@@ -249,23 +251,15 @@ export default function HomeScreen() {
               </View>
               <View style={homeStyles.teeTimeRow}>
                 <Text style={[homeStyles.teeTimeHoles, isDark && homeStyles.teeTimeHolesDark]}>
-                  {nextTeeTime.hole} {t('home.teeTimeCard.holes')}
+                  N/A {t('home.teeTimeCard.holes')}
                 </Text>
               </View>
-              {nextTeeTime.booking_status && (
-                <View style={homeStyles.statusBadge}>
-                  <Text style={homeStyles.statusText}>
-                    {nextTeeTime.booking_status.toUpperCase()}
-                  </Text>
-                </View>
-              )}
+              <View style={homeStyles.teeTimeRow}>
+                <Text style={[homeStyles.teeTimeHoles, isDark && homeStyles.teeTimeHolesDark]}>
+                  {nextTeeTime.hole} {t('home.teeTimeCard.hole')}
+                </Text>
+              </View>
             </View>
-            <TouchableOpacity
-              style={homeStyles.button}
-              onPress={() => navigation.navigate('TeeTimes')}
-            >
-              <Text style={homeStyles.buttonText}>{t('common.viewDetails')}</Text>
-            </TouchableOpacity>
           </View>
          </View>
         )}

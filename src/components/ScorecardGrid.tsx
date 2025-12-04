@@ -38,7 +38,7 @@ export default function ScorecardGrid({
     const diff = score - par;
     if (diff < 0) return '#10b981'; // Under par (green)
     if (diff > 0) return '#ef4444'; // Over par (red)
-    return '#6b7280'; // Even (gray)
+    return isDark ? '#d1d5db' : '#6b7280'; // Even (gray)
   };
 
   const renderHoleCell = (hole: HoleData, isTotal = false) => {
@@ -65,17 +65,23 @@ export default function ScorecardGrid({
             isTotal && styles.cellTotalText,
           ]}
         >
-          {hole.number}
+          Hole {hole.number}
         </Text>
         <Text
           style={[
             styles.cellScore,
             { color: getScoreColor(hole.score, hole.par) },
-            isDark && styles.cellScoreDark,
             isTotal && styles.cellTotalText,
           ]}
         >
           {hole.score ?? '—'}
+        </Text>
+        <Text style={[
+            styles.cellNumber,
+            isDark && styles.cellNumberDark,
+            isTotal && styles.cellTotalText,
+          ]}>
+          Par {hole.par ?? '—'}
         </Text>
       </TouchableOpacity>
     );
@@ -106,11 +112,11 @@ export default function ScorecardGrid({
         >
           {frontNineHoles.map((hole) => renderHoleCell(hole))}
           <View style={[styles.cell, styles.cellTotal, isDark && styles.cellTotalDark]}>
-            <Text style={[styles.cellNumber, styles.cellTotalText]}>OUT</Text>
-            <Text style={[styles.cellScore, styles.cellTotalText]}>
+            <Text style={[styles.cellNumber, isDark ? styles.cellNumberDark : styles.cellTotalText]}>OUT</Text>
+            <Text style={[styles.cellScore, isDark ? styles.cellNumberDark : styles.cellTotalText]}>
               {front9Total}
             </Text>
-            <Text style={[styles.cellPar, styles.cellTotalText]}>
+            <Text style={[styles.cellPar, isDark ? styles.cellNumberDark : styles.cellTotalText]}>
               {totalParFront}
             </Text>
           </View>
@@ -129,11 +135,11 @@ export default function ScorecardGrid({
         >
           {backNineHoles.map((hole) => renderHoleCell(hole))}
           <View style={[styles.cell, styles.cellTotal, isDark && styles.cellTotalDark]}>
-            <Text style={[styles.cellNumber, styles.cellTotalText]}>IN</Text>
-            <Text style={[styles.cellScore, styles.cellTotalText]}>
+            <Text style={[styles.cellNumber, isDark ? styles.cellNumberDark : styles.cellTotalText]}>IN</Text>
+            <Text style={[styles.cellScore, isDark ? styles.cellNumberDark : styles.cellTotalText]}>
               {back9Total}
             </Text>
-            <Text style={[styles.cellPar, styles.cellTotalText]}>
+            <Text style={[styles.cellPar, isDark ? styles.cellNumberDark : styles.cellTotalText]}>
               {totalParBack}
             </Text>
           </View>
@@ -285,6 +291,11 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   cellTotalText: {
+    color: '#6b7280',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  cellTotalTextDark: {
     color: '#ffffff',
     fontSize: 12,
     fontWeight: '600',
