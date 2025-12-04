@@ -24,6 +24,8 @@ export default function LandingScreen({ navigation }: LandingScreenProps) {
       <LinearGradient
         colors={['#0a0a0a', '#0B3D2E', '#1FAA59']}
         locations={[0, 0.5, 1]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
         style={styles.gradient}
       >
         {/* Header */}
