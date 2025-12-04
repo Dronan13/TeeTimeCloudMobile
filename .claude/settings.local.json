@@ -4,7 +4,8 @@
       "Bash(npx expo install expo-image-picker)",
       "Bash(npm install:*)",
       "Bash(npx tsc:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(npx expo install:*)"
     ],
     "deny": [],
     "ask": []
