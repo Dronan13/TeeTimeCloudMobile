@@ -176,7 +176,7 @@ export default function AppTabs() {
           headerShown: false,
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="TeeTimes"
         component={TeeTimesScreen}
         options={{
@@ -189,7 +189,7 @@ export default function AppTabs() {
           ),
           title: t('teeTimes.title'),
         }}
-      />
+      /> */}
       <Tab.Screen
         name="Tournaments"
         component={TournamentsStackNavigator}
@@ -205,7 +205,7 @@ export default function AppTabs() {
           headerShown: false,
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Rounds"
         component={RoundsStackNavigator}
         options={{
@@ -219,7 +219,7 @@ export default function AppTabs() {
           title: t('navigation.rounds') || 'Rounds',
           headerShown: false,
         }}
-      />
+      /> */}
       <Tab.Screen
         name="RSSArticles"
         component={RSSArticlesScreen}

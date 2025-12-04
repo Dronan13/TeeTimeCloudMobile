@@ -106,6 +106,7 @@
     }
   },
   "home": {
+    "myTournaments": "My Tournaments",
     "nextTeeTime": "Next Tee Time",
     "quickActions": "Quick Actions",
     "upcomingEvents": "Upcoming Events",

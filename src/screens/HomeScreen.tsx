@@ -363,13 +363,13 @@ export default function HomeScreen() {
             <Calendar size={24} color="#2d7a4e" strokeWidth={2} />
             <Text style={[homeStyles.quickActionText, isDark && homeStyles.quickActionTextDark]}>{t('home.myTeeTimes')}</Text>
           </TouchableOpacity>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={[homeStyles.quickActionButton, isDark && homeStyles.quickActionButtonDark]}
             onPress={() => navigation.navigate('RSSArticles')}
           >
             <Newspaper size={24} color="#2d7a4e" strokeWidth={2} />
             <Text style={[homeStyles.quickActionText, isDark && homeStyles.quickActionTextDark]}>{t('navigation.articles')}</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity
             style={[homeStyles.quickActionButton, isDark && homeStyles.quickActionButtonDark]}
             onPress={() => navigation.navigate('Profile', { screen: 'Notifications' })}

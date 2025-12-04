@@ -1,7 +1,7 @@
 import { ApiResponse } from '@/types';
 
 const WEATHER_API_BASE_URL = 'http://api.weatherapi.com/v1';
-const WEATHER_API_KEY = 'd6b143fd40d4428e95763949251311';
+const WEATHER_API_KEY = process.env.EXPO_PUBLIC_WEATHER_API_KEY!;
 
 export interface CurrentWeather {
   location: {
@@ -130,6 +130,7 @@ export const weatherService = {
   /**
    * Get current weather for a location
    */
+  
   async getCurrentWeather(
     lat: number,
     long: number

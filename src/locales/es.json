@@ -106,6 +106,7 @@
     }
   },
   "home": {
+    "myTournaments": "Mis Torneos",
     "nextTeeTime": "Próximo Horario",
     "quickActions": "Acciones Rápidas",
     "upcomingEvents": "Próximos Eventos",
