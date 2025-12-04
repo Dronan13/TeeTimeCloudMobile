@@ -22,10 +22,9 @@ export default function LandingScreen({ navigation }: LandingScreenProps) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <LinearGradient
-        colors={['#0B3D2E', '#0F4A37', '#0B3D2E']}
+        colors={['#0a0a0a', '#0B3D2E', '#1FAA59']}
+        locations={[0, 0.5, 1]}
         style={styles.gradient}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
       >
         {/* Header */}
         <View style={styles.header}>
@@ -106,7 +105,7 @@ export default function LandingScreen({ navigation }: LandingScreenProps) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#0B3D2E',
+    backgroundColor: '#0a0a0a',
   },
   gradient: {
     flex: 1,
