@@ -5,8 +5,22 @@ import { Tables } from '@/types/supabase';
 // Export types from database
 export type GolfRound = Tables<'golf_rounds'>;
 export type GolfRoundHole = Tables<'golf_round_holes'>;
-export type GolfRoundDetails = any; // From golf_round_details view
-export type GolfRoundHolesDetails = any; // From golf_round_holes_details view
+
+// Types for database views
+export interface GolfRoundDetails extends GolfRound {
+  course_name?: string;
+  tee_box_name?: string;
+  tee_color?: string;
+  course_par?: number;
+  course_rating?: number;
+  slope_rating?: number;
+}
+
+export interface GolfRoundHolesDetails extends GolfRoundHole {
+  course_par?: number;
+  course_handicap?: number;
+  tee_yards?: number;
+}
 
 /**
  * Personal golf round statistics calculated from hole data
@@ -206,11 +220,11 @@ export const golfRoundsService = {
 
       if (existing) {
         // Hole exists - perform UPDATE only with provided fields
-        const updateData: any = {
+        const updateData: Partial<GolfRoundHole> & { round_id: string; hole_number: number } = {
           round_id: roundId,
           hole_number: holeNumber,
         };
-        
+
         if (holeData.user_id !== undefined) updateData.user_id = holeData.user_id;
         if (holeData.tee_box_id !== undefined) updateData.tee_box_id = holeData.tee_box_id;
         if (holeData.strokes !== undefined) updateData.strokes = holeData.strokes;
@@ -232,7 +246,7 @@ export const golfRoundsService = {
         return { data, error: null };
       } else {
         // Hole doesn't exist - perform INSERT
-        const insertData: any = {
+        const insertData: Partial<GolfRoundHole> & { round_id: string; hole_number: number } = {
           round_id: roundId,
           hole_number: holeNumber,
         };
@@ -364,7 +378,7 @@ export const golfRoundsService = {
       }).length;
 
       // Then update round with calculated stats
-      const updateData: any = {
+      const updateData: Partial<GolfRound> = {
         total_score: totalScore,
         front_score: frontScore || null,
         back_score: backScore || null,
@@ -417,7 +431,7 @@ export const golfRoundsService = {
   /**
    * Calculate round statistics from hole array
    */
-  calculateRoundStatistics(holes: any[]): RoundStatistics {
+  calculateRoundStatistics(holes: GolfRoundHolesDetails[]): RoundStatistics {
     // Filter only played holes (with strokes)
     const playedHoles = holes.filter((h) => h.strokes !== null && h.strokes !== undefined);
 

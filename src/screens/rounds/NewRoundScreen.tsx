@@ -19,10 +19,18 @@ import { Calendar, ChevronDown } from 'lucide-react-native';
 
 type Props = NativeStackScreenProps<RoundsStackParamList, 'NewRound'>;
 
+interface CourseLocation {
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  zip_code?: string | null;
+  country?: string | null;
+}
+
 interface CourseData {
   id: string;
   name: string;
-  location?: any;
+  location?: CourseLocation | null;
 }
 
 interface TeeBoxData {

@@ -11,6 +11,21 @@ const STORAGE_PREFIX = '@personal_round';
 const SYNC_QUEUE_KEY = '@personal_round_sync_queue';
 
 /**
+ * Hole data with database field names for API calls
+ */
+interface HoleData {
+  hole_number: number;
+  score: number | null;
+  par: number;
+  putts?: number | null;
+  fairway_hit?: boolean | null;
+  green_in_regulation?: boolean;
+  sand_save?: boolean | null;
+  penalties?: number;
+  notes?: string;
+}
+
+/**
  * Save round state to AsyncStorage
  */
 export const saveRoundToStorage = async (round: PersonalRoundState): Promise<void> => {
@@ -56,7 +71,7 @@ export interface SyncQueueItem {
   timestamp: number;
   action: 'upsert_hole' | 'complete_round' | 'delete';
   holeNumber?: number;  // For hole updates
-  data?: any;
+  data?: HoleData | RoundStatistics;
   startTime?: string;  // For round completion
   endTime?: string;    // For round completion
 }
@@ -104,7 +119,7 @@ export const clearSyncQueue = async (): Promise<void> => {
 export const queueHoleUpdate = async (
   roundId: string,
   holeNumber: number,
-  holeData: any
+  holeData: HoleData
 ): Promise<void> => {
   await queueSyncUpdate({
     roundId,
@@ -225,25 +240,25 @@ export const calculateGIR = (strokes: number, par: number): boolean => {
   return strokes <= par + 2;
 };
 
-export const calculateTotalGIR = (holes: any[]): number => {
+export const calculateTotalGIR = (holes: HoleData[]): number => {
   return holes.filter(
     (h) => h.score !== null && h.score !== undefined && calculateGIR(h.score, h.par)
   ).length;
 };
 
-export const calculateGrosScore = (holes: any[]): number => {
+export const calculateGrosScore = (holes: HoleData[]): number => {
   return holes
     .filter((h) => h.score !== null && h.score !== undefined)
     .reduce((sum, h) => sum + h.score, 0);
 };
 
-export const calculateFront9 = (holes: any[]): number => {
+export const calculateFront9 = (holes: HoleData[]): number => {
   return holes
     .filter((h) => h.hole_number <= 9 && h.score !== null && h.score !== undefined)
     .reduce((sum, h) => sum + h.score, 0);
 };
 
-export const calculateBack9 = (holes: any[]): number => {
+export const calculateBack9 = (holes: HoleData[]): number => {
   return holes
     .filter((h) => h.hole_number > 9 && h.score !== null && h.score !== undefined)
     .reduce((sum, h) => sum + h.score, 0);
@@ -253,7 +268,7 @@ export const calculateNetScore = (grossScore: number, courseHandicap: number): n
   return grossScore - courseHandicap;
 };
 
-export const calculateTotalPar = (holes: any[]): number => {
+export const calculateTotalPar = (holes: HoleData[]): number => {
   return holes
     .filter((h) => h.score !== null && h.score !== undefined)
     .reduce((sum, h) => sum + h.par, 0);
@@ -267,7 +282,7 @@ export const calculateScoreToPar = (grossScore: number, totalPar: number): numbe
  * Comprehensive statistics calculation
  */
 export const calculateStatistics = (
-  holes: any[],
+  holes: HoleData[],
   courseRating?: number,
   slopeRating?: number
 ): RoundStatistics => {

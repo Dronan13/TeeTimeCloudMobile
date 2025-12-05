@@ -52,14 +52,15 @@ export default function SupportScreen() {
         setLocalImageUri(result.publicUrl);
         Alert.alert(t('common.success'), 'Image uploaded successfully');
       }
-    } catch (error: any) {
-      if (error.message === 'Permission to access gallery is required') {
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to upload image';
+      if (errorMessage === 'Permission to access gallery is required') {
         Alert.alert(
           'Permission Required',
           'Please grant permission to access your photo library in Settings.'
         );
       } else {
-        Alert.alert(t('common.error'), error.message || 'Failed to upload image');
+        Alert.alert(t('common.error'), errorMessage);
       }
     } finally {
       setUploadingImage(false);
@@ -125,8 +126,9 @@ export default function SupportScreen() {
           },
         ]
       );
-    } catch (error: any) {
-      Alert.alert(t('common.error'), error.message || 'Failed to submit support request');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to submit support request';
+      Alert.alert(t('common.error'), errorMessage);
     } finally {
       setLoading(false);
     }

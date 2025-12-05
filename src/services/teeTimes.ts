@@ -29,8 +29,8 @@ export const teeTimesService = {
       if (error) throw error;
 
       // Calculate available players for each slot
-      const slotsWithAvailability = (data || []).map((slot: any) => {
-        const reservationCount = slot.tee_time_reservations?.[0]?.count || 0;
+      const slotsWithAvailability = (data || []).map((slot) => {
+        const reservationCount = (slot.tee_time_reservations as unknown as Array<{ count: number }>)?.[0]?.count || 0;
         const maxPlayers = slot.max_players || 4;
         const availablePlayers = Math.max(0, maxPlayers - reservationCount);
 
@@ -38,7 +38,7 @@ export const teeTimesService = {
           ...slot,
           reservation_count: reservationCount,
           available_players: availablePlayers,
-        };
+        } as TeeTimeSlotWithAvailability;
       });
 
       return { data: slotsWithAvailability, error: null };

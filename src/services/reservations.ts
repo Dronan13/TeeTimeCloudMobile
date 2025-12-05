@@ -33,11 +33,12 @@ export const reservationsService = {
       if (error) throw error;
 
       // Transform the nested data structure
-      const transformedData = (data || []).map((reservation: any) => ({
+      // Note: Supabase returns a complex nested structure that we need to flatten
+      const transformedData = (data || []).map((reservation) => ({
         ...reservation,
         slot: reservation.slot,
-        course: reservation.course?.courses,
-      }));
+        course: (reservation.course as { courses?: unknown })?.courses as any,
+      } as ReservationWithDetails));
 
       return { data: transformedData, error: null };
     } catch (error) {
@@ -69,10 +70,7 @@ export const reservationsService = {
       if (error) throw error;
 
       // Filter and sort on the client side
-      const upcoming = (data || [])
-        .map((reservation: any) => ({
-          ...reservation,
-        }));
+      const upcoming = (data || []) as ReservationWithDetails[];
 
       if (upcoming.length === 0) {
         return { data: null, error: null };

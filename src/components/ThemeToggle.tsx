@@ -2,13 +2,13 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Sun, Moon, Smartphone } from 'lucide-react-native';
+import { Sun, Moon, Smartphone, LucideIcon } from 'lucide-react-native';
 
 export default function ThemeToggle() {
   const { theme, setTheme, isDark } = useTheme();
   const { t } = useLanguage();
 
-  const options: Array<{ value: 'light' | 'dark' | 'system'; label: string; Icon: any }> = [
+  const options: Array<{ value: 'light' | 'dark' | 'system'; label: string; Icon: LucideIcon }> = [
     { value: 'light', label: t('theme.light'), Icon: Sun },
     { value: 'dark', label: t('theme.dark'), Icon: Moon },
     { value: 'system', label: t('theme.system'), Icon: Smartphone },

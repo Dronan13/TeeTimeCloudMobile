@@ -95,8 +95,9 @@ export default function UpdatePasswordScreen({ navigation }: UpdatePasswordScree
           },
         ]
       );
-    } catch (error: any) {
-      Alert.alert(t('common.error'), error.message || 'Failed to update password');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update password';
+      Alert.alert(t('common.error'), errorMessage);
     } finally {
       setLoading(false);
     }

@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { ChevronDown } from 'lucide-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { TournamentsStackParamList } from '@/types';
+import { TournamentsStackParamList, Tournament } from '@/types';
 import { tournamentsService } from '@/services/tournaments';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -36,7 +36,7 @@ export default function TournamentRegistrationScreen({
   const { t } = useLanguage();
   const { user, profile } = useAuth();
 
-  const [tournament, setTournament] = useState<any>(null);
+  const [tournament, setTournament] = useState<Tournament | null>(null);
   const [groups, setGroups] = useState<FlightOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [registering, setRegistering] = useState(false);
@@ -67,12 +67,12 @@ export default function TournamentRegistrationScreen({
 
       if (groupsData) {
         // Enrich groups with player counts
-        const enrichedGroups = groupsData.map((group: any) => ({
+        const enrichedGroups = groupsData.map((group) => ({
           id: group.id,
           name: group.name,
-          max_players: group.max_players,
-          is_closed: group.is_closed,
-          player_count: group.tournament_rounds?.[0]?.count || 0,
+          max_players: group.max_players || 0,
+          is_closed: group.is_closed || false,
+          player_count: (group.tournament_rounds as unknown as Array<{ count: number }>)?.[0]?.count || 0,
         }));
         setGroups(enrichedGroups);
 

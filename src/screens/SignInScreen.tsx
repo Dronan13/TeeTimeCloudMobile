@@ -55,8 +55,9 @@ export default function SignInScreen({ navigation }: SignInScreenProps) {
     setLoading(true);
     try {
       await signIn(email, password);
-    } catch (error: any) {
-      Alert.alert(t('auth.signIn.errorSignInFailed'), error.message || t('auth.signIn.errorInvalidCredentials'));
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : t('auth.signIn.errorInvalidCredentials');
+      Alert.alert(t('auth.signIn.errorSignInFailed'), errorMessage);
     } finally {
       setLoading(false);
     }

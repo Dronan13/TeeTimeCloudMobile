@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
-import { CoursesStackParamList, CourseWithDetails, CourseEvent } from '@/types';
+import { CoursesStackParamList, CourseWithDetails, CourseEvent, CourseGallery } from '@/types';
 import { coursesService } from '@/services/courses';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Phone, Mail, Globe, Clock, Flag, MapPin, Calendar, DollarSign, X, Star, Facebook, Instagram } from 'lucide-react-native';
@@ -116,7 +116,7 @@ export default function CourseDetailScreen({
     setTimeout(() => setFullscreenImageUrl(null), 300);
   }, []);
 
-  const renderGalleryItem = ({ item, index }: { item: any; index: number }) => (
+  const renderGalleryItem = ({ item, index }: { item: CourseGallery; index: number }) => (
     <TouchableOpacity
       activeOpacity={0.9}
       onPress={() => handleImagePress(item.image_url)}
@@ -197,15 +197,16 @@ export default function CourseDetailScreen({
     </View>
   );
 
-  const getOperatingHoursText = (operatingHours: any): string => {
+  const getOperatingHoursText = (operatingHours: unknown): string => {
     if (!operatingHours) return 'Hours not available';
     if (typeof operatingHours === 'string') return operatingHours;
     if (typeof operatingHours === 'object') {
       const today = new Date()
         .toLocaleDateString('en-US', { weekday: 'long' })
         .toLowerCase();
-      if (operatingHours[today]) {
-        return `Today: ${operatingHours[today]}`;
+      const hoursObj = operatingHours as Record<string, string>;
+      if (hoursObj[today]) {
+        return `Today: ${hoursObj[today]}`;
       }
       return 'See website for hours';
     }

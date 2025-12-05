@@ -79,9 +79,11 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
     [navigation]
   );
 
-  const getLocationAddress = (location: any): string | null => {
-    if (!location) return null;
-    return location.city + ', ' + location.state || null;
+  const getLocationAddress = (location: unknown): string | null => {
+    if (!location || typeof location !== 'object') return null;
+    const loc = location as { city?: string; state?: string };
+    if (!loc.city && !loc.state) return null;
+    return `${loc.city || ''}${loc.city && loc.state ? ', ' : ''}${loc.state || ''}`;
   };
 
   const renderCourseItem = ({ item }: { item: Course }) => {

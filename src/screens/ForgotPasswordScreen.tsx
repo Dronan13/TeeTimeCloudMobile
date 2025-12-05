@@ -54,8 +54,9 @@ export default function ForgotPasswordScreen({ navigation }: ForgotPasswordScree
       await resetPassword(email);
       Alert.alert(t('auth.forgotPassword.successTitle'), t('auth.forgotPassword.successMessage'));
       navigation.goBack();
-    } catch (error: any) {
-      Alert.alert(t('common.error'), error.message);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : t('common.error');
+      Alert.alert(t('common.error'), errorMessage);
     } finally {
       setLoading(false);
     }

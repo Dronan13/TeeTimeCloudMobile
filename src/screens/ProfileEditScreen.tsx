@@ -84,8 +84,9 @@ export default function ProfileEditScreen() {
           onPress: () => navigation.goBack(),
         },
       ]);
-    } catch (error: any) {
-      Alert.alert(t('profile.edit.errorTitle'), error.message || t('profile.edit.errorMessage'));
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : t('profile.edit.errorMessage');
+      Alert.alert(t('profile.edit.errorTitle'), errorMessage);
     } finally {
       setLoading(false);
     }
