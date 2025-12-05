@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
 } from 'react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -41,7 +40,7 @@ export default function ScorecardGrid({
     return isDark ? '#d1d5db' : '#6b7280'; // Even (gray)
   };
 
-  const renderHoleCell = (hole: HoleData, isTotal = false) => {
+  const renderHoleCell = (hole: HoleData) => {
     const isSelected = hole.number === currentHole;
 
     return (
@@ -52,17 +51,13 @@ export default function ScorecardGrid({
           isDark && styles.cellDark,
           isSelected && styles.cellSelected,
           isDark && isSelected && styles.cellSelectedDark,
-          isTotal && styles.cellTotal,
-          isDark && isTotal && styles.cellTotalDark,
         ]}
-        onPress={() => !isTotal && onHoleSelect(hole.number)}
-        disabled={isTotal}
+        onPress={() => onHoleSelect(hole.number)}
       >
         <Text
           style={[
             styles.cellNumber,
             isDark && styles.cellNumberDark,
-            isTotal && styles.cellTotalText,
           ]}
         >
           Hole {hole.number}
@@ -71,19 +66,35 @@ export default function ScorecardGrid({
           style={[
             styles.cellScore,
             { color: getScoreColor(hole.score, hole.par) },
-            isTotal && styles.cellTotalText,
           ]}
         >
           {hole.score ?? '—'}
         </Text>
         <Text style={[
-            styles.cellNumber,
-            isDark && styles.cellNumberDark,
-            isTotal && styles.cellTotalText,
+            styles.cellPar,
+            isDark && styles.cellParDark,
           ]}>
-          Par {hole.par ?? '—'}
+          Par {hole.par}
         </Text>
       </TouchableOpacity>
+    );
+  };
+
+  const renderSummaryCell = (label: string, score: number, totalPar: number) => {
+    const vsPar = score - totalPar;
+
+    return (
+      <View style={[styles.cell, styles.summaryCell, isDark && styles.summaryCellDark]}>
+        <Text style={[styles.summaryLabel, isDark && styles.summaryLabelDark]}>
+          {label}
+        </Text>
+        <Text style={[styles.summaryScore, isDark && styles.summaryScoreDark]}>
+          {score}
+        </Text>
+        <Text style={[styles.summaryVsPar, isDark && styles.summaryVsParDark]}>
+          {vsPar > 0 ? `+${vsPar}` : vsPar === 0 ? 'E' : vsPar}
+        </Text>
+      </View>
     );
   };
 
@@ -100,50 +111,26 @@ export default function ScorecardGrid({
         Score Card
       </Text>
 
-      {/* Front 9 */}
+      {/* Front 9 - 5x2 Grid */}
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>
           Front 9
         </Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.gridRow}
-        >
+        <View style={styles.gridContainer}>
           {frontNineHoles.map((hole) => renderHoleCell(hole))}
-          <View style={[styles.cell, styles.cellTotal, isDark && styles.cellTotalDark]}>
-            <Text style={[styles.cellNumber, isDark ? styles.cellNumberDark : styles.cellTotalText]}>OUT</Text>
-            <Text style={[styles.cellScore, isDark ? styles.cellNumberDark : styles.cellTotalText]}>
-              {front9Total}
-            </Text>
-            <Text style={[styles.cellPar, isDark ? styles.cellNumberDark : styles.cellTotalText]}>
-              {totalParFront}
-            </Text>
-          </View>
-        </ScrollView>
+          {renderSummaryCell('OUT', front9Total, totalParFront)}
+        </View>
       </View>
 
-      {/* Back 9 */}
+      {/* Back 9 - 5x2 Grid */}
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>
           Back 9
         </Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.gridRow}
-        >
+        <View style={styles.gridContainer}>
           {backNineHoles.map((hole) => renderHoleCell(hole))}
-          <View style={[styles.cell, styles.cellTotal, isDark && styles.cellTotalDark]}>
-            <Text style={[styles.cellNumber, isDark ? styles.cellNumberDark : styles.cellTotalText]}>IN</Text>
-            <Text style={[styles.cellScore, isDark ? styles.cellNumberDark : styles.cellTotalText]}>
-              {back9Total}
-            </Text>
-            <Text style={[styles.cellPar, isDark ? styles.cellNumberDark : styles.cellTotalText]}>
-              {totalParBack}
-            </Text>
-          </View>
-        </ScrollView>
+          {renderSummaryCell('IN', back9Total, totalParBack)}
+        </View>
       </View>
 
       {/* Totals */}
@@ -219,7 +206,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
   section: {
-    marginBottom: 12,
+    marginBottom: 16,
   },
   sectionTitle: {
     fontSize: 12,
@@ -230,17 +217,20 @@ const styles = StyleSheet.create({
   sectionTitleDark: {
     color: '#d1d5db',
   },
-  gridRow: {
+  gridContainer: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 6,
   },
   cell: {
-    minWidth: 50,
+    width: '18%',
+    minHeight: 65,
     paddingVertical: 8,
-    paddingHorizontal: 6,
+    paddingHorizontal: 4,
     backgroundColor: '#f9fafb',
     borderRadius: 6,
     alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
     borderColor: '#e5e7eb',
   },
@@ -258,47 +248,70 @@ const styles = StyleSheet.create({
     borderColor: '#22c55e',
     borderWidth: 2,
   },
-  cellTotal: {
-    backgroundColor: '#f3f4f6',
-    borderWidth: 2,
-    borderColor: '#6b7280',
-    minWidth: 60,
-  },
-  cellTotalDark: {
-    backgroundColor: '#1a1d21',
-    borderColor: '#9ca3af',
-  },
   cellNumber: {
     fontSize: 10,
     fontWeight: '600',
     color: '#6b7280',
-    marginBottom: 2,
+    marginBottom: 1,
+    textAlign: 'center',
   },
   cellNumberDark: {
     color: '#d1d5db',
   },
   cellScore: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '700',
-  },
-  cellScoreDark: {
-    color: '#ffffff',
+    marginVertical: 1,
+    textAlign: 'center',
   },
   cellPar: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: '500',
     color: '#9ca3af',
-    marginTop: 2,
+    marginTop: 1,
+    textAlign: 'center',
   },
-  cellTotalText: {
-    color: '#6b7280',
-    fontSize: 12,
+  cellParDark: {
+    color: '#d1d5db',
+  },
+  summaryCell: {
+    backgroundColor: '#2d7a4e',
+    borderColor: '#2d7a4e',
+    borderWidth: 1,
+  },
+  summaryCellDark: {
+    backgroundColor: '#1e4d30',
+    borderColor: '#2d7a4e',
+  },
+  summaryLabel: {
+    fontSize: 10,
     fontWeight: '600',
-  },
-  cellTotalTextDark: {
     color: '#ffffff',
-    fontSize: 12,
-    fontWeight: '600',
+    marginBottom: 1,
+    textAlign: 'center',
+  },
+  summaryLabelDark: {
+    color: '#ffffff',
+  },
+  summaryScore: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#ffffff',
+    marginVertical: 1,
+    textAlign: 'center',
+  },
+  summaryScoreDark: {
+    color: '#ffffff',
+  },
+  summaryVsPar: {
+    fontSize: 9,
+    fontWeight: '500',
+    color: '#e0f2e9',
+    marginTop: 1,
+    textAlign: 'center',
+  },
+  summaryVsParDark: {
+    color: '#e0f2e9',
   },
   totalsRow: {
     flexDirection: 'row',
@@ -309,6 +322,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     borderWidth: 1,
     borderColor: '#e5e7eb',
+    marginTop: 4,
   },
   totalsRowDark: {
     backgroundColor: '#1a1d21',

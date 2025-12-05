@@ -383,14 +383,6 @@ export default function ScorecardScreen({ route, navigation }: Props) {
         style={[styles.scrollView, isDark && styles.scrollViewDark]}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Score Input */}
-        {currentHole && (
-          <ScoreInput
-            currentScore={currentHole.score}
-            onScoreChange={handleScoreChange}
-            holePar={currentHole.par}
-          />
-        )}
 
         {/* Navigation */}
         <View style={styles.navigationRow}>
@@ -448,6 +440,14 @@ export default function ScorecardScreen({ route, navigation }: Props) {
             <ChevronRight size={20} color={isDark ? '#ffffff' : '#1a1d21'} />
           </TouchableOpacity>
         </View>
+        {/* Score Input */}
+        {currentHole && (
+          <ScoreInput
+            currentScore={currentHole.score}
+            onScoreChange={handleScoreChange}
+            holePar={currentHole.par}
+          />
+        )}
 
         {/* Scorecard Grid */}
         <ScorecardGrid
@@ -579,7 +579,7 @@ const styles = StyleSheet.create({
   navigationRow: {
     flexDirection: 'row',
     gap: 12,
-    marginBottom: 16,
+    marginBottom: 12,
   },
   navButton: {
     flex: 1,

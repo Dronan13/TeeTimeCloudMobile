@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 12,
     padding: 16,
-    marginBottom: 16,
+    marginBottom: 12,
     borderWidth: 1,
     borderColor: '#e5e7eb',
   },
@@ -146,9 +146,9 @@ const styles = StyleSheet.create({
   displayBox: {
     backgroundColor: '#f9fafb',
     borderRadius: 8,
-    paddingVertical: 16,
+    paddingVertical: 12,
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
     borderWidth: 1,
     borderColor: '#e5e7eb',
   },
@@ -166,9 +166,9 @@ const styles = StyleSheet.create({
     color: '#d1d5db',
   },
   displayValue: {
-    fontSize: 48,
+    fontSize: 42,
     fontWeight: '700',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   parDiff: {
     fontSize: 12,
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-    marginBottom: 12,
+    marginBottom: 0,
   },
   numberButton: {
     flex: 1,
@@ -218,6 +218,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
     color: '#1a1d21',
+    textAlign: 'center',
   },
   numberTextDark: {
     color: '#ffffff',
@@ -233,7 +234,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#f3f4f6',
     borderRadius: 8,
     gap: 6,
-    marginBottom: 8,
+    marginTop: 8,
+    marginBottom: 6,
   },
   clearButtonDark: {
     backgroundColor: '#1a1d21',
