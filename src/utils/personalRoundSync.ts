@@ -10,6 +10,37 @@ import { golfRoundsService } from '@/services/golfRounds';
 const STORAGE_PREFIX = '@personal_round';
 const SYNC_QUEUE_KEY = '@personal_round_sync_queue';
 
+const MAX_RETRY_ATTEMPTS = 3;
+const BASE_DELAY_MS = 1000;
+
+/**
+ * Retry an async operation with exponential backoff
+ */
+async function retryWithBackoff<T>(
+  operation: () => Promise<T>,
+  maxRetries: number = MAX_RETRY_ATTEMPTS
+): Promise<T> {
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error('Unknown error');
+
+      if (attempt === maxRetries - 1) {
+        throw lastError;
+      }
+
+      const delay = BASE_DELAY_MS * Math.pow(2, attempt);
+      console.log(`Retry attempt ${attempt + 1}/${maxRetries} after ${delay}ms`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+
+  throw lastError || new Error('Max retries exceeded');
+}
+
 /**
  * Hole data with database field names for API calls
  */
@@ -74,6 +105,7 @@ export interface SyncQueueItem {
   data?: HoleData | RoundStatistics;
   startTime?: string;  // For round completion
   endTime?: string;    // For round completion
+  retryCount?: number; // Track retry attempts
 }
 
 /**
@@ -158,7 +190,7 @@ export const getQueuedHoleCount = async (roundId: string): Promise<number> => {
 };
 
 /**
- * Process sync queue and send all pending updates to server
+ * Process sync queue and send all pending updates to server with retry logic
  */
 export const processSyncQueue = async (): Promise<boolean> => {
   try {
@@ -175,46 +207,76 @@ export const processSyncQueue = async (): Promise<boolean> => {
     const completions = queue.filter((item) => item.action === 'complete_round');
     const deletions = queue.filter((item) => item.action === 'delete');
 
-    // 1. Sync all hole updates
+    // 1. Sync all hole updates with retry
     for (const item of holeUpdates) {
+      const retryCount = item.retryCount || 0;
+
+      // Skip if max retries exceeded
+      if (retryCount >= MAX_RETRY_ATTEMPTS) {
+        console.warn(`Max retries exceeded for hole ${item.holeNumber} in round ${item.roundId}, dropping from queue`);
+        continue;
+      }
+
       try {
         if (item.holeNumber && item.data) {
-          await golfRoundsService.upsertGolfRoundHole(
-            item.roundId,
-            item.holeNumber,
-            item.data
-          );
+          await retryWithBackoff(async () => {
+            await golfRoundsService.upsertGolfRoundHole(
+              item.roundId,
+              item.holeNumber!,
+              item.data as HoleData
+            );
+          });
         }
       } catch (error) {
-        console.error(`Error syncing hole ${item.holeNumber} for round ${item.roundId}:`, error);
-        failedItems.push(item);
+        console.error(`Error syncing hole ${item.holeNumber} for round ${item.roundId} after retries:`, error);
+        failedItems.push({ ...item, retryCount: retryCount + 1 });
       }
     }
 
-    // 2. Sync round completions
+    // 2. Sync round completions with retry
     for (const item of completions) {
+      const retryCount = item.retryCount || 0;
+
+      // Skip if max retries exceeded
+      if (retryCount >= MAX_RETRY_ATTEMPTS) {
+        console.warn(`Max retries exceeded for completing round ${item.roundId}, dropping from queue`);
+        continue;
+      }
+
       try {
         if (item.data) {
-          await golfRoundsService.completeGolfRound(
-            item.roundId,
-            item.data,
-            item.startTime,
-            item.endTime
-          );
+          await retryWithBackoff(async () => {
+            await golfRoundsService.completeGolfRound(
+              item.roundId,
+              item.data as RoundStatistics,
+              item.startTime,
+              item.endTime
+            );
+          });
         }
       } catch (error) {
-        console.error(`Error completing round ${item.roundId}:`, error);
-        failedItems.push(item);
+        console.error(`Error completing round ${item.roundId} after retries:`, error);
+        failedItems.push({ ...item, retryCount: retryCount + 1 });
       }
     }
 
-    // 3. Process deletions
+    // 3. Process deletions with retry
     for (const item of deletions) {
+      const retryCount = item.retryCount || 0;
+
+      // Skip if max retries exceeded
+      if (retryCount >= MAX_RETRY_ATTEMPTS) {
+        console.warn(`Max retries exceeded for deleting round ${item.roundId}, dropping from queue`);
+        continue;
+      }
+
       try {
-        await golfRoundsService.deleteGolfRound(item.roundId);
+        await retryWithBackoff(async () => {
+          await golfRoundsService.deleteGolfRound(item.roundId);
+        });
       } catch (error) {
-        console.error(`Error deleting round ${item.roundId}:`, error);
-        failedItems.push(item);
+        console.error(`Error deleting round ${item.roundId} after retries:`, error);
+        failedItems.push({ ...item, retryCount: retryCount + 1 });
       }
     }
 

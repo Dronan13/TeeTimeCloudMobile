@@ -30,40 +30,33 @@ export default function DisputeButton({
   const handleRequestDispute = () => {
     if (isDisputeFlagged) {
       Alert.alert(
-        'Dispute Already Flagged',
-        'This round has already been flagged for dispute review.',
-        [{ text: 'OK', style: 'cancel' }]
+        t('tournaments.dispute.alreadyFlaggedTitle'),
+        t('tournaments.dispute.alreadyFlaggedMessage'),
+        [{ text: t('common.ok'), style: 'cancel' }]
       );
       return;
     }
 
     Alert.prompt(
-      'Request Dispute Review',
-      'Please explain why you are requesting a dispute for this round:',
+      t('tournaments.dispute.requestTitle'),
+      t('tournaments.dispute.requestMessage'),
       [
         {
-          text: 'Cancel',
+          text: t('common.cancel'),
           style: 'cancel',
         },
         {
-          text: 'Submit',
+          text: t('common.submit'),
           onPress: async (reason) => {
             if (!reason || reason.trim().length === 0) {
-              Alert.alert('Error', 'Please provide a reason for the dispute.');
+              Alert.alert(t('common.error'), t('tournaments.dispute.errorReasonRequired'));
               return;
             }
 
             try {
               await onDisputeSubmit(reason.trim());
-              Alert.alert(
-                'Success',
-                'Your dispute request has been submitted. An administrator will review it shortly.'
-              );
             } catch (error) {
-              Alert.alert(
-                'Error',
-                'Failed to submit dispute request. Please try again.'
-              );
+              // Error handled in parent component
             }
           },
           style: 'default',
@@ -103,7 +96,7 @@ export default function DisputeButton({
               isDisputeFlagged && styles.buttonTextFlagged,
             ]}
           >
-            {isDisputeFlagged ? 'Dispute Flagged' : 'Request Dispute'}
+            {isDisputeFlagged ? t('tournaments.dispute.flagged') : t('tournaments.dispute.request')}
           </Text>
         </>
       )}

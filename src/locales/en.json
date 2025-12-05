@@ -25,7 +25,8 @@
     "viewDetails": "View Details",
     "retry": "Retry",
     "refresh": "Refresh",
-    "players": "Players"
+    "players": "Players",
+    "submit": "Submit"
   },
   "navigation": {
     "home": "Home",
@@ -338,6 +339,20 @@
     "english": "English",
     "spanish": "Spanish",
     "selectLanguage": "Select Language"
+  },
+  "tournaments": {
+    "dispute": {
+      "errorReasonRequired": "Please provide a reason for the dispute",
+      "errorReasonTooShort": "Dispute reason must be at least 10 characters",
+      "errorSubmitFailed": "Failed to submit dispute. Please try again",
+      "successSubmitted": "Your dispute has been submitted for review",
+      "alreadyFlaggedTitle": "Dispute Already Flagged",
+      "alreadyFlaggedMessage": "This round has already been flagged for dispute review",
+      "requestTitle": "Request Dispute Review",
+      "requestMessage": "Please explain why you are requesting a dispute:",
+      "flagged": "Dispute Flagged",
+      "request": "Request Dispute"
+    }
   },
   "tournament": {
     "title": "Tournaments",

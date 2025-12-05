@@ -29,28 +29,49 @@ export default function TournamentListScreen({ navigation }: Props) {
   const [tournaments, setTournaments] = useState<(Tournament & { courses?: { name: string } | null })[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterType>('all');
   const [userRegistrations, setUserRegistrations] = useState<Set<string>>(new Set());
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
+  const ITEMS_PER_PAGE = 20;
   const now = new Date();
 
-  const fetchTournaments = useCallback(async () => {
+  const fetchTournaments = useCallback(async (pageNum: number = 1, append: boolean = false) => {
     try {
-      setError(null);
-      const { data, error: fetchError } = await tournamentsService.fetchTournaments();
+      if (!append) {
+        setError(null);
+      }
+
+      const { data, error: fetchError } = await tournamentsService.fetchTournaments(
+        false,
+        pageNum,
+        ITEMS_PER_PAGE
+      );
 
       if (fetchError) {
         setError(t('errors.server'));
-        setTournaments([]);
+        if (!append) {
+          setTournaments([]);
+        }
         return;
       }
 
       if (data) {
-        setTournaments(data);
-        // Fetch user's registrations
+        // Check if we have more data
+        setHasMore(data.length === ITEMS_PER_PAGE);
+
+        if (append) {
+          setTournaments(prev => [...prev, ...data]);
+        } else {
+          setTournaments(data);
+        }
+
+        // Fetch user's registrations for new tournaments
         if (user?.id) {
-          const registered = new Set<string>();
+          const registered = new Set(userRegistrations);
           for (const tournament of data) {
             const { data: isReg } = await tournamentsService.isUserRegistered(
               tournament.id,
@@ -65,12 +86,15 @@ export default function TournamentListScreen({ navigation }: Props) {
       }
     } catch (err) {
       setError(t('errors.unknown'));
-      setTournaments([]);
+      if (!append) {
+        setTournaments([]);
+      }
     } finally {
       setLoading(false);
       setRefreshing(false);
+      setLoadingMore(false);
     }
-  }, [user?.id, t]);
+  }, [user?.id, t, userRegistrations, ITEMS_PER_PAGE]);
 
   useEffect(() => {
     fetchTournaments();
@@ -78,8 +102,19 @@ export default function TournamentListScreen({ navigation }: Props) {
 
   const handleRefresh = useCallback(() => {
     setRefreshing(true);
-    fetchTournaments();
+    setPage(1);
+    setHasMore(true);
+    fetchTournaments(1, false);
   }, [fetchTournaments]);
+
+  const handleLoadMore = useCallback(() => {
+    if (!loadingMore && hasMore && !loading) {
+      setLoadingMore(true);
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchTournaments(nextPage, true);
+    }
+  }, [loadingMore, hasMore, loading, page, fetchTournaments]);
 
   const getFilteredTournaments = () => {
     return tournaments.filter((tournament) => {
@@ -218,6 +253,15 @@ export default function TournamentListScreen({ navigation }: Props) {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={renderEmptyState}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          loadingMore ? (
+            <View style={styles.loadingMoreContainer}>
+              <ActivityIndicator size="small" color="#2d7a4e" />
+            </View>
+          ) : null
+        }
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -329,5 +373,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#ffffff',
+  },
+  loadingMoreContainer: {
+    paddingVertical: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

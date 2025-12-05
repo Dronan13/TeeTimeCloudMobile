@@ -25,7 +25,8 @@
     "viewDetails": "Ver Detalles",
     "retry": "Reintentar",
     "refresh": "Actualizar",
-    "players": "Jugadores"
+    "players": "Jugadores",
+    "submit": "Enviar"
   },
   "navigation": {
     "home": "Inicio",
@@ -338,6 +339,20 @@
     "english": "Inglés",
     "spanish": "Español",
     "selectLanguage": "Seleccionar Idioma"
+  },
+  "tournaments": {
+    "dispute": {
+      "errorReasonRequired": "Por favor proporciona una razón para la disputa",
+      "errorReasonTooShort": "La razón de la disputa debe tener al menos 10 caracteres",
+      "errorSubmitFailed": "Error al enviar la disputa. Por favor intenta de nuevo",
+      "successSubmitted": "Tu disputa ha sido enviada para revisión",
+      "alreadyFlaggedTitle": "Disputa Ya Marcada",
+      "alreadyFlaggedMessage": "Esta ronda ya ha sido marcada para revisión de disputa",
+      "requestTitle": "Solicitar Revisión de Disputa",
+      "requestMessage": "Por favor explica por qué solicitas una disputa:",
+      "flagged": "Disputa Marcada",
+      "request": "Solicitar Disputa"
+    }
   },
   "tournament": {
     "title": "Torneos",

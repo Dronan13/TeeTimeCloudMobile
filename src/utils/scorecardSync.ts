@@ -23,11 +23,43 @@ export interface SyncQueueItem {
   roundId: string;
   updates: Record<string, any>;
   timestamp: string;
+  retryCount?: number;
 }
 
 const SCORECARD_KEY = (roundId: string) => `@scorecard:${roundId}`;
 const SYNC_QUEUE_KEY = '@scorecard_sync_queue';
 const LAST_SYNC_KEY = (roundId: string) => `@scorecard_last_sync:${roundId}`;
+
+const MAX_RETRY_ATTEMPTS = 3;
+const BASE_DELAY_MS = 1000;
+
+/**
+ * Retry an async operation with exponential backoff
+ */
+async function retryWithBackoff<T>(
+  operation: () => Promise<T>,
+  maxRetries: number = MAX_RETRY_ATTEMPTS
+): Promise<T> {
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error('Unknown error');
+
+      if (attempt === maxRetries - 1) {
+        throw lastError;
+      }
+
+      const delay = BASE_DELAY_MS * Math.pow(2, attempt);
+      console.log(`Retry attempt ${attempt + 1}/${maxRetries} after ${delay}ms`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+
+  throw lastError || new Error('Max retries exceeded');
+}
 
 /**
  * Load scorecard state from local storage
@@ -136,22 +168,25 @@ export const clearSyncQueue = async (): Promise<void> => {
 };
 
 /**
- * Sync scorecard to server
+ * Sync scorecard to server with retry logic
  */
 export const syncScorecardToServer = async (
   roundId: string,
   updates: Record<string, any>
 ): Promise<boolean> => {
   try {
-    const { data, error } = await tournamentsService.updateRound(
-      roundId,
-      updates
-    );
+    await retryWithBackoff(async () => {
+      const { data, error } = await tournamentsService.updateRound(
+        roundId,
+        updates
+      );
 
-    if (error) {
-      console.error('Sync error:', error);
-      return false;
-    }
+      if (error) {
+        throw new Error(`Sync error: ${error.message || 'Unknown error'}`);
+      }
+
+      return data;
+    });
 
     // Record successful sync time
     await AsyncStorage.setItem(
@@ -161,13 +196,13 @@ export const syncScorecardToServer = async (
 
     return true;
   } catch (error) {
-    console.error('Error syncing to server:', error);
+    console.error('Error syncing to server after retries:', error);
     return false;
   }
 };
 
 /**
- * Process all pending sync updates
+ * Process all pending sync updates with retry tracking
  */
 export const processSyncQueue = async (): Promise<void> => {
   try {
@@ -177,27 +212,46 @@ export const processSyncQueue = async (): Promise<void> => {
       return;
     }
 
-    // Group updates by roundId
-    const updatesByRound: Record<string, Record<string, any>> = {};
+    // Group updates by roundId, keeping track of retry counts
+    const updatesByRound: Record<string, { updates: Record<string, any>; retryCount: number }> = {};
 
     for (const item of queue) {
       if (!updatesByRound[item.roundId]) {
-        updatesByRound[item.roundId] = {};
+        updatesByRound[item.roundId] = { updates: {}, retryCount: item.retryCount || 0 };
       }
-      Object.assign(updatesByRound[item.roundId], item.updates);
+      Object.assign(updatesByRound[item.roundId].updates, item.updates);
+      updatesByRound[item.roundId].retryCount = Math.max(
+        updatesByRound[item.roundId].retryCount,
+        item.retryCount || 0
+      );
     }
+
+    const failedItems: SyncQueueItem[] = [];
 
     // Sync each round
-    let allSuccess = true;
-    for (const [roundId, updates] of Object.entries(updatesByRound)) {
+    for (const [roundId, { updates, retryCount }] of Object.entries(updatesByRound)) {
+      // Skip if max retries exceeded
+      if (retryCount >= MAX_RETRY_ATTEMPTS) {
+        console.warn(`Max retries exceeded for round ${roundId}, dropping from queue`);
+        continue;
+      }
+
       const success = await syncScorecardToServer(roundId, updates);
       if (!success) {
-        allSuccess = false;
+        // Re-queue with incremented retry count
+        failedItems.push({
+          roundId,
+          updates,
+          timestamp: new Date().toISOString(),
+          retryCount: retryCount + 1,
+        });
       }
     }
 
-    // Clear queue only if all syncs succeeded
-    if (allSuccess) {
+    // Update queue with failed items
+    if (failedItems.length > 0) {
+      await AsyncStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(failedItems));
+    } else {
       await clearSyncQueue();
     }
   } catch (error) {

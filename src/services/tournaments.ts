@@ -390,4 +390,23 @@ export const tournamentsService = {
       return { data: null, error: error as Error };
     }
   },
+
+  /**
+   * Get dispute details for a round
+   */
+  async getDisputeDetails(roundId: string): Promise<ApiResponse<any>> {
+    try {
+      const { data, error } = await supabase
+        .from('tournament_disputes')
+        .select('*')
+        .eq('round_id', roundId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error fetching dispute details:', error);
+      return { data: null, error: error as Error };
+    }
+  },
 };

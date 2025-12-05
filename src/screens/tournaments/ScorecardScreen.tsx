@@ -118,13 +118,43 @@ export default function ScorecardScreen({ route, navigation }: Props) {
   };
 
   const handleDisputeSubmit = async (reason: string) => {
+    // Validate dispute reason
+    if (!reason || reason.trim().length === 0) {
+      Alert.alert(t('common.error'), t('tournaments.dispute.errorReasonRequired'));
+      return;
+    }
+
+    if (reason.trim().length < 10) {
+      Alert.alert(t('common.error'), t('tournaments.dispute.errorReasonTooShort'));
+      return;
+    }
+
     try {
       setSubmittingDispute(true);
-      const { data, error } = await tournamentsService.submitDisputeRequest(roundId, reason);
+      const { data, error } = await tournamentsService.submitDisputeRequest(roundId, reason.trim());
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
       setIsDisputeFlagged(true);
+
+      // Show success confirmation
+      Alert.alert(
+        t('common.success'),
+        t('tournaments.dispute.successSubmitted'),
+        [{ text: t('common.ok') }]
+      );
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : t('tournaments.dispute.errorSubmitFailed');
+      Alert.alert(
+        t('common.error'),
+        errorMessage,
+        [
+          { text: t('common.cancel'), style: 'cancel' },
+          { text: t('common.retry'), onPress: () => handleDisputeSubmit(reason) }
+        ]
+      );
     } finally {
       setSubmittingDispute(false);
     }
