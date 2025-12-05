@@ -1,8 +1,11 @@
 import { ApiResponse } from '@/types';
 
-
 const WEATHER_API_BASE_URL = 'https://api.weatherapi.com/v1';
-const WEATHER_API_KEY = 'd6b143fd40d4428e95763949251311';
+const WEATHER_API_KEY = process.env.EXPO_PUBLIC_WEATHER_API_KEY;
+
+if (!WEATHER_API_KEY) {
+  throw new Error('Weather API key not configured. Please add EXPO_PUBLIC_WEATHER_API_KEY to your .env file');
+}
 
 export interface CurrentWeather {
   location: {
