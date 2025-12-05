@@ -383,7 +383,6 @@ export default function ScorecardScreen({ route, navigation }: Props) {
         style={[styles.scrollView, isDark && styles.scrollViewDark]}
         contentContainerStyle={styles.scrollContent}
       >
-
         {/* Navigation */}
         <View style={styles.navigationRow}>
           <TouchableOpacity
