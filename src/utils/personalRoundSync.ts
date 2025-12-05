@@ -227,26 +227,26 @@ export const calculateGIR = (strokes: number, par: number): boolean => {
 
 export const calculateTotalGIR = (holes: any[]): number => {
   return holes.filter(
-    (h) => h.strokes !== null && h.strokes !== undefined && calculateGIR(h.strokes, h.par)
+    (h) => h.score !== null && h.score !== undefined && calculateGIR(h.score, h.par)
   ).length;
 };
 
 export const calculateGrosScore = (holes: any[]): number => {
   return holes
-    .filter((h) => h.strokes !== null && h.strokes !== undefined)
-    .reduce((sum, h) => sum + h.strokes, 0);
+    .filter((h) => h.score !== null && h.score !== undefined)
+    .reduce((sum, h) => sum + h.score, 0);
 };
 
 export const calculateFront9 = (holes: any[]): number => {
   return holes
-    .filter((h) => h.hole_number <= 9 && h.strokes !== null && h.strokes !== undefined)
-    .reduce((sum, h) => sum + h.strokes, 0);
+    .filter((h) => h.hole_number <= 9 && h.score !== null && h.score !== undefined)
+    .reduce((sum, h) => sum + h.score, 0);
 };
 
 export const calculateBack9 = (holes: any[]): number => {
   return holes
-    .filter((h) => h.hole_number > 9 && h.strokes !== null && h.strokes !== undefined)
-    .reduce((sum, h) => sum + h.strokes, 0);
+    .filter((h) => h.hole_number > 9 && h.score !== null && h.score !== undefined)
+    .reduce((sum, h) => sum + h.score, 0);
 };
 
 export const calculateNetScore = (grossScore: number, courseHandicap: number): number => {
@@ -255,7 +255,7 @@ export const calculateNetScore = (grossScore: number, courseHandicap: number): n
 
 export const calculateTotalPar = (holes: any[]): number => {
   return holes
-    .filter((h) => h.strokes !== null && h.strokes !== undefined)
+    .filter((h) => h.score !== null && h.score !== undefined)
     .reduce((sum, h) => sum + h.par, 0);
 };
 
@@ -272,8 +272,7 @@ export const calculateStatistics = (
   slopeRating?: number
 ): RoundStatistics => {
   // Filter only played holes
-  const playedHoles = holes.filter((h) => h.strokes !== null && h.strokes !== undefined);
-
+  const playedHoles = holes.filter((h) => h.score !== null && h.score !== undefined);
   if (playedHoles.length === 0) {
     return createEmptyStatistics();
   }

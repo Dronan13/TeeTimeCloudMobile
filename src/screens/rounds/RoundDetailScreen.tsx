@@ -11,6 +11,7 @@ import {
 import { RoundsStackParamList } from '@/types/personalRound';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { golfRoundsService, RoundStatistics } from '@/services/golfRounds';
 import { calculateStatistics } from '@/utils/personalRoundSync';
 import { Edit2, Trash2 } from 'lucide-react-native';
@@ -46,6 +47,7 @@ interface RoundDetail {
 export default function RoundDetailScreen({ navigation, route }: Props) {
   const { roundId } = route.params;
   const { isDark } = useTheme();
+  const { t } = useLanguage();
 
   const [round, setRound] = useState<RoundDetail | null>(null);
   const [holes, setHoles] = useState<HoleDetail[]>([]);
@@ -125,10 +127,10 @@ export default function RoundDetailScreen({ navigation, route }: Props) {
   }, [navigation, roundId]);
 
   const handleDelete = useCallback(() => {
-    Alert.alert('Delete Round', 'Are you sure you want to delete this round?', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('rounds.detail.delete'), t('rounds.detail.deleteConfirm'), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('rounds.detail.delete'),
         style: 'destructive',
         onPress: async () => {
           try {
@@ -137,14 +139,14 @@ export default function RoundDetailScreen({ navigation, route }: Props) {
             navigation.navigate('RoundsList');
           } catch (error) {
             console.error('Error deleting round:', error);
-            Alert.alert('Error', 'Failed to delete round');
+            Alert.alert(t('common.error'), t('rounds.detail.deleteError'));
           } finally {
             setDeleting(false);
           }
         },
       },
     ]);
-  }, [roundId, navigation]);
+  }, [roundId, navigation, t]);
 
   if (loading) {
     return (
@@ -200,7 +202,7 @@ export default function RoundDetailScreen({ navigation, route }: Props) {
               {/* Gross Score */}
               <View className="flex-1 mr-2 rounded-lg p-4" style={{ backgroundColor: cardBg }}>
                 <Text className="text-xs" style={{ color: secondaryColor }}>
-                  Score
+                  {t('rounds.detail.score')}
                 </Text>
                 <Text className="text-3xl font-bold" style={{ color: textColor }}>
                   {stats.grossScore}
@@ -224,7 +226,7 @@ export default function RoundDetailScreen({ navigation, route }: Props) {
                   className="text-xs"
                   style={{ color: isGood ? '#90ee90' : '#f8a5a5' }}
                 >
-                  vs Par
+                  {t('rounds.detail.vsPar')}
                 </Text>
                 <Text
                   className="text-3xl font-bold"
@@ -238,7 +240,7 @@ export default function RoundDetailScreen({ navigation, route }: Props) {
               {/* GIR % */}
               <View className="flex-1 rounded-lg p-4" style={{ backgroundColor: cardBg }}>
                 <Text className="text-xs" style={{ color: secondaryColor }}>
-                  GIR %
+                  {t('rounds.detail.girPercent')}
                 </Text>
                 <Text className="text-3xl font-bold" style={{ color: textColor }}>
                   {Math.round(stats.girPercentage)}%
@@ -250,7 +252,7 @@ export default function RoundDetailScreen({ navigation, route }: Props) {
             <View className="flex-row justify-between mb-4">
               <View className="flex-1 mr-2 rounded-lg p-3" style={{ backgroundColor: cardBg }}>
                 <Text className="text-xs" style={{ color: secondaryColor }}>
-                  Front 9
+                  {t('rounds.detail.front9')}
                 </Text>
                 <Text className="text-2xl font-bold" style={{ color: textColor }}>
                   {stats.front9Score}
@@ -259,7 +261,7 @@ export default function RoundDetailScreen({ navigation, route }: Props) {
 
               <View className="flex-1 mr-2 rounded-lg p-3" style={{ backgroundColor: cardBg }}>
                 <Text className="text-xs" style={{ color: secondaryColor }}>
-                  Back 9
+                  {t('rounds.detail.back9')}
                 </Text>
                 <Text className="text-2xl font-bold" style={{ color: textColor }}>
                   {stats.back9Score}
@@ -268,7 +270,7 @@ export default function RoundDetailScreen({ navigation, route }: Props) {
 
               <View className="flex-1 rounded-lg p-3" style={{ backgroundColor: cardBg }}>
                 <Text className="text-xs" style={{ color: secondaryColor }}>
-                  Total Par
+                  {t('rounds.detail.totalPar')}
                 </Text>
                 <Text className="text-2xl font-bold" style={{ color: textColor }}>
                   {stats.totalPar}
@@ -279,14 +281,14 @@ export default function RoundDetailScreen({ navigation, route }: Props) {
             {/* Detailed Stats */}
             <View className="grid gap-3 mb-4">
               <View className="flex-row justify-between p-3 rounded-lg" style={{ backgroundColor: cardBg }}>
-                <Text style={{ color: textColor }}>Putts</Text>
+                <Text style={{ color: textColor }}>{t('rounds.detail.putts')}</Text>
                 <Text className="font-semibold" style={{ color: textColor }}>
                   {stats.totalPutts}
                 </Text>
               </View>
 
               <View className="flex-row justify-between p-3 rounded-lg" style={{ backgroundColor: cardBg }}>
-                <Text style={{ color: textColor }}>GIR</Text>
+                <Text style={{ color: textColor }}>{t('rounds.detail.gir')}</Text>
                 <Text className="font-semibold" style={{ color: textColor }}>
                   {stats.girCount} / {stats.holesPlayed}
                 </Text>
@@ -294,7 +296,7 @@ export default function RoundDetailScreen({ navigation, route }: Props) {
 
               {stats.fairwaysOpportunity > 0 && (
                 <View className="flex-row justify-between p-3 rounded-lg" style={{ backgroundColor: cardBg }}>
-                  <Text style={{ color: textColor }}>Fairways</Text>
+                  <Text style={{ color: textColor }}>{t('rounds.detail.fairways')}</Text>
                   <Text className="font-semibold" style={{ color: textColor }}>
                     {stats.fairwaysHit} / {stats.fairwaysOpportunity} ({Math.round(stats.fairwayPercentage)}%)
                   </Text>
@@ -303,7 +305,7 @@ export default function RoundDetailScreen({ navigation, route }: Props) {
 
               {stats.sandSaveOpportunity > 0 && (
                 <View className="flex-row justify-between p-3 rounded-lg" style={{ backgroundColor: cardBg }}>
-                  <Text style={{ color: textColor }}>Sand Saves</Text>
+                  <Text style={{ color: textColor }}>{t('rounds.detail.sandSaves')}</Text>
                   <Text className="font-semibold" style={{ color: textColor }}>
                     {stats.sandSaves} / {stats.sandSaveOpportunity} ({Math.round(stats.sandSavePercentage)}%)
                   </Text>
@@ -311,7 +313,7 @@ export default function RoundDetailScreen({ navigation, route }: Props) {
               )}
 
               <View className="flex-row justify-between p-3 rounded-lg" style={{ backgroundColor: cardBg }}>
-                <Text style={{ color: textColor }}>Differential</Text>
+                <Text style={{ color: textColor }}>{t('rounds.detail.differential')}</Text>
                 <Text className="font-semibold" style={{ color: textColor }}>
                   {stats.differential.toFixed(1)}
                 </Text>
@@ -327,7 +329,7 @@ export default function RoundDetailScreen({ navigation, route }: Props) {
               className="text-lg font-bold mb-3"
               style={{ color: textColor }}
             >
-              Scorecard
+              {t('rounds.detail.scorecard')}
             </Text>
 
             {/* Front 9 */}
@@ -337,7 +339,7 @@ export default function RoundDetailScreen({ navigation, route }: Props) {
                   className="text-sm font-semibold mb-2"
                   style={{ color: secondaryColor }}
                 >
-                  Front 9
+                  {t('rounds.detail.front9')}
                 </Text>
                 <View className="flex-row flex-wrap">
                   {holes.slice(0, 9).map((hole) => (
@@ -357,7 +359,7 @@ export default function RoundDetailScreen({ navigation, route }: Props) {
                           className="text-xs"
                           style={{ color: secondaryColor }}
                         >
-                          H{hole.number}
+                          {t('rounds.detail.hole')}{hole.number}
                         </Text>
                         <Text
                           className="text-lg font-bold mt-1"
@@ -371,11 +373,44 @@ export default function RoundDetailScreen({ navigation, route }: Props) {
                           className="text-xs"
                           style={{ color: secondaryColor }}
                         >
-                          Par {hole.par}
+                          {t('rounds.detail.par')} {hole.par}
                         </Text>
                       </View>
                     </View>
                   ))}
+
+                  {/* Front 9 Summary */}
+                  <View className="w-1/5 p-2">
+                    <View
+                      className="rounded-lg p-2 items-center"
+                      style={{
+                        backgroundColor: '#2d7a4e',
+                        borderColor: '#2d7a4e',
+                        borderWidth: 1,
+                      }}
+                    >
+                      <Text
+                        className="text-xs font-semibold"
+                        style={{ color: '#ffffff' }}
+                      >
+                        {t('rounds.detail.out')}
+                      </Text>
+                      <Text
+                        className="text-lg font-bold mt-1"
+                        style={{ color: '#ffffff' }}
+                      >
+                        {round?.front_score || 0}
+                      </Text>
+                      <Text
+                        className="text-xs"
+                        style={{ color: '#e0f2e9' }}
+                      >
+                        {round?.front_score && holes.slice(0, 9).length > 0
+                          ? `${round.front_score > holes.slice(0, 9).reduce((sum, h) => sum + h.par, 0) ? '+' : ''}${round.front_score - holes.slice(0, 9).reduce((sum, h) => sum + h.par, 0)}`
+                          : '-'}
+                      </Text>
+                    </View>
+                  </View>
                 </View>
               </View>
             )}
@@ -387,7 +422,7 @@ export default function RoundDetailScreen({ navigation, route }: Props) {
                   className="text-sm font-semibold mb-2"
                   style={{ color: secondaryColor }}
                 >
-                  Back 9
+                  {t('rounds.detail.back9')}
                 </Text>
                 <View className="flex-row flex-wrap">
                   {holes.slice(9, 18).map((hole) => (
@@ -407,7 +442,7 @@ export default function RoundDetailScreen({ navigation, route }: Props) {
                           className="text-xs"
                           style={{ color: secondaryColor }}
                         >
-                          H{hole.number}
+                          {t('rounds.detail.hole')}{hole.number}
                         </Text>
                         <Text
                           className="text-lg font-bold mt-1"
@@ -421,11 +456,44 @@ export default function RoundDetailScreen({ navigation, route }: Props) {
                           className="text-xs"
                           style={{ color: secondaryColor }}
                         >
-                          Par {hole.par}
+                          {t('rounds.detail.par')} {hole.par}
                         </Text>
                       </View>
                     </View>
                   ))}
+
+                  {/* Back 9 Summary */}
+                  <View className="w-1/5 p-2">
+                    <View
+                      className="rounded-lg p-2 items-center"
+                      style={{
+                        backgroundColor: '#2d7a4e',
+                        borderColor: '#2d7a4e',
+                        borderWidth: 1,
+                      }}
+                    >
+                      <Text
+                        className="text-xs font-semibold"
+                        style={{ color: '#ffffff' }}
+                      >
+                        {t('rounds.detail.in')}
+                      </Text>
+                      <Text
+                        className="text-lg font-bold mt-1"
+                        style={{ color: '#ffffff' }}
+                      >
+                        {round?.back_score || 0}
+                      </Text>
+                      <Text
+                        className="text-xs"
+                        style={{ color: '#e0f2e9' }}
+                      >
+                        {round?.back_score && holes.slice(9, 18).length > 0
+                          ? `${round.back_score > holes.slice(9, 18).reduce((sum, h) => sum + h.par, 0) ? '+' : ''}${round.back_score - holes.slice(9, 18).reduce((sum, h) => sum + h.par, 0)}`
+                          : '-'}
+                      </Text>
+                    </View>
+                  </View>
                 </View>
               </View>
             )}
@@ -445,7 +513,7 @@ export default function RoundDetailScreen({ navigation, route }: Props) {
           style={{ backgroundColor: '#2d7a4e' }}
         >
           <Edit2 size={20} color="#ffffff" strokeWidth={2} />
-          <Text className="text-white font-semibold ml-2">Edit</Text>
+          <Text className="text-white font-semibold ml-2">{t('rounds.detail.edit')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -459,7 +527,7 @@ export default function RoundDetailScreen({ navigation, route }: Props) {
           ) : (
             <>
               <Trash2 size={20} color="#ffffff" strokeWidth={2} />
-              <Text className="text-white font-semibold ml-2">Delete</Text>
+              <Text className="text-white font-semibold ml-2">{t('rounds.detail.delete')}</Text>
             </>
           )}
         </TouchableOpacity>

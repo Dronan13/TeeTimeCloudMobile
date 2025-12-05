@@ -460,5 +460,37 @@
     "notFound": "Recurso no encontrado.",
     "unknown": "Ocurrió un error desconocido.",
     "timeout": "Tiempo de espera agotado. Por favor intenta de nuevo."
+  },
+  "rounds": {
+    "details": "Detalles",
+    "title": "Mis Rondas",
+    "noRounds": "Sin rondas aún",
+    "noRoundsMessage": "Comienza a rastrear tus rondas de golf para ver tu progreso y estadísticas aquí.",
+    "startFirstRound": "Comenzar Tu Primera Ronda",
+    "newRound": "Nueva Ronda",
+    "detail": {
+      "title": "Detalles de la Ronda",
+      "score": "Puntuación",
+      "vsPar": "vs Par",
+      "gir": "GIR",
+      "girPercent": "GIR %",
+      "front9": "Primeros 9",
+      "back9": "Últimos 9",
+      "totalPar": "Par Total",
+      "putts": "Putts",
+      "fairways": "Calles",
+      "sandSaves": "Salvadas de Arena",
+      "differential": "Diferencial",
+      "scorecard": "Tarjeta",
+      "out": "IDA",
+      "in": "VUELTA",
+      "hole": "H",
+      "par": "Par",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "deleteConfirm": "¿Estás seguro de que quieres eliminar esta ronda?",
+      "deleteError": "Error al eliminar ronda",
+      "inProgress": "En Progreso"
+    }
   }
 }

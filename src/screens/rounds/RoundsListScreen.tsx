@@ -7,11 +7,13 @@ import {
   TouchableOpacity,
   Text,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { RoundsStackParamList } from '@/types/personalRound';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useAuth } from '@/hooks/useAuth';
 import { golfRoundsService } from '@/services/golfRounds';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Plus } from 'lucide-react-native';
 
 type Props = NativeStackScreenProps<RoundsStackParamList, 'RoundsList'>;
@@ -32,6 +34,7 @@ interface RoundCardData {
 export default function RoundsListScreen({ navigation }: Props) {
   const { user } = useAuth();
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const [rounds, setRounds] = useState<RoundCardData[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -43,6 +46,17 @@ export default function RoundsListScreen({ navigation }: Props) {
   const textColor = isDark ? '#ffffff' : '#1e2226';
   const secondaryColor = isDark ? '#adb5bd' : '#6c757d';
   const cardBg = isDark ? '#2b3137' : '#f8f9fa';
+
+  useEffect(() => {
+    fetchRounds(1);
+  }, [user?.id]);
+
+  // Refresh data every time the screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      fetchRounds(1);
+    }, [user?.id])
+  );
 
   const fetchRounds = useCallback(
     async (pageNum: number = 1, isRefresh = false) => {
@@ -75,10 +89,6 @@ export default function RoundsListScreen({ navigation }: Props) {
     },
     [user?.id, rounds]
   );
-
-  useEffect(() => {
-    fetchRounds(1);
-  }, [user?.id]);
 
   const handleLoadMore = useCallback(() => {
     if (hasMore && !loading) {
@@ -163,7 +173,7 @@ export default function RoundsListScreen({ navigation }: Props) {
                 className="text-xs"
                 style={{ color: secondaryColor }}
               >
-                Score
+                {t('rounds.detail.score')}
               </Text>
               <Text
                 className="text-xl font-bold"
@@ -182,7 +192,7 @@ export default function RoundsListScreen({ navigation }: Props) {
                 className="text-xs"
                 style={{ color: scoreTextColor }}
               >
-                vs Par
+                {t('rounds.detail.vsPar')}
               </Text>
               <Text
                 className="text-xl font-bold"
@@ -199,7 +209,7 @@ export default function RoundsListScreen({ navigation }: Props) {
                 className="text-xs"
                 style={{ color: secondaryColor }}
               >
-                GIR
+                {t('rounds.detail.gir')}
               </Text>
               <Text
                 className="text-xl font-bold"
@@ -216,13 +226,13 @@ export default function RoundsListScreen({ navigation }: Props) {
               className="text-xs"
               style={{ color: secondaryColor }}
             >
-              Front: <Text style={{ color: textColor }}>{item.front_score}</Text>
+              {t('rounds.detail.front9')}: <Text style={{ color: textColor }}>{item.front_score}</Text>
             </Text>
             <Text
               className="text-xs"
               style={{ color: secondaryColor }}
             >
-              Back: <Text style={{ color: textColor }}>{item.back_score}</Text>
+              {t('rounds.detail.back9')}: <Text style={{ color: textColor }}>{item.back_score}</Text>
             </Text>
           </View>
 
@@ -230,7 +240,7 @@ export default function RoundsListScreen({ navigation }: Props) {
           {!item.total_score && (
             <View className="mt-2 pt-2 border-t" style={{ borderColor: isDark ? '#343a40' : '#dee2e6' }}>
               <Text className="text-xs" style={{ color: '#ffc107' }}>
-                In Progress
+                {t('rounds.detail.inProgress')}
               </Text>
             </View>
           )}
@@ -245,20 +255,20 @@ export default function RoundsListScreen({ navigation }: Props) {
         className="text-lg font-semibold mb-2"
         style={{ color: textColor }}
       >
-        No rounds yet
+        {t('rounds.noRounds')}
       </Text>
       <Text
         className="text-sm text-center px-6"
         style={{ color: secondaryColor }}
       >
-        Start tracking your golf rounds to see your progress and statistics here.
+        {t('rounds.noRoundsMessage')}
       </Text>
       <TouchableOpacity
         onPress={handleNewRound}
         className="mt-6 px-6 py-3 rounded-lg"
         style={{ backgroundColor: '#2d7a4e' }}
       >
-        <Text className="text-white font-semibold">Start Your First Round</Text>
+        <Text className="text-white font-semibold">{t('rounds.startFirstRound')}</Text>
       </TouchableOpacity>
     </View>
   );

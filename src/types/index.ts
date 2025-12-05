@@ -61,6 +61,15 @@ export type AppTabParamList = {
   Profile: NavigatorScreenParams<ProfileStackParamList> | undefined;
 };
 
+export type AppTab5ParamList = {
+  Home: undefined;
+  Courses: NavigatorScreenParams<CoursesStackParamList> | undefined;
+  Tournaments: NavigatorScreenParams<TournamentsStackParamList> | undefined;
+  RSSArticles: undefined;
+  Profile: NavigatorScreenParams<ProfileStackParamList> | undefined;
+};
+
+
 export type CoursesStackParamList = {
   CoursesList: undefined;
   CourseDetail: { courseId: string };

@@ -13,7 +13,6 @@ import {
   Dimensions,
   Button,
 } from 'react-native';
-import * as Sentry from '@sentry/react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { CompositeNavigationProp } from '@react-navigation/native';
@@ -27,7 +26,7 @@ import { coursesService } from '@/services/courses';
 import { weatherService } from '@/services/weather';
 import { tournamentsService } from '@/services/tournaments';
 import { golfRoundsService } from '@/services/golfRounds';
-import { ReservationWithDetails, CourseEvent, AppTabParamList, CoursesStackParamList, Database } from '@/types';
+import { CourseEvent, AppTabParamList, CoursesStackParamList, Database } from '@/types';
 import MyTournamentCard from '@/components/MyTournamentCard';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -67,9 +66,7 @@ export default function HomeScreen() {
   // Refresh data every time the screen comes into focus
   useFocusEffect(
     useCallback(() => {
-      if (user?.id) {
-        loadHomeData();
-      }
+      loadHomeData();
     }, [user?.id])
   );
 

@@ -81,11 +81,7 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
 
   const getLocationAddress = (location: any): string | null => {
     if (!location) return null;
-    if (typeof location === 'string') return location;
-    if (typeof location === 'object') {
-      return location.address || location.formatted_address || location.city || null;
-    }
-    return null;
+    return location.city + ', ' + location.state || null;
   };
 
   const renderCourseItem = ({ item }: { item: Course }) => {
@@ -99,7 +95,6 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
         onPress={() => handleCoursePress(item.id)}
         activeOpacity={0.7}
       >
-        <Image source={{ uri: imageUrl }} style={styles.courseImage} resizeMode="cover" />
         <View style={[styles.courseInfo, isDark && styles.courseInfoDark]}>
           <Text style={[styles.courseName, isDark && styles.courseNameDark]} numberOfLines={1}>
             {item.name}
@@ -109,22 +104,6 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
               <MapPin size={14} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={2} />
               <Text style={[styles.courseLocation, isDark && styles.courseLocationDark]} numberOfLines={2}>
                 {locationAddress}
-              </Text>
-            </View>
-          )}
-          {item.phone && (
-            <View style={styles.courseRow}>
-              <Phone size={14} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={2} />
-              <Text style={[styles.coursePhone, isDark && styles.coursePhoneDark]} numberOfLines={1}>
-                {item.phone}
-              </Text>
-            </View>
-          )}
-          {item.email && (
-            <View style={styles.courseRow}>
-              <Mail size={14} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={2} />
-              <Text style={[styles.courseEmail, isDark && styles.courseEmailDark]} numberOfLines={1}>
-                {item.email}
               </Text>
             </View>
           )}

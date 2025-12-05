@@ -10,8 +10,6 @@ npm-debug.*
 *.orig.*
 .env
 .env.local
-.claude/
-.docs/
 web-build/
 ios/
 android/

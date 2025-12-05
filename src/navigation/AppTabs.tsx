@@ -1,10 +1,10 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { AppTabParamList, CoursesStackParamList, ProfileStackParamList } from '@/types';
+import { AppTabParamList, AppTab5ParamList, CoursesStackParamList, ProfileStackParamList } from '@/types';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Home, Flag, Calendar, Bell, User, Newspaper, Trophy, RotateCcw } from 'lucide-react-native';
+import { Home, Flag, Calendar, User, Newspaper, Trophy, RotateCcw } from 'lucide-react-native';
 
 // Import screens
 import HomeScreen from '@/screens/HomeScreen';
@@ -252,3 +252,4 @@ export default function AppTabs() {
     </Tab.Navigator>
   );
 }
+

@@ -320,27 +320,60 @@ export const golfRoundsService = {
         durationMinutes = Math.round((end - start) / (1000 * 60));
       }
 
-      // Calculate total penalties from all holes
-      const { data: holesData } = await supabase
-        .from('golf_round_holes')
-        .select('penalties')
-        .eq('round_id', roundId);
+      // Fetch all holes data to calculate statistics from actual data
+      // Use golf_round_holes_details view which includes course_par
+      const { data: holesData, error: holesError } = await supabase
+        .from('golf_round_holes_details')
+        .select('hole_number, strokes, putts, penalties, fairway_hit, course_par')
+        .eq('round_id', roundId)
+        .not('strokes', 'is', null);
 
-      const totalPenalties = holesData
-        ? holesData.reduce((sum, hole) => sum + (hole.penalties || 0), 0)
-        : 0;
+      if (holesError) throw holesError;
 
-      // Then update round with stats
+      // Calculate all statistics from holes data
+      const holes = holesData || [];
+
+      // Total score
+      const totalScore = holes.reduce((sum, h) => sum + (h.strokes || 0), 0);
+
+      // Front 9 and Back 9 scores
+      const front9Holes = holes.filter(h => (h.hole_number || 0) <= 9);
+      const back9Holes = holes.filter(h => (h.hole_number || 0) > 9);
+      const frontScore = front9Holes.reduce((sum, h) => sum + (h.strokes || 0), 0);
+      const backScore = back9Holes.reduce((sum, h) => sum + (h.strokes || 0), 0);
+
+      // Score to par
+      const totalPar = holes.reduce((sum, h) => sum + (h.course_par || 0), 0);
+      const scoreToPar = totalScore - totalPar;
+
+      // Total putts
+      const totalPutts = holes.reduce((sum, h) => sum + (h.putts || 0), 0);
+
+      // Total penalties
+      const totalPenalties = holes.reduce((sum, h) => sum + (h.penalties || 0), 0);
+
+      // Fairways hit (par 4s and 5s only)
+      const fairwayOpportunities = holes.filter(h => (h.course_par || 0) >= 4);
+      const fairwaysHit = fairwayOpportunities.filter(h => h.fairway_hit === true).length;
+
+      // Greens in regulation (GIR) - strokes <= par - 2
+      const greensInRegulation = holes.filter(h => {
+        const strokes = h.strokes || 0;
+        const par = h.course_par || 0;
+        return strokes <= par - 2;
+      }).length;
+
+      // Then update round with calculated stats
       const updateData: any = {
-        total_score: statistics.grossScore,
-        front_score: statistics.front9Score,
-        back_score: statistics.back9Score,
-        score_to_par: statistics.scoreToPar,
-        total_putts: statistics.totalPutts,
-        fairways_hit: statistics.fairwaysHit,
-        greens_in_regulation: statistics.girCount,
-        differential: statistics.differential,
+        total_score: totalScore,
+        front_score: frontScore || null,
+        back_score: backScore || null,
+        score_to_par: scoreToPar,
+        total_putts: totalPutts,
         total_penalties: totalPenalties,
+        fairways_hit: fairwaysHit,
+        greens_in_regulation: greensInRegulation,
+        differential: statistics.differential, // Use calculated differential from statistics
       };
 
       if (startTime) updateData.start_time = startTime;

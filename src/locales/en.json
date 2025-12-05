@@ -460,5 +460,37 @@
     "notFound": "Resource not found.",
     "unknown": "An unknown error occurred.",
     "timeout": "Request timeout. Please try again."
+  },
+  "rounds": {
+    "details": "Details",
+    "title": "My Rounds",
+    "noRounds": "No rounds yet",
+    "noRoundsMessage": "Start tracking your golf rounds to see your progress and statistics here.",
+    "startFirstRound": "Start Your First Round",
+    "newRound": "New Round",
+    "detail": {
+      "title": "Round Details",
+      "score": "Score",
+      "vsPar": "vs Par",
+      "gir": "GIR",
+      "girPercent": "GIR %",
+      "front9": "Front 9",
+      "back9": "Back 9",
+      "totalPar": "Total Par",
+      "putts": "Putts",
+      "fairways": "Fairways",
+      "sandSaves": "Sand Saves",
+      "differential": "Differential",
+      "scorecard": "Scorecard",
+      "out": "OUT",
+      "in": "IN",
+      "hole": "H",
+      "par": "Par",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirm": "Are you sure you want to delete this round?",
+      "deleteError": "Failed to delete round",
+      "inProgress": "In Progress"
+    }
   }
 }
