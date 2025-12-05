@@ -131,13 +131,76 @@ export default function ProfileEditScreen() {
 
           <View style={styles.inputContainer}>
             <Text style={[styles.label, isDark && styles.labelDark]}>{t('profile.edit.gender')}</Text>
+            <View style={styles.genderContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.genderOption,
+                  isDark && styles.genderOptionDark,
+                  formData.gender === 'Male' && styles.genderOptionSelected,
+                  formData.gender === 'Male' && isDark && styles.genderOptionSelectedDark,
+                ]}
+                onPress={() => handleInputChange('gender', 'Male')}
+              >
+                <Text
+                  style={[
+                    styles.genderOptionText,
+                    isDark && styles.genderOptionTextDark,
+                    formData.gender === 'Male' && styles.genderOptionTextSelected,
+                  ]}
+                >
+                  {t('profile.edit.male')}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.genderOption,
+                  isDark && styles.genderOptionDark,
+                  formData.gender === 'Female' && styles.genderOptionSelected,
+                  formData.gender === 'Female' && isDark && styles.genderOptionSelectedDark,
+                ]}
+                onPress={() => handleInputChange('gender', 'Female')}
+              >
+                <Text
+                  style={[
+                    styles.genderOptionText,
+                    isDark && styles.genderOptionTextDark,
+                    formData.gender === 'Female' && styles.genderOptionTextSelected,
+                  ]}
+                >
+                  {t('profile.edit.female')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+
+        <View style={[styles.section, isDark && styles.sectionDark]}>
+          <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>
+            {t('profile.edit.golfInfo')}
+          </Text>
+
+          <View style={styles.inputContainer}>
+            <Text style={[styles.label, isDark && styles.labelDark]}>{t('profile.edit.handicap')}</Text>
             <TextInput
               style={[styles.input, isDark && styles.inputDark]}
-              placeholder={t('profile.edit.genderPlaceholder')}
+              placeholder={t('profile.edit.handicapPlaceholder')}
               placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
-              value={formData.gender}
-              onChangeText={(value) => handleInputChange('gender', value)}
-              autoCapitalize="words"
+              value={formData.handicap_index}
+              onChangeText={(value) => handleInputChange('handicap_index', value)}
+              keyboardType="decimal-pad"
+            />
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Text style={[styles.label, isDark && styles.labelDark]}>{t('profile.edit.ghinId')}</Text>
+            <TextInput
+              style={[styles.input, isDark && styles.inputDark]}
+              placeholder={t('profile.edit.ghinIdPlaceholder')}
+              placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
+              value={formData.ghin_id}
+              onChangeText={(value) => handleInputChange('ghin_id', value)}
+              keyboardType="number-pad"
             />
           </View>
         </View>
@@ -192,72 +255,6 @@ export default function ProfileEditScreen() {
               value={formData.zip_code}
               onChangeText={(value) => handleInputChange('zip_code', value)}
               keyboardType="number-pad"
-            />
-          </View>
-        </View>
-
-        <View style={[styles.section, isDark && styles.sectionDark]}>
-          <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>
-            {t('profile.edit.golfInfo')}
-          </Text>
-
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>{t('profile.edit.handicap')}</Text>
-            <TextInput
-              style={[styles.input, isDark && styles.inputDark]}
-              placeholder={t('profile.edit.handicapPlaceholder')}
-              placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
-              value={formData.handicap_index}
-              onChangeText={(value) => handleInputChange('handicap_index', value)}
-              keyboardType="decimal-pad"
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>{t('profile.edit.ghinId')}</Text>
-            <TextInput
-              style={[styles.input, isDark && styles.inputDark]}
-              placeholder={t('profile.edit.ghinIdPlaceholder')}
-              placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
-              value={formData.ghin_id}
-              onChangeText={(value) => handleInputChange('ghin_id', value)}
-              keyboardType="number-pad"
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>{t('profile.edit.averageScore')}</Text>
-            <TextInput
-              style={[styles.input, isDark && styles.inputDark]}
-              placeholder={t('profile.edit.averageScorePlaceholder')}
-              placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
-              value={formData.average_score}
-              onChangeText={(value) => handleInputChange('average_score', value)}
-              keyboardType="decimal-pad"
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>{t('profile.edit.averageDrive')}</Text>
-            <TextInput
-              style={[styles.input, isDark && styles.inputDark]}
-              placeholder={t('profile.edit.averageDrivePlaceholder')}
-              placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
-              value={formData.average_drive_yards}
-              onChangeText={(value) => handleInputChange('average_drive_yards', value)}
-              keyboardType="number-pad"
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, isDark && styles.labelDark]}>{t('profile.edit.playingFrequency')}</Text>
-            <TextInput
-              style={[styles.input, isDark && styles.inputDark]}
-              placeholder={t('profile.edit.playingFrequencyPlaceholder')}
-              placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
-              value={formData.playing_frequency}
-              onChangeText={(value) => handleInputChange('playing_frequency', value)}
-              autoCapitalize="words"
             />
           </View>
         </View>
@@ -350,6 +347,45 @@ const styles = StyleSheet.create({
     backgroundColor: '#343a40',
     borderColor: '#495057',
     color: '#f8f9fa',
+  },
+  genderContainer: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  genderOption: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#d1d6db',
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  genderOptionDark: {
+    backgroundColor: '#343a40',
+    borderColor: '#495057',
+  },
+  genderOptionSelected: {
+    backgroundColor: '#2d7a4e',
+    borderColor: '#2d7a4e',
+  },
+  genderOptionSelectedDark: {
+    backgroundColor: '#2d7a4e',
+    borderColor: '#2d7a4e',
+  },
+  genderOptionText: {
+    fontSize: 16,
+    color: '#495057',
+    fontWeight: '500',
+  },
+  genderOptionTextDark: {
+    color: '#f8f9fa',
+  },
+  genderOptionTextSelected: {
+    color: '#fff',
+    fontWeight: '600',
   },
   saveButton: {
     backgroundColor: '#2d7a4e',

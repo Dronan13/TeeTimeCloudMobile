@@ -9,14 +9,25 @@ import {
   FlatList,
   Switch,
   Modal,
+  AppState,
 } from 'react-native';
 import { RoundsStackParamList } from '@/types/personalRound';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { golfRoundsService } from '@/services/golfRounds';
-import { calculateStatistics, saveRoundToStorage, loadRoundFromStorage } from '@/utils/personalRoundSync';
-import { ChevronLeft, ChevronRight, Flag } from 'lucide-react-native';
+import {
+  calculateStatistics,
+  saveRoundToStorage,
+  loadRoundFromStorage,
+  queueHoleUpdate,
+  queueRoundCompletion,
+  getSyncQueue,
+  processSyncQueue,
+  getQueuedHoleCount,
+} from '@/utils/personalRoundSync';
+import { ChevronLeft, ChevronRight, Flag, Wifi, WifiOff, Loader, AlertCircle } from 'lucide-react-native';
 
 type Props = NativeStackScreenProps<RoundsStackParamList, 'PersonalScorecard'>;
 
@@ -35,6 +46,7 @@ interface HoleData {
 export default function PersonalScorecardScreen({ navigation, route }: Props) {
   const { user } = useAuth();
   const { isDark } = useTheme();
+  const { isOnline } = useNetworkStatus();
   const { roundId, isEditing = false } = route.params;
 
   const [holes, setHoles] = useState<HoleData[]>([]);
@@ -44,6 +56,9 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
   const [saving, setSaving] = useState(false);
   const [courseData, setCourseData] = useState<any>(null);
   const [showScoreInput, setShowScoreInput] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<'synced' | 'syncing' | 'offline' | 'error'>('synced');
+  const [pendingUpdates, setPendingUpdates] = useState(0);
+  const [roundStartTime, setRoundStartTime] = useState<string | null>(null);
   const scoreInputRef = useRef<TextInput>(null);
 
   const bgColor = isDark ? '#1e2226' : '#ffffff';
@@ -51,10 +66,84 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
   const secondaryColor = isDark ? '#adb5bd' : '#6c757d';
   const cardBg = isDark ? '#2b3137' : '#f8f9fa';
 
+  // Auto-sync function
+  const attemptAutoSync = useCallback(async () => {
+    if (!isOnline) {
+      setSyncStatus('offline');
+      return;
+    }
+
+    try {
+      setSyncStatus('syncing');
+      const queue = await getSyncQueue();
+
+      if (queue.length === 0) {
+        setSyncStatus('synced');
+        setPendingUpdates(0);
+        return;
+      }
+
+      const success = await processSyncQueue();
+
+      if (success) {
+        setSyncStatus('synced');
+        setPendingUpdates(0);
+      } else {
+        setSyncStatus('error');
+      }
+    } catch (error) {
+      console.error('Auto-sync failed:', error);
+      setSyncStatus('error');
+    }
+  }, [isOnline]);
+
   // Load round data on mount
   useEffect(() => {
     loadRoundData();
   }, [roundId]);
+
+  // Load pending updates count on mount
+  useEffect(() => {
+    const loadPendingCount = async () => {
+      const queue = await getSyncQueue();
+      setPendingUpdates(queue.length);
+
+      // Attempt sync if online and has pending
+      if (isOnline && queue.length > 0) {
+        attemptAutoSync();
+      }
+    };
+
+    loadPendingCount();
+  }, [isOnline, attemptAutoSync]);
+
+  // Auto-sync timer - sync every 30 seconds when online and has pending updates
+  useEffect(() => {
+    if (!isOnline || pendingUpdates === 0) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      attemptAutoSync();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [isOnline, pendingUpdates, attemptAutoSync]);
+
+  // Background sync on app resume
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', async (nextAppState) => {
+      if (nextAppState === 'active' && isOnline) {
+        // App returned to foreground - attempt sync
+        const queueCount = await getQueuedHoleCount(roundId);
+        if (queueCount > 0) {
+          await attemptAutoSync();
+        }
+      }
+    });
+
+    return () => subscription.remove();
+  }, [isOnline, roundId, attemptAutoSync]);
 
   const loadRoundData = useCallback(async () => {
     try {
@@ -63,20 +152,37 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
       // Try to load from local storage first
       const localRound = await loadRoundFromStorage(roundId);
       if (localRound) {
-        setHoles(
-          localRound.holes.map((h) => ({
-            number: h.number,
-            score: h.score,
-            par: h.par,
-            yards: h.yards,
-            putts: h.putts,
-            fairwayHit: h.fairwayHit,
-            sandSave: h.sandSave,
-            penalties: h.penalties || 0,
-            notes: h.notes || '',
-          }))
-        );
+        const loadedHoles = localRound.holes.map((h) => ({
+          number: h.number,
+          score: h.score,
+          par: h.par,
+          yards: h.yards,
+          putts: h.putts ?? null,
+          fairwayHit: h.fairwayHit ?? null,
+          sandSave: h.sandSave ?? null,
+          penalties: h.penalties || 0,
+          notes: h.notes || '',
+        }));
+
+        // Pad to 18 holes if needed
+        while (loadedHoles.length < 18) {
+          const holeNum = loadedHoles.length + 1;
+          loadedHoles.push({
+            number: holeNum,
+            score: null,
+            par: 4,
+            yards: 0,
+            putts: null,
+            fairwayHit: null,
+            sandSave: null,
+            penalties: 0,
+            notes: '',
+          });
+        }
+
+        setHoles(loadedHoles);
         setRoundComplete(localRound.isComplete);
+        setRoundStartTime(localRound.roundStartTime || null);
         return;
       }
 
@@ -90,6 +196,7 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
       const round = roundResponse.data as any;
       setCourseData(round);
       setRoundComplete(!!round.total_score); // Round is complete if it has a total_score
+      setRoundStartTime(round.start_time || new Date().toISOString()); // Use existing or set now
 
       // Fetch holes
       const holesResponse = await golfRoundsService.fetchGolfRoundHoles(roundId);
@@ -135,11 +242,66 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
 
   const updateHole = useCallback(
     (holeIndex: number, updates: Partial<HoleData>) => {
+      // Update local state immediately (synchronous for UI responsiveness)
       const newHoles = [...holes];
       newHoles[holeIndex] = { ...newHoles[holeIndex], ...updates };
       setHoles(newHoles);
+
+      // Perform async operations in background without blocking UI
+      (async () => {
+        try {
+          // Recalculate statistics
+          const playedHoles = newHoles.filter((h) => h.score !== null);
+          const newStats = calculateStatistics(playedHoles, courseData?.course_rating, courseData?.slope_rating);
+
+          // Save to AsyncStorage immediately
+          const updatedRound = {
+            roundId,
+            courseId: courseData?.course_id,
+            teeBoxId: courseData?.tee_box_id,
+            holes: playedHoles,
+            roundDate: courseData?.round_date,
+            roundStartTime: roundStartTime || new Date().toISOString(),
+            statistics: newStats,
+            isComplete: false,
+            lastSyncedAt: null,
+          };
+          await saveRoundToStorage(updatedRound);
+
+          // Set start time if not already set
+          if (!roundStartTime) {
+            setRoundStartTime(updatedRound.roundStartTime);
+          }
+
+          // Queue hole update for Supabase sync
+          await queueHoleUpdate(roundId, newHoles[holeIndex].number, {
+            user_id: user?.id,
+            tee_box_id: courseData?.tee_box_id || null,
+            strokes: newHoles[holeIndex].score,
+            putts: newHoles[holeIndex].putts,
+            fairway_hit: newHoles[holeIndex].fairwayHit,
+            sand_save: newHoles[holeIndex].sandSave,
+            penalties: newHoles[holeIndex].penalties,
+            notes: newHoles[holeIndex].notes,
+          });
+
+          // Update pending count
+          const queue = await getSyncQueue();
+          setPendingUpdates(queue.length);
+
+          // Attempt immediate sync if online
+          if (isOnline) {
+            attemptAutoSync();
+          } else {
+            setSyncStatus('offline');
+          }
+        } catch (error) {
+          console.error('Error updating hole:', error);
+          setSyncStatus('error');
+        }
+      })();
     },
-    [holes]
+    [holes, roundId, courseData, user?.id, isOnline, attemptAutoSync]
   );
 
   const handleScoreInput = useCallback(
@@ -164,10 +326,32 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
     try {
       setSaving(true);
 
-      // Save all holes to database
+      // Calculate final statistics
+      const stats = calculateStatistics(playedHoles, courseData?.course_rating, courseData?.slope_rating);
+
+      const endTime = new Date().toISOString();
+      const startTime = roundStartTime || courseData?.start_time || endTime;
+
+      // Save final state locally with completion flag
+      const finalRound = {
+        roundId,
+        courseId: courseData?.course_id,
+        teeBoxId: courseData?.tee_box_id,
+        holes: playedHoles,
+        roundDate: courseData?.round_date,
+        roundStartTime: startTime,
+        roundEndTime: endTime,
+        statistics: stats,
+        isComplete: true,
+        lastSyncedAt: null,
+      };
+      await saveRoundToStorage(finalRound);
+
+      // Queue all holes and completion for sync
       for (const hole of playedHoles) {
-        await golfRoundsService.upsertGolfRoundHole(roundId, hole.number, {
+        await queueHoleUpdate(roundId, hole.number, {
           user_id: user?.id,
+          tee_box_id: courseData?.tee_box_id || null,
           strokes: hole.score,
           putts: hole.putts,
           fairway_hit: hole.fairwayHit,
@@ -177,32 +361,37 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
         });
       }
 
-      // Calculate statistics
-      const stats = calculateStatistics(playedHoles, courseData?.course_rating, courseData?.slope_rating);
+      // Queue round completion with start and end times
+      await queueRoundCompletion(roundId, stats, startTime, endTime);
 
-      // Complete the round
-      await golfRoundsService.completeGolfRound(roundId, stats);
+      // Attempt full sync if online
+      if (isOnline) {
+        setSyncStatus('syncing');
+        const success = await processSyncQueue();
 
-      // Clear local storage
-      await saveRoundToStorage({
-        roundId,
-        courseId: courseData?.course_id,
-        teeBoxId: courseData?.tee_box_id,
-        holes: playedHoles,
-        roundDate: courseData?.round_date,
-        statistics: stats,
-        isComplete: true,
-        lastSyncedAt: new Date().toISOString(),
-      });
-
-      navigation.replace('RoundDetail', { roundId });
+        if (success) {
+          setSyncStatus('synced');
+          // Update storage with sync timestamp
+          await saveRoundToStorage({ ...finalRound, lastSyncedAt: new Date().toISOString() });
+          navigation.replace('RoundDetail', { roundId });
+        } else {
+          setSyncStatus('error');
+          alert('Some data will sync when connection improves');
+          navigation.replace('RoundDetail', { roundId });
+        }
+      } else {
+        // Offline - allow navigation, will sync later
+        setSyncStatus('offline');
+        alert('Your round will sync when you\'re online');
+        navigation.replace('RoundDetail', { roundId });
+      }
     } catch (error) {
       console.error('Error finishing round:', error);
       alert('Error completing round. Please try again.');
     } finally {
       setSaving(false);
     }
-  }, [holes, roundId, user?.id, courseData, navigation]);
+  }, [holes, roundId, user?.id, courseData, isOnline, navigation]);
 
   const currentHoleData = holes[currentHole];
   const playedHoles = holes.filter((h) => h.score !== null);
@@ -277,6 +466,34 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
             <Text style={{ color: secondaryColor }}>
               Putts: <Text style={{ color: textColor, fontWeight: '600' }}>{stats.totalPutts}</Text>
             </Text>
+          </View>
+
+          {/* Sync Status Indicator */}
+          <View className="flex-row items-center justify-end gap-2 mt-2">
+            {syncStatus === 'synced' && isOnline && (
+              <View className="flex-row items-center gap-1">
+                <Wifi size={16} color="#22c55e" />
+                <Text className="text-xs" style={{ color: '#22c55e' }}>Synced</Text>
+              </View>
+            )}
+            {syncStatus === 'syncing' && (
+              <View className="flex-row items-center gap-1">
+                <Loader size={16} color="#eab308" />
+                <Text className="text-xs" style={{ color: '#eab308' }}>Syncing</Text>
+              </View>
+            )}
+            {syncStatus === 'offline' && (
+              <View className="flex-row items-center gap-1">
+                <WifiOff size={16} color={secondaryColor} />
+                <Text className="text-xs" style={{ color: secondaryColor }}>Offline</Text>
+              </View>
+            )}
+            {syncStatus === 'error' && (
+              <View className="flex-row items-center gap-1">
+                <AlertCircle size={16} color="#ef4444" />
+                <Text className="text-xs" style={{ color: '#ef4444' }}>Sync Error</Text>
+              </View>
+            )}
           </View>
         </View>
 

@@ -41,6 +41,7 @@ export interface RoundStatistics {
   girCount: number;
   girPercentage: number;
   totalPutts: number;
+  totalPenalties: number; // sum of all penalties
   fairwaysHit: number;
   fairwaysOpportunity: number; // par 4s & 5s only
   fairwayPercentage: number;

@@ -271,6 +271,8 @@
       "dateOfBirthPlaceholder": "YYYY-MM-DD",
       "gender": "Gender",
       "genderPlaceholder": "Enter your gender",
+      "male": "Male",
+      "female": "Female",
       "location": "Location",
       "city": "City",
       "cityPlaceholder": "Enter your city",

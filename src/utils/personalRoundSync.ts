@@ -54,8 +54,11 @@ export const deleteRoundFromStorage = async (roundId: string): Promise<void> => 
 export interface SyncQueueItem {
   roundId: string;
   timestamp: number;
-  action: 'upsert' | 'delete';
+  action: 'upsert_hole' | 'complete_round' | 'delete';
+  holeNumber?: number;  // For hole updates
   data?: any;
+  startTime?: string;  // For round completion
+  endTime?: string;    // For round completion
 }
 
 /**
@@ -96,6 +99,50 @@ export const clearSyncQueue = async (): Promise<void> => {
 };
 
 /**
+ * Queue a hole update for sync
+ */
+export const queueHoleUpdate = async (
+  roundId: string,
+  holeNumber: number,
+  holeData: any
+): Promise<void> => {
+  await queueSyncUpdate({
+    roundId,
+    timestamp: Date.now(),
+    action: 'upsert_hole',
+    holeNumber,
+    data: holeData,
+  });
+};
+
+/**
+ * Queue round completion for sync
+ */
+export const queueRoundCompletion = async (
+  roundId: string,
+  statistics: RoundStatistics,
+  startTime?: string,
+  endTime?: string
+): Promise<void> => {
+  await queueSyncUpdate({
+    roundId,
+    timestamp: Date.now(),
+    action: 'complete_round',
+    data: statistics,
+    startTime,
+    endTime,
+  });
+};
+
+/**
+ * Get count of queued updates for a specific round
+ */
+export const getQueuedHoleCount = async (roundId: string): Promise<number> => {
+  const queue = await getSyncQueue();
+  return queue.filter((item) => item.roundId === roundId).length;
+};
+
+/**
  * Process sync queue and send all pending updates to server
  */
 export const processSyncQueue = async (): Promise<boolean> => {
@@ -106,39 +153,64 @@ export const processSyncQueue = async (): Promise<boolean> => {
       return true;
     }
 
-    let allSuccessful = true;
+    const failedItems: SyncQueueItem[] = [];
 
-    for (const item of queue) {
+    // Process in order: holes first, then completions
+    const holeUpdates = queue.filter((item) => item.action === 'upsert_hole');
+    const completions = queue.filter((item) => item.action === 'complete_round');
+    const deletions = queue.filter((item) => item.action === 'delete');
+
+    // 1. Sync all hole updates
+    for (const item of holeUpdates) {
       try {
-        if (item.action === 'upsert') {
-          // Sync round holes
-          if (item.data && item.data.holes) {
-            for (const hole of item.data.holes) {
-              await golfRoundsService.upsertGolfRoundHole(item.roundId, hole.number, hole);
-            }
-          }
-          // Sync round stats
-          if (item.data && item.data.statistics) {
-            await golfRoundsService.updateGolfRound(item.roundId, {
-              total_score: item.data.statistics.grossScore,
-              front_score: item.data.statistics.front9Score,
-              back_score: item.data.statistics.back9Score,
-            });
-          }
-        } else if (item.action === 'delete') {
-          await golfRoundsService.deleteGolfRound(item.roundId);
+        if (item.holeNumber && item.data) {
+          await golfRoundsService.upsertGolfRoundHole(
+            item.roundId,
+            item.holeNumber,
+            item.data
+          );
         }
       } catch (error) {
-        console.error(`Error syncing item for round ${item.roundId}:`, error);
-        allSuccessful = false;
+        console.error(`Error syncing hole ${item.holeNumber} for round ${item.roundId}:`, error);
+        failedItems.push(item);
       }
     }
 
-    if (allSuccessful) {
-      await clearSyncQueue();
+    // 2. Sync round completions
+    for (const item of completions) {
+      try {
+        if (item.data) {
+          await golfRoundsService.completeGolfRound(
+            item.roundId,
+            item.data,
+            item.startTime,
+            item.endTime
+          );
+        }
+      } catch (error) {
+        console.error(`Error completing round ${item.roundId}:`, error);
+        failedItems.push(item);
+      }
     }
 
-    return allSuccessful;
+    // 3. Process deletions
+    for (const item of deletions) {
+      try {
+        await golfRoundsService.deleteGolfRound(item.roundId);
+      } catch (error) {
+        console.error(`Error deleting round ${item.roundId}:`, error);
+        failedItems.push(item);
+      }
+    }
+
+    // Update queue with only failed items
+    if (failedItems.length > 0) {
+      await AsyncStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(failedItems));
+      return false;
+    } else {
+      await clearSyncQueue();
+      return true;
+    }
   } catch (error) {
     console.error('Error processing sync queue:', error);
     return false;
@@ -220,6 +292,9 @@ export const calculateStatistics = (
   // Putts
   const totalPutts = playedHoles.reduce((sum, h) => sum + (h.putts || 0), 0);
 
+  // Penalties
+  const totalPenalties = playedHoles.reduce((sum, h) => sum + (h.penalties || 0), 0);
+
   // Fairways (par 4s and 5s)
   const fairwayOpportunities = playedHoles.filter((h) => h.par >= 4);
   const fairwaysHit = fairwayOpportunities.filter((h) => h.fairway_hit === true).length;
@@ -252,6 +327,7 @@ export const calculateStatistics = (
     girCount,
     girPercentage: Math.round(girPercentage * 100) / 100,
     totalPutts,
+    totalPenalties,
     fairwaysHit,
     fairwaysOpportunity: fairwayOpportunities.length,
     fairwayPercentage: Math.round(fairwayPercentage * 100) / 100,
@@ -275,6 +351,7 @@ export const createEmptyStatistics = (): RoundStatistics => ({
   girCount: 0,
   girPercentage: 0,
   totalPutts: 0,
+  totalPenalties: 0,
   fairwaysHit: 0,
   fairwaysOpportunity: 0,
   fairwayPercentage: 0,

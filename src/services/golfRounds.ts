@@ -21,6 +21,7 @@ export interface RoundStatistics {
   girCount: number;
   girPercentage: number;
   totalPutts: number;
+  totalPenalties: number;
   fairwaysHit: number;
   fairwaysOpportunity: number;
   fairwayPercentage: number;
@@ -195,21 +196,65 @@ export const golfRoundsService = {
     holeData: Partial<GolfRoundHole>
   ): Promise<ApiResponse<GolfRoundHole>> {
     try {
-      const { data, error } = await supabase
+      // First, check if the hole already exists
+      const { data: existing } = await supabase
         .from('golf_round_holes')
-        .upsert(
-          {
-            round_id: roundId,
-            hole_number: holeNumber,
-            ...holeData,
-          },
-          { onConflict: 'round_id,hole_number' }
-        )
-        .select()
-        .single();
+        .select('id')
+        .eq('round_id', roundId)
+        .eq('hole_number', holeNumber)
+        .maybeSingle();
 
-      if (error) throw error;
-      return { data, error: null };
+      if (existing) {
+        // Hole exists - perform UPDATE only with provided fields
+        const updateData: any = {
+          round_id: roundId,
+          hole_number: holeNumber,
+        };
+        
+        if (holeData.user_id !== undefined) updateData.user_id = holeData.user_id;
+        if (holeData.tee_box_id !== undefined) updateData.tee_box_id = holeData.tee_box_id;
+        if (holeData.strokes !== undefined) updateData.strokes = holeData.strokes;
+        if (holeData.putts !== undefined) updateData.putts = holeData.putts;
+        if (holeData.fairway_hit !== undefined) updateData.fairway_hit = holeData.fairway_hit;
+        if (holeData.sand_save !== undefined) updateData.sand_save = holeData.sand_save;
+        if (holeData.penalties !== undefined) updateData.penalties = holeData.penalties;
+        if (holeData.notes !== undefined) updateData.notes = holeData.notes;
+
+        const { data, error } = await supabase
+          .from('golf_round_holes')
+          .update(updateData)
+          .eq('round_id', roundId)
+          .eq('hole_number', holeNumber)
+          .select()
+          .single();
+
+        if (error) throw error;
+        return { data, error: null };
+      } else {
+        // Hole doesn't exist - perform INSERT
+        const insertData: any = {
+          round_id: roundId,
+          hole_number: holeNumber,
+        };
+
+        if (holeData.user_id !== undefined) insertData.user_id = holeData.user_id;
+        if (holeData.tee_box_id !== undefined) insertData.tee_box_id = holeData.tee_box_id;
+        if (holeData.strokes !== undefined) insertData.strokes = holeData.strokes;
+        if (holeData.putts !== undefined) insertData.putts = holeData.putts;
+        if (holeData.fairway_hit !== undefined) insertData.fairway_hit = holeData.fairway_hit;
+        if (holeData.sand_save !== undefined) insertData.sand_save = holeData.sand_save;
+        if (holeData.penalties !== undefined) insertData.penalties = holeData.penalties;
+        if (holeData.notes !== undefined) insertData.notes = holeData.notes;
+
+        const { data, error } = await supabase
+          .from('golf_round_holes')
+          .insert(insertData)
+          .select()
+          .single();
+
+        if (error) throw error;
+        return { data, error: null };
+      }
     } catch (error) {
       console.error('Error upserting golf round hole:', error);
       return { data: null, error: error as Error };
@@ -259,25 +304,52 @@ export const golfRoundsService = {
    */
   async completeGolfRound(
     roundId: string,
-    statistics: RoundStatistics
+    statistics: RoundStatistics,
+    startTime?: string,
+    endTime?: string
   ): Promise<ApiResponse<GolfRound>> {
     try {
       // First cleanup unplayed holes
       await this.cleanupUnplayedHoles(roundId);
 
+      // Calculate duration if both start and end times are provided
+      let durationMinutes: number | null = null;
+      if (startTime && endTime) {
+        const start = new Date(startTime).getTime();
+        const end = new Date(endTime).getTime();
+        durationMinutes = Math.round((end - start) / (1000 * 60));
+      }
+
+      // Calculate total penalties from all holes
+      const { data: holesData } = await supabase
+        .from('golf_round_holes')
+        .select('penalties')
+        .eq('round_id', roundId);
+
+      const totalPenalties = holesData
+        ? holesData.reduce((sum, hole) => sum + (hole.penalties || 0), 0)
+        : 0;
+
       // Then update round with stats
+      const updateData: any = {
+        total_score: statistics.grossScore,
+        front_score: statistics.front9Score,
+        back_score: statistics.back9Score,
+        score_to_par: statistics.scoreToPar,
+        total_putts: statistics.totalPutts,
+        fairways_hit: statistics.fairwaysHit,
+        greens_in_regulation: statistics.girCount,
+        differential: statistics.differential,
+        total_penalties: totalPenalties,
+      };
+
+      if (startTime) updateData.start_time = startTime;
+      if (endTime) updateData.end_time = endTime;
+      if (durationMinutes !== null) updateData.duration_minutes = durationMinutes;
+
       const { data, error } = await supabase
         .from('golf_rounds')
-        .update({
-          total_score: statistics.grossScore,
-          front_score: statistics.front9Score,
-          back_score: statistics.back9Score,
-          score_to_par: statistics.scoreToPar,
-          total_putts: statistics.totalPutts,
-          fairways_hit: statistics.fairwaysHit,
-          greens_in_regulation: statistics.girCount,
-          differential: statistics.differential,
-        })
+        .update(updateData)
         .eq('id', roundId)
         .select()
         .single();
@@ -327,6 +399,7 @@ export const golfRoundsService = {
         girCount: 0,
         girPercentage: 0,
         totalPutts: 0,
+        totalPenalties: 0,
         fairwaysHit: 0,
         fairwaysOpportunity: 0,
         fairwayPercentage: 0,
@@ -361,6 +434,9 @@ export const golfRoundsService = {
     // Count putts
     const totalPutts = playedHoles.reduce((sum, h) => sum + (h.putts || 0), 0);
 
+    // Count penalties
+    const totalPenalties = playedHoles.reduce((sum, h) => sum + (h.penalties || 0), 0);
+
     // Count fairways (par 4s and 5s only)
     const fairwayOpportunities = playedHoles.filter((h) => h.par >= 4);
     const fairwaysHit = fairwayOpportunities.filter((h) => h.fairway_hit === true).length;
@@ -388,6 +464,7 @@ export const golfRoundsService = {
       girCount,
       girPercentage: Math.round(girPercentage * 100) / 100,
       totalPutts,
+      totalPenalties,
       fairwaysHit,
       fairwaysOpportunity: fairwayOpportunities.length,
       fairwayPercentage: Math.round(fairwayPercentage * 100) / 100,

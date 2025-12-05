@@ -104,7 +104,7 @@ export const coursesService = {
         .from('tee_boxes')
         .select('*')
         .eq('course_id', courseId)
-        .order('name', { ascending: true });
+        .order('total_yards', { ascending: true });
 
       if (error) throw error;
 

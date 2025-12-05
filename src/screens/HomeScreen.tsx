@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -14,7 +14,7 @@ import {
   Button,
 } from 'react-native';
 import * as Sentry from '@sentry/react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { CompositeNavigationProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -63,6 +63,15 @@ export default function HomeScreen() {
   useEffect(() => {
     loadHomeData();
   }, [user?.id]);
+
+  // Refresh data every time the screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      if (user?.id) {
+        loadHomeData();
+      }
+    }, [user?.id])
+  );
 
   const loadHomeData = async () => {
     if (!user?.id) return;
@@ -140,6 +149,39 @@ export default function HomeScreen() {
   const handleCloseImageModal = () => {
     setIsImageModalVisible(false);
     setTimeout(() => setFullscreenImageUrl(null), 300);
+  };
+
+  // Quick Action Navigation Handlers
+  // These handlers provide a centralized navigation logic for quick actions
+  // - Book Tee Time: Navigates to home course tee times if set, otherwise to courses list
+  // - My Tee Times: Navigates to user's tee time reservations
+  // - Rounds: Navigates to user's golf rounds list
+  // - Inbox: Navigates to notifications within the Profile stack
+
+  const handleBookTeeTime = () => {
+    if (profile?.home_course_id && homeCourseName) {
+      navigation.navigate('Courses', {
+        screen: 'CourseTeeTimesScreen',
+        params: {
+          courseId: profile.home_course_id,
+          courseName: homeCourseName,
+        },
+      });
+    } else {
+      navigation.navigate('Courses');
+    }
+  };
+
+  const handleMyTeeTimes = () => {
+    navigation.navigate('TeeTimes');
+  };
+
+  const handleRounds = () => {
+    navigation.navigate('Rounds');
+  };
+
+  const handleInbox = () => {
+    navigation.navigate('Profile', { screen: 'Notifications' });
   };
 
   if (loading) {
@@ -333,47 +375,28 @@ export default function HomeScreen() {
         <View style={homeStyles.quickActionsRow}>
           <TouchableOpacity
             style={[homeStyles.quickActionButton, isDark && homeStyles.quickActionButtonDark]}
-            onPress={() => {
-              if (profile?.home_course_id && homeCourseName) {
-                navigation.navigate('Courses', {
-                  screen: 'CourseTeeTimesScreen',
-                  params: {
-                    courseId: profile.home_course_id,
-                    courseName: homeCourseName,
-                  },
-                });
-              } else {
-                navigation.navigate('Courses');
-              }
-            }}
+            onPress={handleBookTeeTime}
           >
             <Flag size={24} color="#2d7a4e" strokeWidth={2} />
             <Text style={[homeStyles.quickActionText, isDark && homeStyles.quickActionTextDark]}>{t('home.bookTeeTime')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[homeStyles.quickActionButton, isDark && homeStyles.quickActionButtonDark]}
-            onPress={() => navigation.navigate('TeeTimes')}
+            onPress={handleMyTeeTimes}
           >
             <Calendar size={24} color="#2d7a4e" strokeWidth={2} />
             <Text style={[homeStyles.quickActionText, isDark && homeStyles.quickActionTextDark]}>{t('home.myTeeTimes')}</Text>
           </TouchableOpacity>
-          {/* <TouchableOpacity
-            style={[homeStyles.quickActionButton, isDark && homeStyles.quickActionButtonDark]}
-            onPress={() => navigation.navigate('RSSArticles')}
-          >
-            <Newspaper size={24} color="#2d7a4e" strokeWidth={2} />
-            <Text style={[homeStyles.quickActionText, isDark && homeStyles.quickActionTextDark]}>{t('navigation.articles')}</Text>
-          </TouchableOpacity> */}
           <TouchableOpacity
             style={[homeStyles.quickActionButton, isDark && homeStyles.quickActionButtonDark]}
-            onPress={() => navigation.navigate('Rounds', { screen: 'RoundsList' })}
+            onPress={handleRounds}
           >
             <RotateCcw size={24} color="#2d7a4e" strokeWidth={2} />
             <Text style={[homeStyles.quickActionText, isDark && homeStyles.quickActionTextDark]}>{t('navigation.rounds') || 'Rounds'}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[homeStyles.quickActionButton, isDark && homeStyles.quickActionButtonDark]}
-            onPress={() => navigation.navigate('Profile', { screen: 'Notifications' })}
+            onPress={handleInbox}
           >
             <Bell size={24} color="#2d7a4e" strokeWidth={2} />
             <Text style={[homeStyles.quickActionText, isDark && homeStyles.quickActionTextDark]}>{t('home.inbox')}</Text>
@@ -393,9 +416,7 @@ export default function HomeScreen() {
             <Text style={[homeStyles.sectionTitle, isDark && homeStyles.sectionTitleDark]}>
               {t('home.recentRounds') || 'Recent Rounds'}
             </Text>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('Rounds', { screen: 'RoundsList' })}
-            >
+            <TouchableOpacity onPress={handleRounds}>
               <Text style={homeStyles.viewAllLink}>{t('common.viewAll') || 'View All'}</Text>
             </TouchableOpacity>
           </View>
@@ -739,7 +760,7 @@ const homeStyles = StyleSheet.create({
     borderColor: '#e9ecef',
   },
   quickActionText: {
-    fontSize: 11,
+    fontSize: 10,
     color: '#495057',
     textAlign: 'center',
     fontWeight: '500',

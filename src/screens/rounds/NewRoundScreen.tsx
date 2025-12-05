@@ -22,7 +22,7 @@ type Props = NativeStackScreenProps<RoundsStackParamList, 'NewRound'>;
 interface CourseData {
   id: string;
   name: string;
-  location?: string;
+  location?: any;
 }
 
 interface TeeBoxData {
@@ -31,6 +31,7 @@ interface TeeBoxData {
   color?: string;
   course_rating?: number;
   slope_rating?: number;
+  total_yards?: number;
 }
 
 export default function NewRoundScreen({ navigation }: Props) {
@@ -59,7 +60,7 @@ export default function NewRoundScreen({ navigation }: Props) {
   const fetchCourses = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await coursesService.fetchCourses(1, 100);
+      const response = await coursesService.fetchCourses(undefined, 1, 100);
       if (response.data) {
         const coursesList = (response.data as any[]).map((course) => ({
           id: course.id,
@@ -82,12 +83,14 @@ export default function NewRoundScreen({ navigation }: Props) {
     try {
       const response = await coursesService.fetchCourseTeeBoxes(course.id);
       if (response.data) {
+        console.log(response.data);
         const boxes = (response.data as any[]).map((box) => ({
           id: box.id,
           name: box.name,
           color: box.color,
           course_rating: box.course_rating,
           slope_rating: box.slope_rating,
+          total_yards: box.total_yards,
         }));
         setTeeBoxes(boxes);
         setSelectedTeeBox(boxes[0] || null);
@@ -219,7 +222,7 @@ export default function NewRoundScreen({ navigation }: Props) {
                     >
                       {box.name}
                     </Text>
-                    {box.course_rating && box.slope_rating && (
+                    {box.course_rating && box.slope_rating &&  (
                       <Text
                         className="text-xs"
                         style={{
@@ -227,7 +230,7 @@ export default function NewRoundScreen({ navigation }: Props) {
                             selectedTeeBox?.id === box.id ? 'rgba(255,255,255,0.7)' : secondaryColor,
                         }}
                       >
-                        {box.course_rating.toFixed(1)} / {box.slope_rating}
+                       {box.total_yards} / {box.course_rating.toFixed(1)} / {box.slope_rating}
                       </Text>
                     )}
                   </View>
@@ -350,7 +353,7 @@ export default function NewRoundScreen({ navigation }: Props) {
                       className="text-sm"
                       style={{ color: secondaryColor }}
                     >
-                      {item.location}
+                      {item.location?.address}
                     </Text>
                   )}
                 </TouchableOpacity>
