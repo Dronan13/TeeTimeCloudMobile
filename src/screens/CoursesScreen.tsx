@@ -16,6 +16,8 @@ import { coursesService } from '@/services/courses';
 import { useTheme } from '@/contexts/ThemeContext';
 import { styles as globalStyles } from '@/utils/styles';
 import { MapPin, Phone, Mail, ChevronRight, Flag, X } from 'lucide-react-native';
+import { CourseCardSkeleton } from '@/components/skeletons';
+import { EmptyState } from '@/components/EmptyState';
 
 type CoursesScreenNavigationProp = StackNavigationProp<
   CoursesStackParamList,
@@ -118,27 +120,26 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
   };
 
   const renderEmptyState = () => (
-    <View style={[styles.emptyState, isDark && styles.emptyStateDark]}>
-      <Flag size={48} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={1.5} />
-      <Text style={[styles.emptyStateTitle, isDark && styles.emptyStateTitleDark]}>
-        {searchQuery ? 'No courses found' : 'No courses available'}
-      </Text>
-      <Text style={[styles.emptyStateText, isDark && styles.emptyStateTextDark]}>
-        {searchQuery
+    <EmptyState
+      icon={<Flag size={64} color={isDark ? '#6b7280' : '#9ca3af'} />}
+      title={searchQuery ? 'No courses found' : 'No courses available'}
+      description={
+        searchQuery
           ? 'Try adjusting your search query'
-          : 'Check back later for available courses'}
-      </Text>
-    </View>
+          : 'Check back later for available courses'
+      }
+    />
   );
 
-  if (loading && !refreshing) {
-    return (
-      <View style={[styles.centerContainer, isDark && styles.centerContainerDark]}>
-        <ActivityIndicator size="large" color="#2d7a4e" />
-        <Text style={[styles.loadingText, isDark && styles.loadingTextDark]}>Loading courses...</Text>
-      </View>
-    );
-  }
+  const renderLoadingState = () => (
+    <View style={styles.listContainer}>
+      <CourseCardSkeleton />
+      <CourseCardSkeleton />
+      <CourseCardSkeleton />
+      <CourseCardSkeleton />
+      <CourseCardSkeleton />
+    </View>
+  );
 
   if (error && !refreshing) {
     return (
@@ -175,24 +176,28 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
         )}
       </View>
 
-      <FlatList
-        data={courses}
-        renderItem={renderCourseItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={
-          courses.length === 0 ? styles.emptyListContainer : styles.listContainer
-        }
-        ListEmptyComponent={renderEmptyState}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            tintColor="#2d7a4e"
-            colors={['#2d7a4e']}
-          />
-        }
-        showsVerticalScrollIndicator={false}
-      />
+      {loading && !refreshing ? (
+        renderLoadingState()
+      ) : (
+        <FlatList
+          data={courses}
+          renderItem={renderCourseItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={
+            courses.length === 0 ? styles.emptyListContainer : styles.listContainer
+          }
+          ListEmptyComponent={renderEmptyState}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor="#2d7a4e"
+              colors={['#2d7a4e']}
+            />
+          }
+          showsVerticalScrollIndicator={false}
+        />
+      )}
     </View>
   );
 }

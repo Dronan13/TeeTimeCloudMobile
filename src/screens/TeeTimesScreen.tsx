@@ -15,6 +15,8 @@ import { supabase } from '@/lib/supabaseClient';
 import { Database } from '@/types/supabase';
 import { format, parseISO, isPast, startOfDay } from 'date-fns';
 import { Calendar, Clock, Flag, DollarSign, X } from 'lucide-react-native';
+import { TeeTimeCardSkeleton } from '@/components/skeletons';
+import { EmptyState } from '@/components/EmptyState';
 
 type TeeTimeReservation =
   Database['public']['Views']['tee_time_reservations_with_slot']['Row'];
@@ -228,14 +230,6 @@ export default function TeeTimesScreen() {
     );
   };
 
-  if (loading) {
-    return (
-      <View style={[styles.loadingContainer, isDark && styles.loadingContainerDark]}>
-        <ActivityIndicator size="large" color="#2d7a4e" />
-      </View>
-    );
-  }
-
   return (
     <ScrollView
       style={[styles.container, isDark && styles.containerDark]}
@@ -243,10 +237,18 @@ export default function TeeTimesScreen() {
     >
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Upcoming Reservations</Text>
-        {upcomingReservations.length === 0 ? (
-          <View style={[styles.emptyState, isDark && styles.emptyStateDark]}>
-            <Text style={[styles.emptyText, isDark && styles.emptyTextDark]}>No upcoming reservations</Text>
-          </View>
+        {loading ? (
+          <>
+            <TeeTimeCardSkeleton />
+            <TeeTimeCardSkeleton />
+            <TeeTimeCardSkeleton />
+          </>
+        ) : upcomingReservations.length === 0 ? (
+          <EmptyState
+            icon={<Calendar size={64} color={isDark ? '#6b7280' : '#9ca3af'} />}
+            title="No upcoming reservations"
+            description="You don't have any tee times booked. Browse courses and reserve your next round!"
+          />
         ) : (
           upcomingReservations.map(renderReservation)
         )}
@@ -254,7 +256,12 @@ export default function TeeTimesScreen() {
 
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Past Reservations</Text>
-        {pastReservations.length === 0 ? (
+        {loading ? (
+          <>
+            <TeeTimeCardSkeleton />
+            <TeeTimeCardSkeleton />
+          </>
+        ) : pastReservations.length === 0 ? (
           <View style={[styles.emptyState, isDark && styles.emptyStateDark]}>
             <Text style={[styles.emptyText, isDark && styles.emptyTextDark]}>No past reservations</Text>
           </View>

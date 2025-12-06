@@ -28,6 +28,7 @@ import { tournamentsService } from '@/services/tournaments';
 import { golfRoundsService } from '@/services/golfRounds';
 import { CourseEvent, AppTabParamList, CoursesStackParamList, Database } from '@/types';
 import MyTournamentCard from '@/components/MyTournamentCard';
+import { WeatherSkeleton, TeeTimeSkeleton, TournamentCardSkeleton, RoundCardSkeleton } from '@/components/skeletons';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { Flag, MapPin, Calendar, Bell, Thermometer, Wind, Droplets, CloudSun, Clock, X, Newspaper, RotateCcw, ChevronRight } from 'lucide-react-native';
@@ -49,6 +50,10 @@ export default function HomeScreen() {
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [weatherLoading, setWeatherLoading] = useState(false);
+  const [nextTeeTimeLoading, setNextTeeTimeLoading] = useState(false);
+  const [tournamentsLoading, setTournamentsLoading] = useState(false);
+  const [roundsLoading, setRoundsLoading] = useState(false);
   const [nextTeeTime, setNextTeeTime] = useState<Database['public']['Views']['tee_time_reservations_with_slot']['Row'] | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const [upcomingEvents, setUpcomingEvents] = useState<CourseEvent[]>([]);
@@ -76,55 +81,81 @@ export default function HomeScreen() {
     try {
       setLoading(true);
 
+      // Fetch home course info
       if (profile?.home_course_id) {
         const courseRes = await coursesService.fetchCourseById(profile.home_course_id);
         if (courseRes.data?.name) {
           setHomeCourseName(courseRes.data.name);
         }
-      }
 
-      if (profile?.home_course_id) {
-        const courseRes = await coursesService.fetchCourseById(profile.home_course_id);
+        // Fetch weather independently
         const homeCourseLocation = courseRes.data?.location as any;
-
         if (homeCourseLocation?.latitude && homeCourseLocation?.longitude) {
-          const weatherRes = await weatherService.getCurrentWeather(
+          setWeatherLoading(true);
+          weatherService.getCurrentWeather(
             homeCourseLocation.latitude,
             homeCourseLocation.longitude
-          );
-          if (weatherRes.data) {
-            setWeather(weatherRes.data);
+          )
+            .then(weatherRes => {
+              if (weatherRes.data) {
+                setWeather(weatherRes.data);
+              }
+            })
+            .catch(err => console.error('Weather fetch error:', err))
+            .finally(() => setWeatherLoading(false));
+        }
+
+        // Fetch events
+        coursesService.fetchCourseEvents(profile.home_course_id)
+          .then(eventsRes => {
+            if (eventsRes.data) {
+              setUpcomingEvents(eventsRes.data.slice(0, 3));
+            }
+          })
+          .catch(err => console.error('Events fetch error:', err));
+      }
+
+      // Fetch next tee time independently
+      setNextTeeTimeLoading(true);
+      reservationsService.fetchNextReservation(user.id)
+        .then(nextRes => {
+          if (nextRes.data) {
+            setNextTeeTime(nextRes.data);
           }
-        }
+        })
+        .catch(err => console.error('Next tee time fetch error:', err))
+        .finally(() => setNextTeeTimeLoading(false));
 
-        const eventsRes = await coursesService.fetchCourseEvents(profile.home_course_id);
-        if (eventsRes.data) {
-          setUpcomingEvents(eventsRes.data.slice(0, 3));
-        }
-      }
+      // Fetch unread count
+      notificationsService.fetchUnreadCount(user.id)
+        .then(unreadRes => {
+          if (unreadRes.data !== null) {
+            setUnreadCount(unreadRes.data);
+          }
+        })
+        .catch(err => console.error('Unread count fetch error:', err));
 
-      const nextRes = await reservationsService.fetchNextReservation(user.id);
+      // Fetch active tournaments independently
+      setTournamentsLoading(true);
+      tournamentsService.fetchUserActiveTournaments(user.id)
+        .then(tournamentsRes => {
+          if (tournamentsRes.data) {
+            setActiveTournaments(tournamentsRes.data);
+          }
+        })
+        .catch(err => console.error('Tournaments fetch error:', err))
+        .finally(() => setTournamentsLoading(false));
 
-      if (nextRes.data) {
-        setNextTeeTime(nextRes.data);
-      }
-
-      const unreadRes = await notificationsService.fetchUnreadCount(user.id);
-      if (unreadRes.data !== null) {
-        setUnreadCount(unreadRes.data);
-      }
-
-      // Fetch active tournaments for current user
-      const tournamentsRes = await tournamentsService.fetchUserActiveTournaments(user.id);
-      if (tournamentsRes.data) {
-        setActiveTournaments(tournamentsRes.data);
-      }
-
-      // Fetch recent personal rounds (last 3)
-      const roundsRes = await golfRoundsService.fetchRecentGolfRounds(user.id, 3);
-      if (roundsRes.data) {
-        setRecentRounds(roundsRes.data);
-      }
+      // Fetch recent rounds independently
+      setRoundsLoading(true);
+      golfRoundsService.fetchRecentGolfRounds(user.id, 3)
+        .then(roundsRes => {
+          if (roundsRes.data) {
+            setRecentRounds(roundsRes.data);
+          }
+        })
+        .catch(err => console.error('Rounds fetch error:', err))
+        .finally(() => setRoundsLoading(false));
     } catch (error) {
       console.error('Error loading home data:', error);
     } finally {
@@ -181,14 +212,6 @@ export default function HomeScreen() {
     navigation.navigate('Profile', { screen: 'Notifications' });
   };
 
-  if (loading) {
-    return (
-      <View style={[homeStyles.loadingContainer, isDark && homeStyles.loadingContainerDark]}>
-        <ActivityIndicator size="large" color="#2d7a4e" />
-      </View>
-    );
-  }
-
   return (
     <>
       <ScrollView
@@ -232,7 +255,9 @@ export default function HomeScreen() {
       </View>
 
       {/* Weather at Home Course */}
-      {weather && (
+      {weatherLoading ? (
+        <WeatherSkeleton />
+      ) : weather ? (
         <View style={[homeStyles.section, isDark && homeStyles.sectionDark]}>
           <View style={homeStyles.weatherDetails}>
               <View style={homeStyles.weatherItem}>
@@ -261,12 +286,13 @@ export default function HomeScreen() {
               </View>
             </View>
         </View>
-      )}
+      ) : null}
 
       {/* Next Tee Time / Book CTA */}
-      
-        {nextTeeTime && (
-          <View style={[homeStyles.section, isDark && homeStyles.sectionDark]}>
+      {nextTeeTimeLoading ? (
+        <TeeTimeSkeleton />
+      ) : nextTeeTime ? (
+        <View style={[homeStyles.section, isDark && homeStyles.sectionDark]}>
           <View style={[homeStyles.nextTeeTimeCard, isDark && homeStyles.nextTeeTimeCardDark]}>
             <Text style={[homeStyles.sectionTitle, isDark && homeStyles.sectionTitleDark]}>{t('home.nextTeeTime')}</Text>
             <View style={homeStyles.teeTimeDetails}>
@@ -300,11 +326,16 @@ export default function HomeScreen() {
               </View>
             </View>
           </View>
-         </View>
-        )}
+        </View>
+      ) : null}
 
       {/* My Active Tournaments */}
-      {activeTournaments.length > 0 && (
+      {tournamentsLoading ? (
+        <View style={[homeStyles.section, isDark && homeStyles.sectionDark]}>
+          <TournamentCardSkeleton />
+          <TournamentCardSkeleton />
+        </View>
+      ) : activeTournaments.length > 0 ? (
         <View style={[homeStyles.section, isDark && homeStyles.sectionDark]}>
           <Text style={[homeStyles.sectionTitle, isDark && homeStyles.sectionTitleDark]}>
             {t('home.myTournaments') || 'My Tournaments'}
@@ -364,7 +395,7 @@ export default function HomeScreen() {
             );
           })}
         </View>
-      )}
+      ) : null}
 
       {/* Quick Actions Row */}
       <View style={[homeStyles.section, isDark && homeStyles.sectionDark]}>
@@ -407,7 +438,13 @@ export default function HomeScreen() {
       </View>
 
       {/* Recent Rounds */}
-      {recentRounds.length > 0 && (
+      {roundsLoading ? (
+        <View style={[homeStyles.section, isDark && homeStyles.sectionDark]}>
+          <RoundCardSkeleton />
+          <RoundCardSkeleton />
+          <RoundCardSkeleton />
+        </View>
+      ) : recentRounds.length > 0 ? (
         <View style={[homeStyles.section, isDark && homeStyles.sectionDark]}>
           <View style={homeStyles.sectionHeader}>
             <Text style={[homeStyles.sectionTitle, isDark && homeStyles.sectionTitleDark]}>
@@ -481,7 +518,7 @@ export default function HomeScreen() {
             );
           })}
         </View>
-      )}
+      ) : null}
 
       {/* Upcoming Course Events */}
       {upcomingEvents.length > 0 && (

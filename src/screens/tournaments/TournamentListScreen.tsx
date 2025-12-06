@@ -16,6 +16,9 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import TournamentCard from '@/components/TournamentCard';
+import { TournamentCardSkeleton } from '@/components/skeletons';
+import { EmptyState } from '@/components/EmptyState';
+import { Trophy } from 'lucide-react-native';
 
 type Props = NativeStackScreenProps<TournamentsStackParamList, 'TournamentsList'>;
 
@@ -150,27 +153,34 @@ export default function TournamentListScreen({ navigation }: Props) {
   );
 
   const renderEmptyState = () => (
-    <View style={[styles.emptyContainer, isDark && styles.emptyContainerDark]}>
-      <Text style={[styles.emptyText, isDark && styles.emptyTextDark]}>
-        {filter === 'upcoming'
+    <EmptyState
+      icon={<Trophy size={64} color={isDark ? '#6b7280' : '#9ca3af'} />}
+      title={
+        filter === 'upcoming'
           ? t('tournament.list.emptyUpcoming')
           : filter === 'past'
             ? t('tournament.list.emptyPast')
-            : t('tournament.list.emptyUpcoming')}
-      </Text>
-    </View>
+            : t('tournament.emptyState.title')
+      }
+      description={
+        filter === 'upcoming'
+          ? t('tournament.emptyState.description')
+          : filter === 'past'
+            ? 'No past tournaments found.'
+            : t('tournament.emptyState.description')
+      }
+    />
   );
 
-  if (loading) {
-    return (
-      <View style={[styles.centerContainer, isDark && styles.centerContainerDark]}>
-        <ActivityIndicator size="large" color="#2d7a4e" />
-        <Text style={[styles.loadingText, isDark && styles.loadingTextDark]}>
-          {t('common.loading')}
-        </Text>
-      </View>
-    );
-  }
+  const renderLoadingState = () => (
+    <View style={styles.listContent}>
+      <TournamentCardSkeleton />
+      <TournamentCardSkeleton />
+      <TournamentCardSkeleton />
+      <TournamentCardSkeleton />
+      <TournamentCardSkeleton />
+    </View>
+  );
 
   if (error && tournaments.length === 0) {
     return (
@@ -247,29 +257,33 @@ export default function TournamentListScreen({ navigation }: Props) {
       </View>
 
       {/* Tournament List */}
-      <FlatList
-        data={filteredTournaments}
-        renderItem={renderTournamentItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContent}
-        ListEmptyComponent={renderEmptyState}
-        onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={
-          loadingMore ? (
-            <View style={styles.loadingMoreContainer}>
-              <ActivityIndicator size="small" color="#2d7a4e" />
-            </View>
-          ) : null
-        }
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            tintColor="#2d7a4e"
-          />
-        }
-      />
+      {loading ? (
+        renderLoadingState()
+      ) : (
+        <FlatList
+          data={filteredTournaments}
+          renderItem={renderTournamentItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.listContent}
+          ListEmptyComponent={renderEmptyState}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            loadingMore ? (
+              <View style={styles.loadingMoreContainer}>
+                <ActivityIndicator size="small" color="#2d7a4e" />
+              </View>
+            ) : null
+          }
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor="#2d7a4e"
+            />
+          }
+        />
+      )}
     </View>
   );
 }

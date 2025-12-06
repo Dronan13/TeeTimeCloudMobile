@@ -14,7 +14,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { golfRoundsService } from '@/services/golfRounds';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Plus } from 'lucide-react-native';
+import { Plus, RotateCcw } from 'lucide-react-native';
+import { RoundCardSkeleton } from '@/components/skeletons';
+import { EmptyState } from '@/components/EmptyState';
 
 type Props = NativeStackScreenProps<RoundsStackParamList, 'RoundsList'>;
 
@@ -250,65 +252,54 @@ export default function RoundsListScreen({ navigation }: Props) {
   };
 
   const EmptyList = () => (
-    <View className="flex-1 justify-center items-center py-12">
-      <Text
-        className="text-lg font-semibold mb-2"
-        style={{ color: textColor }}
-      >
-        {t('rounds.noRounds')}
-      </Text>
-      <Text
-        className="text-sm text-center px-6"
-        style={{ color: secondaryColor }}
-      >
-        {t('rounds.noRoundsMessage')}
-      </Text>
-      <TouchableOpacity
-        onPress={handleNewRound}
-        className="mt-6 px-6 py-3 rounded-lg"
-        style={{ backgroundColor: '#2d7a4e' }}
-      >
-        <Text className="text-white font-semibold">{t('rounds.startFirstRound')}</Text>
-      </TouchableOpacity>
+    <EmptyState
+      icon={<RotateCcw size={64} color={isDark ? '#6b7280' : '#9ca3af'} />}
+      title={t('rounds.noRounds')}
+      description={t('rounds.noRoundsMessage')}
+      actionLabel={t('rounds.startFirstRound')}
+      onAction={handleNewRound}
+    />
+  );
+
+  const LoadingList = () => (
+    <View className="px-4 py-3">
+      <RoundCardSkeleton />
+      <RoundCardSkeleton />
+      <RoundCardSkeleton />
+      <RoundCardSkeleton />
+      <RoundCardSkeleton />
     </View>
   );
 
-  if (loading && rounds.length === 0) {
-    return (
-      <View
-        className="flex-1 justify-center items-center"
-        style={{ backgroundColor: bgColor }}
-      >
-        <ActivityIndicator size="large" color="#2d7a4e" />
-      </View>
-    );
-  }
-
   return (
     <View className="flex-1" style={{ backgroundColor: bgColor }}>
-      <FlatList
-        data={rounds}
-        renderItem={({ item }) => <RoundCard item={item} />}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 16, paddingVertical: 12 }}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            tintColor="#2d7a4e"
-          />
-        }
-        onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.5}
-        ListEmptyComponent={<EmptyList />}
-        ListFooterComponent={
-          loading && rounds.length > 0 ? (
-            <View className="py-4">
-              <ActivityIndicator size="small" color="#2d7a4e" />
-            </View>
-          ) : null
-        }
-      />
+      {loading && rounds.length === 0 ? (
+        <LoadingList />
+      ) : (
+        <FlatList
+          data={rounds}
+          renderItem={({ item }) => <RoundCard item={item} />}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 16, paddingVertical: 12 }}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor="#2d7a4e"
+            />
+          }
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
+          ListEmptyComponent={<EmptyList />}
+          ListFooterComponent={
+            loading && rounds.length > 0 ? (
+              <View className="py-4">
+                <ActivityIndicator size="small" color="#2d7a4e" />
+              </View>
+            ) : null
+          }
+        />
+      )}
 
       {/* Floating action button */}
       <TouchableOpacity
