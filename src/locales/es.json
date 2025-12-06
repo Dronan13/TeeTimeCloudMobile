@@ -503,6 +503,8 @@
     "fetchTournaments": "Error al cargar torneos",
     "fetchTeeTimes": "Error al cargar horarios",
     "fetchRounds": "Error al cargar rondas",
+    "fetchWeather": "Error al cargar datos del clima",
+    "fetchEvents": "Error al cargar eventos",
     "submitScore": "Error al enviar puntuación",
     "generic": "Algo salió mal. Por favor intenta de nuevo."
   },

@@ -503,6 +503,8 @@
     "fetchTournaments": "Failed to load tournaments",
     "fetchTeeTimes": "Failed to load tee times",
     "fetchRounds": "Failed to load rounds",
+    "fetchWeather": "Failed to load weather data",
+    "fetchEvents": "Failed to load events",
     "submitScore": "Failed to submit score",
     "generic": "Something went wrong. Please try again."
   },
