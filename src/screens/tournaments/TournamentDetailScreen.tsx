@@ -16,6 +16,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import { format } from 'date-fns';
+import { DetailSkeleton } from '@/components/skeletons';
 
 type Props = NativeStackScreenProps<TournamentsStackParamList, 'TournamentDetail'>;
 
@@ -87,8 +88,8 @@ export default function TournamentDetailScreen({
 
   if (loading) {
     return (
-      <View style={[styles.centerContainer, isDark && styles.centerContainerDark]}>
-        <ActivityIndicator size="large" color="#2d7a4e" />
+      <View style={[styles.container, isDark && styles.containerDark]}>
+        <DetailSkeleton />
       </View>
     );
   }

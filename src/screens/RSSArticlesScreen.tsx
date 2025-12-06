@@ -15,6 +15,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import RSSArticleCard from '@/components/RSSArticleCard';
 import FloatingActionButton from '@/components/FloatingActionButton';
 import { Newspaper } from 'lucide-react-native';
+import { ArticleCardSkeleton } from '@/components/skeletons';
 
 type RSSArticle = Database['public']['Tables']['rss_articles']['Row'];
 
@@ -124,13 +125,19 @@ export default function RSSArticlesScreen() {
     </View>
   );
 
+  const renderLoadingState = () => (
+    <View style={styles.listContainer}>
+      <ArticleCardSkeleton />
+      <ArticleCardSkeleton />
+      <ArticleCardSkeleton />
+      <ArticleCardSkeleton />
+    </View>
+  );
+
   if (loading && !refreshing) {
     return (
-      <View style={[styles.centerContainer, isDark && styles.centerContainerDark]}>
-        <ActivityIndicator size="large" color="#2d7a4e" />
-        <Text style={[styles.loadingText, isDark && styles.loadingTextDark]}>
-          {t('rssArticles.loading') || 'Loading articles...'}
-        </Text>
+      <View style={[styles.container, isDark && styles.containerDark]}>
+        {renderLoadingState()}
       </View>
     );
   }

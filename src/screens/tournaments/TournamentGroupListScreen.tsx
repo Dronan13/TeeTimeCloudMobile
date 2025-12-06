@@ -14,6 +14,7 @@ import { TournamentsStackParamList } from '@/types';
 import { tournamentsService } from '@/services/tournaments';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { PlayerCardSkeleton } from '@/components/skeletons';
 
 type Props = NativeStackScreenProps<TournamentsStackParamList, 'TournamentGroupList'>;
 
@@ -142,10 +143,20 @@ export default function TournamentGroupListScreen({
     );
   };
 
+  const renderLoadingState = () => (
+    <View style={styles.listContent}>
+      <PlayerCardSkeleton />
+      <PlayerCardSkeleton />
+      <PlayerCardSkeleton />
+      <PlayerCardSkeleton />
+      <PlayerCardSkeleton />
+    </View>
+  );
+
   if (loading) {
     return (
-      <View style={[styles.centerContainer, isDark && styles.centerContainerDark]}>
-        <ActivityIndicator size="large" color="#2d7a4e" />
+      <View style={[styles.container, isDark && styles.containerDark]}>
+        {renderLoadingState()}
       </View>
     );
   }

@@ -19,6 +19,7 @@ import { CoursesStackParamList, CourseWithDetails, CourseEvent, CourseGallery } 
 import { coursesService } from '@/services/courses';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Phone, Mail, Globe, Clock, Flag, MapPin, Calendar, DollarSign, X, Star, Facebook, Instagram } from 'lucide-react-native';
+import { DetailSkeleton } from '@/components/skeletons';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -215,9 +216,8 @@ export default function CourseDetailScreen({
 
   if (loading) {
     return (
-      <View style={[styles.centerContainer, isDark && styles.centerContainerDark]}>
-        <ActivityIndicator size="large" color="#2d7a4e" />
-        <Text style={[styles.loadingText, isDark && styles.loadingTextDark]}>Loading course details...</Text>
+      <View style={[styles.container, isDark && styles.containerDark]}>
+        <DetailSkeleton />
       </View>
     );
   }

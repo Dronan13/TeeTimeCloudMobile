@@ -31,6 +31,7 @@ import {
   queueSyncUpdate,
   processSyncQueue,
 } from '@/utils/scorecardSync';
+import { ScorecardSkeleton } from '@/components/skeletons';
 
 type Props = NativeStackScreenProps<TournamentsStackParamList, 'Scorecard'>;
 
@@ -328,9 +329,9 @@ export default function ScorecardScreen({ route, navigation }: Props) {
 
   if (loading) {
     return (
-      <View style={[styles.centerContainer, isDark && styles.centerContainerDark]}>
-        <ActivityIndicator size="large" color="#2d7a4e" />
-      </View>
+      <SafeAreaView style={[styles.container, isDark && styles.containerDark]}>
+        <ScorecardSkeleton />
+      </SafeAreaView>
     );
   }
 

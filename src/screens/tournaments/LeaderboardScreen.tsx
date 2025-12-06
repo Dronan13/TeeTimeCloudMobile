@@ -17,6 +17,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
 import LeaderboardCard from '@/components/LeaderboardCard';
+import { LeaderboardItemSkeleton } from '@/components/skeletons';
 
 type Props = NativeStackScreenProps<TournamentsStackParamList, 'Leaderboard'>;
 
@@ -118,11 +119,24 @@ export default function LeaderboardScreen({ route }: Props) {
     );
   };
 
+  const renderLoadingState = () => (
+    <View style={styles.listContent}>
+      <LeaderboardItemSkeleton />
+      <LeaderboardItemSkeleton />
+      <LeaderboardItemSkeleton />
+      <LeaderboardItemSkeleton />
+      <LeaderboardItemSkeleton />
+      <LeaderboardItemSkeleton />
+      <LeaderboardItemSkeleton />
+      <LeaderboardItemSkeleton />
+    </View>
+  );
+
   if (loading) {
     return (
-      <View style={[styles.centerContainer, isDark && styles.centerContainerDark]}>
-        <ActivityIndicator size="large" color="#2d7a4e" />
-      </View>
+      <SafeAreaView style={[styles.container, isDark && styles.containerDark]}>
+        {renderLoadingState()}
+      </SafeAreaView>
     );
   }
 

@@ -16,6 +16,7 @@ import { tournamentsService } from '@/services/tournaments';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
+import { FormSkeleton } from '@/components/skeletons';
 
 type Props = NativeStackScreenProps<TournamentsStackParamList, 'TournamentRegistration'>;
 
@@ -213,8 +214,8 @@ export default function TournamentRegistrationScreen({
 
   if (loading) {
     return (
-      <View style={[styles.centerContainer, isDark && styles.centerContainerDark]}>
-        <ActivityIndicator size="large" color="#2d7a4e" />
+      <View style={[styles.container, isDark && styles.containerDark]}>
+        <FormSkeleton fieldCount={5} />
       </View>
     );
   }

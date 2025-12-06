@@ -15,6 +15,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { golfRoundsService, RoundStatistics } from '@/services/golfRounds';
 import { calculateStatistics } from '@/utils/personalRoundSync';
 import { Edit2, Trash2 } from 'lucide-react-native';
+import { ScorecardSkeleton } from '@/components/skeletons';
 
 type Props = NativeStackScreenProps<RoundsStackParamList, 'RoundDetail'>;
 
@@ -151,10 +152,10 @@ export default function RoundDetailScreen({ navigation, route }: Props) {
   if (loading) {
     return (
       <View
-        className="flex-1 justify-center items-center"
+        className="flex-1"
         style={{ backgroundColor: bgColor }}
       >
-        <ActivityIndicator size="large" color="#2d7a4e" />
+        <ScorecardSkeleton />
       </View>
     );
   }

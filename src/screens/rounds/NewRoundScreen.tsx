@@ -16,6 +16,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { golfRoundsService } from '@/services/golfRounds';
 import { coursesService } from '@/services/courses';
 import { Calendar, ChevronDown } from 'lucide-react-native';
+import { FormSkeleton } from '@/components/skeletons';
 
 type Props = NativeStackScreenProps<RoundsStackParamList, 'NewRound'>;
 
@@ -145,10 +146,10 @@ export default function NewRoundScreen({ navigation }: Props) {
   if (loading) {
     return (
       <View
-        className="flex-1 justify-center items-center"
+        className="flex-1"
         style={{ backgroundColor: bgColor }}
       >
-        <ActivityIndicator size="large" color="#2d7a4e" />
+        <FormSkeleton fieldCount={3} />
       </View>
     );
   }
