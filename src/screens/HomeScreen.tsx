@@ -29,6 +29,7 @@ import { golfRoundsService } from '@/services/golfRounds';
 import { CourseEvent, AppTabParamList, CoursesStackParamList, Database } from '@/types';
 import MyTournamentCard from '@/components/MyTournamentCard';
 import { WeatherSkeleton, TeeTimeSkeleton, TournamentCardSkeleton, RoundCardSkeleton } from '@/components/skeletons';
+import FloatingActionButton from '@/components/FloatingActionButton';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { Flag, MapPin, Calendar, Bell, Thermometer, Wind, Droplets, CloudSun, Clock, X, Newspaper, RotateCcw, ChevronRight } from 'lucide-react-native';
@@ -213,9 +214,10 @@ export default function HomeScreen() {
   };
 
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <ScrollView
         style={[homeStyles.container, isDark && homeStyles.containerDark]}
+        contentContainerStyle={{ paddingBottom: 80 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
       {/* Profile Snapshot */}
@@ -579,6 +581,8 @@ export default function HomeScreen() {
       )}
       </ScrollView>
 
+      <FloatingActionButton />
+
       {/* Fullscreen Image Modal */}
       <Modal
         visible={isImageModalVisible}
@@ -611,7 +615,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
       </Modal>
-    </>
+    </View>
   );
 }
 

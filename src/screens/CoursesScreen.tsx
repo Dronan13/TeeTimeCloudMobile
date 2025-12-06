@@ -18,6 +18,7 @@ import { styles as globalStyles } from '@/utils/styles';
 import { MapPin, Phone, Mail, ChevronRight, Flag, X } from 'lucide-react-native';
 import { CourseCardSkeleton } from '@/components/skeletons';
 import { EmptyState } from '@/components/EmptyState';
+import FloatingActionButton from '@/components/FloatingActionButton';
 
 type CoursesScreenNavigationProp = StackNavigationProp<
   CoursesStackParamList,
@@ -183,9 +184,10 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
           data={courses}
           renderItem={renderCourseItem}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={
-            courses.length === 0 ? styles.emptyListContainer : styles.listContainer
-          }
+          contentContainerStyle={[
+            courses.length === 0 ? styles.emptyListContainer : styles.listContainer,
+            { paddingBottom: 80 },
+          ]}
           ListEmptyComponent={renderEmptyState}
           refreshControl={
             <RefreshControl
@@ -198,6 +200,8 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
           showsVerticalScrollIndicator={false}
         />
       )}
+
+      <FloatingActionButton />
     </View>
   );
 }

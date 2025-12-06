@@ -13,6 +13,7 @@ import { rssArticlesService } from '@/services/rssArticles';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import RSSArticleCard from '@/components/RSSArticleCard';
+import FloatingActionButton from '@/components/FloatingActionButton';
 import { Newspaper } from 'lucide-react-native';
 
 type RSSArticle = Database['public']['Tables']['rss_articles']['Row'];
@@ -160,9 +161,10 @@ export default function RSSArticlesScreen() {
         data={articles}
         renderItem={renderArticleItem}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={
-          articles.length === 0 ? styles.emptyListContainer : styles.listContainer
-        }
+        contentContainerStyle={[
+          articles.length === 0 ? styles.emptyListContainer : styles.listContainer,
+          { paddingBottom: 80 },
+        ]}
         ListEmptyComponent={renderEmptyState}
         ListFooterComponent={renderFooter}
         refreshControl={
@@ -182,6 +184,8 @@ export default function RSSArticlesScreen() {
         initialNumToRender={10}
         windowSize={10}
       />
+
+      <FloatingActionButton />
     </View>
   );
 }

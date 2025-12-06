@@ -352,6 +352,14 @@
     "spanish": "Español",
     "selectLanguage": "Seleccionar Idioma"
   },
+  "quickActions": {
+    "title": "Acciones Rápidas",
+    "bookTeeTime": "Reservar Horario",
+    "myTeeTimes": "Mis Horarios",
+    "myRounds": "Mis Rondas",
+    "startRound": "Iniciar Ronda",
+    "findTournaments": "Buscar Torneos"
+  },
   "tournaments": {
     "dispute": {
       "errorReasonRequired": "Por favor proporciona una razón para la disputa",

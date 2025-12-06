@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './src/hooks/useAuth';
 import { ThemeProvider } from './src/contexts/ThemeContext';
 import { LanguageProvider } from './src/contexts/LanguageContext';
+import { NotificationProvider } from './src/contexts/NotificationContext';
 import RootNavigator from './src/navigation/RootNavigator';
 import * as Sentry from '@sentry/react-native';
 
@@ -46,8 +47,10 @@ export default Sentry.wrap(function App() {
         <ThemeProvider>
           <QueryClientProvider client={queryClient}>
             <AuthProvider>
-              <RootNavigator />
-              <StatusBar style="auto" />
+              <NotificationProvider>
+                <RootNavigator />
+                <StatusBar style="auto" />
+              </NotificationProvider>
             </AuthProvider>
           </QueryClientProvider>
         </ThemeProvider>

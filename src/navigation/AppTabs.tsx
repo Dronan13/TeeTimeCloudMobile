@@ -5,6 +5,7 @@ import { AppTabParamList, AppTab5ParamList, CoursesStackParamList, ProfileStackP
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Home, Flag, Calendar, User, Newspaper, Trophy, RotateCcw } from 'lucide-react-native';
+import NotificationHeaderButton from '@/components/NotificationHeaderButton';
 
 // Import screens
 import HomeScreen from '@/screens/HomeScreen';
@@ -145,6 +146,7 @@ export default function AppTabs() {
         headerTitleStyle: {
           fontWeight: '600',
         },
+        headerRight: () => <NotificationHeaderButton />,
       }}
     >
       <Tab.Screen
@@ -180,6 +182,7 @@ export default function AppTabs() {
         name="TeeTimes"
         component={TeeTimesScreen}
         options={{
+          tabBarButton: () => null,
           tabBarIcon: ({ color, focused }) => (
             <Calendar
               size={24}
@@ -209,6 +212,7 @@ export default function AppTabs() {
         name="Rounds"
         component={RoundsStackNavigator}
         options={{
+          tabBarButton: () => null,
           tabBarIcon: ({ color, focused }) => (
             <RotateCcw
               size={24}

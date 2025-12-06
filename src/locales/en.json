@@ -352,6 +352,14 @@
     "spanish": "Spanish",
     "selectLanguage": "Select Language"
   },
+  "quickActions": {
+    "title": "Quick Actions",
+    "bookTeeTime": "Book Tee Time",
+    "myTeeTimes": "My Tee Times",
+    "myRounds": "My Rounds",
+    "startRound": "Start Round",
+    "findTournaments": "Find Tournaments"
+  },
   "tournaments": {
     "dispute": {
       "errorReasonRequired": "Please provide a reason for the dispute",
