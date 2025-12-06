@@ -26,7 +26,10 @@
     "retry": "Retry",
     "refresh": "Refresh",
     "players": "Players",
-    "submit": "Submit"
+    "submit": "Submit",
+    "offline": "You're offline",
+    "offlineMessage": "Changes will be synced when you're back online",
+    "pendingUpdates": "{{count}} pending updates"
   },
   "navigation": {
     "home": "Home",
@@ -186,6 +189,11 @@
     "cancelSuccess": "Reservation cancelled successfully",
     "cancelError": "Failed to cancel reservation",
     "bookNew": "Book New Tee Time",
+    "emptyState": {
+      "title": "No Tee Times Yet",
+      "description": "You don't have any tee times booked. Browse courses and reserve your next round!",
+      "action": "Browse Courses"
+    },
     "details": {
       "date": "Date",
       "time": "Time",
@@ -236,6 +244,10 @@
       "reminder": "Reminder",
       "announcement": "Announcement",
       "promotion": "Promotion"
+    },
+    "emptyState": {
+      "title": "No Notifications",
+      "description": "You're all caught up! You'll be notified when there are updates."
     }
   },
   "profile": {
@@ -370,6 +382,11 @@
       "playersCount": "{{count}} / {{max}} players",
       "filter": "Filter"
     },
+    "emptyState": {
+      "title": "No Tournaments Available",
+      "description": "There are no tournaments scheduled at the moment. Check back soon for upcoming events!",
+      "action": "Browse Courses"
+    },
     "detail": {
       "title": "Tournament Details",
       "description": "Description",
@@ -410,13 +427,19 @@
       "errorInvalidHandicap": "You don't have a valid handicap"
     },
     "scorecard": {
-      "title": "Scorecard",
+      "title": "Score Card",
       "enterScore": "Enter Score",
       "notes": "Notes (optional)",
       "summary": "Score Summary",
       "front9": "Front 9",
       "back9": "Back 9",
       "total": "Total",
+      "par": "Par",
+      "vsPar": "vs Par",
+      "hole": "Hole {{number}}",
+      "parValue": "Par {{value}}",
+      "out": "OUT",
+      "in": "IN",
       "prevHole": "Previous Hole",
       "nextHole": "Next Hole",
       "finishRound": "Finish Round",
@@ -469,12 +492,26 @@
     "checkBackLater": "Check back later for new golf articles"
   },
   "errors": {
+    "title": "Error",
     "network": "Network error. Please check your connection.",
     "server": "Server error. Please try again later.",
     "unauthorized": "Unauthorized. Please sign in again.",
     "notFound": "Resource not found.",
     "unknown": "An unknown error occurred.",
-    "timeout": "Request timeout. Please try again."
+    "timeout": "Request timeout. Please try again.",
+    "fetchCourses": "Failed to load courses",
+    "fetchTournaments": "Failed to load tournaments",
+    "fetchTeeTimes": "Failed to load tee times",
+    "fetchRounds": "Failed to load rounds",
+    "submitScore": "Failed to submit score",
+    "generic": "Something went wrong. Please try again."
+  },
+  "success": {
+    "title": "Success",
+    "saved": "Changes saved successfully",
+    "updated": "Updated successfully",
+    "deleted": "Deleted successfully",
+    "submitted": "Submitted successfully"
   },
   "rounds": {
     "details": "Details",

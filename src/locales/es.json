@@ -26,7 +26,10 @@
     "retry": "Reintentar",
     "refresh": "Actualizar",
     "players": "Jugadores",
-    "submit": "Enviar"
+    "submit": "Enviar",
+    "offline": "Sin conexión",
+    "offlineMessage": "Los cambios se sincronizarán cuando vuelvas a conectarte",
+    "pendingUpdates": "{{count}} actualizaciones pendientes"
   },
   "navigation": {
     "home": "Inicio",
@@ -186,6 +189,11 @@
     "cancelSuccess": "Reserva cancelada exitosamente",
     "cancelError": "Error al cancelar reserva",
     "bookNew": "Reservar Nuevo Horario",
+    "emptyState": {
+      "title": "Sin Horarios Aún",
+      "description": "No tienes horarios reservados. ¡Explora campos y reserva tu próxima ronda!",
+      "action": "Explorar Campos"
+    },
     "details": {
       "date": "Fecha",
       "time": "Hora",
@@ -236,6 +244,10 @@
       "reminder": "Recordatorio",
       "announcement": "Anuncio",
       "promotion": "Promoción"
+    },
+    "emptyState": {
+      "title": "Sin Notificaciones",
+      "description": "¡Estás al día! Te notificaremos cuando haya actualizaciones."
     }
   },
   "profile": {
@@ -370,6 +382,11 @@
       "playersCount": "{{count}} / {{max}} jugadores",
       "filter": "Filtrar"
     },
+    "emptyState": {
+      "title": "Sin Torneos Disponibles",
+      "description": "No hay torneos programados en este momento. ¡Vuelve pronto para próximos eventos!",
+      "action": "Explorar Campos"
+    },
     "detail": {
       "title": "Detalles del Torneo",
       "description": "Descripción",
@@ -417,6 +434,12 @@
       "front9": "Primeros 9",
       "back9": "Últimos 9",
       "total": "Total",
+      "par": "Par",
+      "vsPar": "vs Par",
+      "hole": "Hoyo {{number}}",
+      "parValue": "Par {{value}}",
+      "out": "SALIDA",
+      "in": "ENTRADA",
       "prevHole": "Hoyo Anterior",
       "nextHole": "Próximo Hoyo",
       "finishRound": "Terminar Ronda",
@@ -469,12 +492,26 @@
     "checkBackLater": "Vuelve más tarde para nuevos artículos de golf"
   },
   "errors": {
+    "title": "Error",
     "network": "Error de red. Por favor verifica tu conexión.",
     "server": "Error del servidor. Por favor intenta más tarde.",
     "unauthorized": "No autorizado. Por favor inicia sesión de nuevo.",
     "notFound": "Recurso no encontrado.",
     "unknown": "Ocurrió un error desconocido.",
-    "timeout": "Tiempo de espera agotado. Por favor intenta de nuevo."
+    "timeout": "Tiempo de espera agotado. Por favor intenta de nuevo.",
+    "fetchCourses": "Error al cargar campos",
+    "fetchTournaments": "Error al cargar torneos",
+    "fetchTeeTimes": "Error al cargar horarios",
+    "fetchRounds": "Error al cargar rondas",
+    "submitScore": "Error al enviar puntuación",
+    "generic": "Algo salió mal. Por favor intenta de nuevo."
+  },
+  "success": {
+    "title": "Éxito",
+    "saved": "Cambios guardados exitosamente",
+    "updated": "Actualizado exitosamente",
+    "deleted": "Eliminado exitosamente",
+    "submitted": "Enviado exitosamente"
   },
   "rounds": {
     "details": "Detalles",

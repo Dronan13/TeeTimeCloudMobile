@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/contexts/ThemeContext';
 
 interface HoleData {
@@ -30,6 +31,7 @@ export default function ScorecardGrid({
   back9Total = 0,
   totalScore = 0,
 }: ScorecardGridProps) {
+  const { t } = useTranslation();
   const { isDark } = useTheme();
 
   const getScoreColor = (score: number | null, par: number) => {
@@ -60,7 +62,7 @@ export default function ScorecardGrid({
             isDark && styles.cellNumberDark,
           ]}
         >
-          Hole {hole.number}
+          {t('tournament.scorecard.hole', { number: hole.number })}
         </Text>
         <Text
           style={[
@@ -74,7 +76,7 @@ export default function ScorecardGrid({
             styles.cellPar,
             isDark && styles.cellParDark,
           ]}>
-          Par {hole.par}
+          {t('tournament.scorecard.parValue', { value: hole.par })}
         </Text>
       </TouchableOpacity>
     );
@@ -108,28 +110,28 @@ export default function ScorecardGrid({
   return (
     <View style={[styles.container, isDark && styles.containerDark]}>
       <Text style={[styles.title, isDark && styles.titleDark]}>
-        Score Card
+        {t('tournament.scorecard.title')}
       </Text>
 
       {/* Front 9 - 5x2 Grid */}
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>
-          Front 9
+          {t('tournament.scorecard.front9')}
         </Text>
         <View style={styles.gridContainer}>
           {frontNineHoles.map((hole) => renderHoleCell(hole))}
-          {renderSummaryCell('OUT', front9Total, totalParFront)}
+          {renderSummaryCell(t('tournament.scorecard.out'), front9Total, totalParFront)}
         </View>
       </View>
 
       {/* Back 9 - 5x2 Grid */}
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>
-          Back 9
+          {t('tournament.scorecard.back9')}
         </Text>
         <View style={styles.gridContainer}>
           {backNineHoles.map((hole) => renderHoleCell(hole))}
-          {renderSummaryCell('IN', back9Total, totalParBack)}
+          {renderSummaryCell(t('tournament.scorecard.in'), back9Total, totalParBack)}
         </View>
       </View>
 
@@ -142,7 +144,7 @@ export default function ScorecardGrid({
       >
         <View style={styles.totalItem}>
           <Text style={[styles.totalLabel, isDark && styles.totalLabelDark]}>
-            Total
+            {t('tournament.scorecard.total')}
           </Text>
           <Text style={[styles.totalValue, isDark && styles.totalValueDark]}>
             {totalScore}
@@ -150,7 +152,7 @@ export default function ScorecardGrid({
         </View>
         <View style={styles.totalItem}>
           <Text style={[styles.totalLabel, isDark && styles.totalLabelDark]}>
-            Par
+            {t('tournament.scorecard.par')}
           </Text>
           <Text style={[styles.totalValue, isDark && styles.totalValueDark]}>
             {totalPar}
@@ -158,7 +160,7 @@ export default function ScorecardGrid({
         </View>
         <View style={styles.totalItem}>
           <Text style={[styles.totalLabel, isDark && styles.totalLabelDark]}>
-            vs Par
+            {t('tournament.scorecard.vsPar')}
           </Text>
           <Text
             style={[
