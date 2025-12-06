@@ -29,7 +29,6 @@ import { golfRoundsService } from '@/services/golfRounds';
 import { CourseEvent, AppTabParamList, CoursesStackParamList, Database } from '@/types';
 import MyTournamentCard from '@/components/MyTournamentCard';
 import { WeatherSkeleton, TeeTimeSkeleton, TournamentCardSkeleton, RoundCardSkeleton } from '@/components/skeletons';
-import FloatingActionButton from '@/components/FloatingActionButton';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { Flag, MapPin, Calendar, Bell, Thermometer, Wind, Droplets, CloudSun, Clock, X, Newspaper, RotateCcw, ChevronRight } from 'lucide-react-native';
@@ -580,8 +579,6 @@ export default function HomeScreen() {
         </View>
       )}
       </ScrollView>
-
-      <FloatingActionButton />
 
       {/* Fullscreen Image Modal */}
       <Modal

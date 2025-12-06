@@ -13,7 +13,6 @@ import { rssArticlesService } from '@/services/rssArticles';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import RSSArticleCard from '@/components/RSSArticleCard';
-import FloatingActionButton from '@/components/FloatingActionButton';
 import { Newspaper } from 'lucide-react-native';
 import { ArticleCardSkeleton } from '@/components/skeletons';
 
@@ -191,8 +190,6 @@ export default function RSSArticlesScreen() {
         initialNumToRender={10}
         windowSize={10}
       />
-
-      <FloatingActionButton />
     </View>
   );
 }

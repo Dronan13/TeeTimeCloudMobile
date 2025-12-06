@@ -59,6 +59,7 @@ export type AppTabParamList = {
   Rounds: NavigatorScreenParams<RoundsStackParamList> | undefined;
   RSSArticles: undefined;
   Profile: NavigatorScreenParams<ProfileStackParamList> | undefined;
+  Menu: undefined;
 };
 
 export type AppTab5ParamList = {

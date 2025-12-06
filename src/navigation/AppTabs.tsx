@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+import { TouchableOpacity, View, StyleSheet, Text } from 'react-native';
 import { AppTabParamList, AppTab5ParamList, CoursesStackParamList, ProfileStackParamList } from '@/types';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Home, Flag, Calendar, User, Newspaper, Trophy, RotateCcw } from 'lucide-react-native';
+import { Home, Flag, Calendar, User, Newspaper, Trophy, RotateCcw, Menu } from 'lucide-react-native';
 import NotificationHeaderButton from '@/components/NotificationHeaderButton';
+import QuickActionsMenu from '@/components/QuickActionsMenu';
 
 // Import screens
 import HomeScreen from '@/screens/HomeScreen';
@@ -121,8 +123,10 @@ function ProfileStackNavigator() {
 export default function AppTabs() {
   const { isDark } = useTheme();
   const { t } = useLanguage();
+  const [menuVisible, setMenuVisible] = useState(false);
 
   return (
+    <>
     <Tab.Navigator
       screenOptions={{
         tabBarActiveTintColor: '#2d7a4e',
@@ -253,7 +257,49 @@ export default function AppTabs() {
           headerShown: false,
         }}
       />
+      <Tab.Screen
+        name="Menu"
+        component={View}
+        options={{
+          tabBarButton: (props) => (
+            <TouchableOpacity
+              {...props}
+              style={styles.menuTabButton}
+              onPress={() => setMenuVisible(true)}
+              activeOpacity={0.7}
+            >
+              <Menu
+                size={24}
+                color={isDark ? '#adb5bd' : '#868e96'}
+                strokeWidth={2}
+              />
+              <Text style={[styles.menuTabLabel, { color: isDark ? '#adb5bd' : '#868e96' }]}>
+                {t('navigation.menu') || 'Menu'}
+              </Text>
+            </TouchableOpacity>
+          ),
+        }}
+      />
     </Tab.Navigator>
+    <QuickActionsMenu
+      visible={menuVisible}
+      onClose={() => setMenuVisible(false)}
+    />
+    </>
   );
 }
+
+const styles = StyleSheet.create({
+  menuTabButton: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 8,
+  },
+  menuTabLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    marginTop: 4,
+  },
+});
 
