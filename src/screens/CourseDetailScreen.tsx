@@ -18,6 +18,7 @@ import { RouteProp } from '@react-navigation/native';
 import { CoursesStackParamList, CourseWithDetails, CourseEvent, CourseGallery } from '@/types';
 import { coursesService } from '@/services/courses';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Phone, Mail, Globe, Clock, Flag, MapPin, Calendar, DollarSign, X, Star, Facebook, Instagram, Play } from 'lucide-react-native';
 import { DetailSkeleton } from '@/components/skeletons';
 
@@ -40,6 +41,7 @@ export default function CourseDetailScreen({
 }: CourseDetailScreenProps) {
   const { courseId } = route.params;
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const [course, setCourse] = useState<CourseWithDetails | null>(null);
   const [events, setEvents] = useState<CourseEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,7 +65,7 @@ export default function CourseDetailScreen({
       ]);
 
       if (courseResult.error) {
-        setError('Failed to load course details');
+        setError(t('courses.errorLoadDetails'));
         console.error('Error fetching course:', courseResult.error);
       } else if (courseResult.data) {
         setCourse(courseResult.data);
@@ -73,7 +75,7 @@ export default function CourseDetailScreen({
         setEvents(eventsResult.data);
       }
     } catch (err) {
-      setError('An unexpected error occurred');
+      setError(t('courses.errorUnexpected'));
       console.error('Unexpected error:', err);
     } finally {
       setLoading(false);
@@ -213,7 +215,7 @@ export default function CourseDetailScreen({
   );
 
   const getOperatingHoursText = (operatingHours: unknown): string => {
-    if (!operatingHours) return 'Hours not available';
+    if (!operatingHours) return t('courses.hoursNotAvailable');
     if (typeof operatingHours === 'string') return operatingHours;
     if (typeof operatingHours === 'object') {
       const today = new Date()
@@ -223,9 +225,9 @@ export default function CourseDetailScreen({
       if (hoursObj[today]) {
         return `Today: ${hoursObj[today]}`;
       }
-      return 'See website for hours';
+      return t('courses.seeWebsite');
     }
-    return 'Hours not available';
+    return t('courses.hoursNotAvailable');
   };
 
   if (loading) {
@@ -240,9 +242,9 @@ export default function CourseDetailScreen({
     return (
       <View style={[styles.centerContainer, isDark && styles.centerContainerDark]}>
         <Flag size={64} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={1.5} />
-        <Text style={[styles.errorText, isDark && styles.errorTextDark]}>{error || 'Course not found'}</Text>
+        <Text style={[styles.errorText, isDark && styles.errorTextDark]}>{error || t('courses.notFound')}</Text>
         <TouchableOpacity style={styles.retryButton} onPress={fetchCourseDetails}>
-          <Text style={styles.retryButtonText}>Retry</Text>
+          <Text style={styles.retryButtonText}>{t('common.retry')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -325,7 +327,7 @@ export default function CourseDetailScreen({
             activeOpacity={0.8}
           >
             <Flag size={20} color="#fff" strokeWidth={2} />
-            <Text style={styles.reserveButtonText}>Reserve Tee Time</Text>
+            <Text style={styles.reserveButtonText}>{t('courses.reserveTeeTime')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -334,14 +336,14 @@ export default function CourseDetailScreen({
             activeOpacity={0.8}
           >
             <Play size={20} color="#2d7a4e" strokeWidth={2} fill="#2d7a4e" />
-            <Text style={[styles.startRoundButtonText, isDark && styles.startRoundButtonTextDark]}>Start Round</Text>
+            <Text style={[styles.startRoundButtonText, isDark && styles.startRoundButtonTextDark]}>{t('rounds.startRound')}</Text>
           </TouchableOpacity>
         </View>
 
         {/* Description */}
         {course.description && (
           <View style={[styles.section, isDark && styles.sectionDark]}>
-            <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>About</Text>
+            <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>{t('courses.about')}</Text>
             <Text style={[styles.description, isDark && styles.descriptionDark]}>{course.description}</Text>
           </View>
         )}
@@ -349,7 +351,7 @@ export default function CourseDetailScreen({
         {/* Amenities */}
         {course.amenities && course.amenities.length > 0 && (
           <View style={[styles.section, isDark && styles.sectionDark]}>
-            <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Amenities</Text>
+            <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>{t('courses.amenities')}</Text>
             <View style={styles.amenitiesContainer}>
               {course.amenities.map((amenity, index) => renderAmenity(amenity, index))}
             </View>
@@ -359,7 +361,7 @@ export default function CourseDetailScreen({
         {/* Contact Information */}
         {(course.phone || course.email || course.site_url) && course.phone && (
           <View style={[styles.section, isDark && styles.sectionDark]}>
-            <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Contact Information</Text>
+            <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>{t('courses.contactInformation')}</Text>
 
             {course.phone && (
               <TouchableOpacity
@@ -387,7 +389,7 @@ export default function CourseDetailScreen({
                 onPress={() => handleWebsitePress(course.site_url!)}
               >
                 <Globe size={20} color="#2d7a4e" strokeWidth={2} />
-                <Text style={[styles.contactText, isDark && styles.contactTextDark]}>Visit Website</Text>
+                <Text style={[styles.contactText, isDark && styles.contactTextDark]}>{t('courses.visitWebsite')}</Text>
               </TouchableOpacity>
             )}
 
@@ -405,7 +407,7 @@ export default function CourseDetailScreen({
         {/* Social Media */}
         {(course.facebook || course.instagram) && (
           <View style={[styles.section, isDark && styles.sectionDark]}>
-            <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Follow Us</Text>
+            <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>{t('courses.followUs')}</Text>
             <View style={styles.socialContainer}>
               {course.facebook && (
                 <TouchableOpacity
@@ -413,7 +415,7 @@ export default function CourseDetailScreen({
                   onPress={() => handleWebsitePress(course.facebook!)}
                 >
                   <Facebook size={18} color={isDark ? '#f8f9fa' : '#212529'} strokeWidth={2} />
-                  <Text style={[styles.socialButtonText, isDark && styles.socialButtonTextDark]}>Facebook</Text>
+                  <Text style={[styles.socialButtonText, isDark && styles.socialButtonTextDark]}>{t('courses.facebook')}</Text>
                 </TouchableOpacity>
               )}
               {course.instagram && (
@@ -422,7 +424,7 @@ export default function CourseDetailScreen({
                   onPress={() => handleWebsitePress(course.instagram!)}
                 >
                   <Instagram size={18} color={isDark ? '#f8f9fa' : '#212529'} strokeWidth={2} />
-                  <Text style={[styles.socialButtonText, isDark && styles.socialButtonTextDark]}>Instagram</Text>
+                  <Text style={[styles.socialButtonText, isDark && styles.socialButtonTextDark]}>{t('courses.instagram')}</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -432,7 +434,7 @@ export default function CourseDetailScreen({
         {/* Upcoming Events */}
         {events.length > 0 && (
           <View style={[styles.section, isDark && styles.sectionDark]}>
-            <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Upcoming Events</Text>
+            <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>{t('courses.upcomingEvents')}</Text>
             {events.map((event) => (
               <View key={event.id}>{renderEventItem({ item: event })}</View>
             ))}

@@ -16,6 +16,7 @@ import { CoursesStackParamList, Database } from '@/types';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { format, parseISO } from 'date-fns';
 
 type ReservationScreenRouteProp = RouteProp<CoursesStackParamList, 'ReservationScreen'>;
@@ -33,6 +34,7 @@ export default function ReservationScreen() {
   const { slotId, courseId } = route.params;
   const { user, profile } = useAuth();
   const { isDark } = useTheme();
+  const { t } = useLanguage();
 
   const [slot, setSlot] = useState<TeeTimeSlot | null>(null);
   const [loading, setLoading] = useState(true);
@@ -75,7 +77,7 @@ export default function ReservationScreen() {
       setSlot(data);
     } catch (error) {
       console.error('Error fetching slot details:', error);
-      Alert.alert('Error', 'Failed to load reservation details.');
+      Alert.alert(t('common.error'), t('reservation.errorLoadDetails'));
       navigation.goBack();
     } finally {
       setLoading(false);
@@ -85,14 +87,14 @@ export default function ReservationScreen() {
   const handleReserve = async () => {
     if (!firstName || !lastName || !email || !phone) {
       Alert.alert(
-        'Incomplete Profile',
-        'Please update your profile with your Name and Phone Number before booking.',
+        t('reservation.incompleteProfile'),
+        t('reservation.incompleteProfileMessage'),
         [
           {
-            text: 'Go to Profile',
+            text: t('reservation.goToProfile'),
             onPress: () => console.log('Navigate to profile manually'),
           },
-          { text: 'Cancel', style: 'cancel' },
+          { text: t('common.cancel'), style: 'cancel' },
         ]
       );
       return;
@@ -125,19 +127,20 @@ export default function ReservationScreen() {
 
       if (error) throw error;
 
+      const status = bookingStatus === 'confirmed' ? t('reservation.successConfirmed') : t('reservation.successSubmitted');
       Alert.alert(
-        'Success',
-        `Reservation ${bookingStatus === 'confirmed' ? 'Confirmed' : 'Submitted'}!`,
+        t('common.success'),
+        t('reservation.reservationSuccessMessage', { status }),
         [
           {
-            text: 'OK',
+            text: t('common.ok'),
             onPress: () => navigation.navigate('CoursesList'), // Or navigate to My Tee Times
           },
         ]
       );
     } catch (error) {
       console.error('Error creating reservation:', error);
-      Alert.alert('Error', 'Failed to create reservation. Please try again.');
+      Alert.alert(t('common.error'), t('reservation.errorCreateReservation'));
     } finally {
       setSubmitting(false);
     }
@@ -154,30 +157,30 @@ export default function ReservationScreen() {
   return (
     <ScrollView style={[styles.container, isDark && styles.containerDark]} contentContainerStyle={styles.contentContainer}>
       <View style={[styles.header, isDark && styles.headerDark]}>
-        <Text style={[styles.courseName, isDark && styles.courseNameDark]}>Reservation Details</Text>
+        <Text style={[styles.courseName, isDark && styles.courseNameDark]}>{t('reservation.reservationDetails')}</Text>
         {slot && (
           <View style={styles.slotInfo}>
             <Text style={[styles.slotDate, isDark && styles.slotDateDark]}>
               {slot.tee_date ? format(parseISO(slot.tee_date), 'EEEE, MMMM d, yyyy') : ''}
             </Text>
             <Text style={styles.slotTime}>
-              {slot.tee_time ? slot.tee_time.slice(0, 5) : ''} - Hole {slot.hole}
+              {slot.tee_time ? slot.tee_time.slice(0, 5) : ''} - {t('reservation.hole')} {slot.hole}
             </Text>
           </View>
         )}
       </View>
 
       <View style={styles.form}>
-        <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Game Details</Text>
+        <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>{t('reservation.gameDetails')}</Text>
 
-        <Text style={[styles.label, isDark && styles.labelDark]}>Holes</Text>
+        <Text style={[styles.label, isDark && styles.labelDark]}>{t('reservation.holes')}</Text>
         <View style={[styles.holesSelector, isDark && styles.holesSelectorDark]}>
           <TouchableOpacity
             style={[styles.holesOption, holes === 9 && styles.holesOptionActive, isDark && styles.holesOptionDark, holes === 9 && isDark && styles.holesOptionActiveDark]}
             onPress={() => setHoles(9)}
           >
             <Text style={[styles.holesText, holes === 9 && styles.holesTextActive, isDark && styles.holesTextDark]}>
-              9 Holes
+              {t('reservation.nineHoles')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -185,15 +188,15 @@ export default function ReservationScreen() {
             onPress={() => setHoles(18)}
           >
             <Text style={[styles.holesText, holes === 18 && styles.holesTextActive, isDark && styles.holesTextDark]}>
-              18 Holes
+              {t('reservation.eighteenHoles')}
             </Text>
           </TouchableOpacity>
         </View>
 
-        <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Extras & Requirements</Text>
+        <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>{t('reservation.extrasRequirements')}</Text>
 
         <View style={[styles.checkboxRow, isDark && styles.checkboxRowDark]}>
-          <Text style={[styles.checkboxLabel, isDark && styles.checkboxLabelDark]}>Golf Cart Required</Text>
+          <Text style={[styles.checkboxLabel, isDark && styles.checkboxLabelDark]}>{t('reservation.golfCartRequired')}</Text>
           <Switch
             value={golfCartRequired}
             onValueChange={setGolfCartRequired}
@@ -203,7 +206,7 @@ export default function ReservationScreen() {
         </View>
 
         <View style={[styles.checkboxRow, isDark && styles.checkboxRowDark]}>
-          <Text style={[styles.checkboxLabel, isDark && styles.checkboxLabelDark]}>Push Cart Required</Text>
+          <Text style={[styles.checkboxLabel, isDark && styles.checkboxLabelDark]}>{t('reservation.pushCartRequired')}</Text>
           <Switch
             value={pushCartRequired}
             onValueChange={setPushCartRequired}
@@ -213,7 +216,7 @@ export default function ReservationScreen() {
         </View>
 
         <View style={[styles.checkboxRow, isDark && styles.checkboxRowDark]}>
-          <Text style={[styles.checkboxLabel, isDark && styles.checkboxLabelDark]}>Caddy Required</Text>
+          <Text style={[styles.checkboxLabel, isDark && styles.checkboxLabelDark]}>{t('reservation.caddyRequired')}</Text>
           <Switch
             value={caddyRequired}
             onValueChange={setCaddyRequired}
@@ -223,7 +226,7 @@ export default function ReservationScreen() {
         </View>
 
         <View style={[styles.checkboxRow, isDark && styles.checkboxRowDark]}>
-          <Text style={[styles.checkboxLabel, isDark && styles.checkboxLabelDark]}>Clubs Required</Text>
+          <Text style={[styles.checkboxLabel, isDark && styles.checkboxLabelDark]}>{t('reservation.clubsRequired')}</Text>
           <Switch
             value={clubsRequired}
             onValueChange={setClubsRequired}
@@ -233,7 +236,7 @@ export default function ReservationScreen() {
         </View>
 
         <View style={[styles.checkboxRow, isDark && styles.checkboxRowDark]}>
-          <Text style={[styles.checkboxLabel, isDark && styles.checkboxLabelDark]}>Assistance Required</Text>
+          <Text style={[styles.checkboxLabel, isDark && styles.checkboxLabelDark]}>{t('reservation.assistanceRequired')}</Text>
           <Switch
             value={assistanceRequired}
             onValueChange={setAssistanceRequired}
@@ -242,12 +245,12 @@ export default function ReservationScreen() {
           />
         </View>
 
-        <Text style={[styles.label, isDark && styles.labelDark]}>Notes</Text>
+        <Text style={[styles.label, isDark && styles.labelDark]}>{t('reservation.notes')}</Text>
         <TextInput
           style={[styles.input, styles.textArea, isDark && styles.inputDark]}
           value={notes}
           onChangeText={setNotes}
-          placeholder="Any special requests or notes..."
+          placeholder={t('reservation.notesPlaceholder')}
           placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
           multiline
           numberOfLines={4}
@@ -262,7 +265,7 @@ export default function ReservationScreen() {
           {submitting ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.submitButtonText}>Confirm Reservation</Text>
+            <Text style={styles.submitButtonText}>{t('reservation.confirmReservation')}</Text>
           )}
         </TouchableOpacity>
       </View>

@@ -240,7 +240,7 @@ export default function HomeScreen() {
           </View>
           <View style={homeStyles.profileDetails}>
             <Text style={homeStyles.profileName}>
-              {profile?.first_name || 'Golfer'} {profile?.last_name || ''}
+              {profile?.first_name || t('home.golfer')} {profile?.last_name || ''}
             </Text>
             {homeCourseName && (
               <View style={homeStyles.homeCourseRow}>
@@ -317,7 +317,7 @@ export default function HomeScreen() {
               </View>
               <View style={homeStyles.teeTimeRow}>
                 <Text style={[homeStyles.teeTimeHoles, isDark && homeStyles.teeTimeHolesDark]}>
-                  N/A {t('home.teeTimeCard.holes')}
+                  {t('common.na')} {t('home.teeTimeCard.holes')}
                 </Text>
               </View>
               <View style={homeStyles.teeTimeRow}>
@@ -368,8 +368,8 @@ export default function HomeScreen() {
             return (
               <MyTournamentCard
                 key={tournament.id}
-                tournamentName={tournamentData?.name || 'Tournament'}
-                groupName={tournament.tournament_groups?.[0]?.name || 'Group'}
+                tournamentName={tournamentData?.name || t('home.tournament')}
+                groupName={tournament.tournament_groups?.[0]?.name || t('home.group')}
                 courseName={undefined}
                 startDateTime={tournament.start_datetime}
                 holesComplete={holesCompleted}
@@ -495,7 +495,7 @@ export default function HomeScreen() {
                 </View>
                 <View style={homeStyles.recentRoundStats}>
                   <View style={homeStyles.statItem}>
-                    <Text style={[homeStyles.statLabel, isDark && homeStyles.statLabelDark]}>Score</Text>
+                    <Text style={[homeStyles.statLabel, isDark && homeStyles.statLabelDark]}>{t('rounds.detail.score')}</Text>
                     <Text style={[homeStyles.statValue, isDark && homeStyles.statValueDark]}>
                       {round.total_score}
                     </Text>
@@ -503,13 +503,13 @@ export default function HomeScreen() {
                   <View
                     style={[homeStyles.statItem, { backgroundColor: scoreBgColor, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4 }]}
                   >
-                    <Text style={[homeStyles.statLabel, { color: scoreTextColor, fontSize: 11 }]}>vs Par</Text>
+                    <Text style={[homeStyles.statLabel, { color: scoreTextColor, fontSize: 11 }]}>{t('rounds.detail.vsPar')}</Text>
                     <Text style={[homeStyles.statValue, { color: scoreTextColor }]}>
                       {round.score_to_par > 0 ? '+' : ''}{round.score_to_par}
                     </Text>
                   </View>
                   <View style={homeStyles.statItem}>
-                    <Text style={[homeStyles.statLabel, isDark && homeStyles.statLabelDark]}>GIR</Text>
+                    <Text style={[homeStyles.statLabel, isDark && homeStyles.statLabelDark]}>{t('rounds.detail.gir')}</Text>
                     <Text style={[homeStyles.statValue, isDark && homeStyles.statValueDark]}>
                       {round.greens_in_regulation || '0'}
                     </Text>

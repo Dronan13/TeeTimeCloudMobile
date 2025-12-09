@@ -18,6 +18,7 @@ import { CoursesStackParamList, Database } from '@/types';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { format, addDays, parseISO, isSameDay } from 'date-fns';
 import { weatherService, WeatherForecast } from '@/services/weather';
 
@@ -41,6 +42,7 @@ export default function CourseTeeTimesScreen() {
   const { courseId, courseName } = route.params;
   const { user } = useAuth();
   const { isDark } = useTheme();
+  const { t } = useLanguage();
 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedTimePeriod, setSelectedTimePeriod] = useState<TimePeriod>('all');
@@ -122,7 +124,7 @@ export default function CourseTeeTimesScreen() {
       setTeeTimes(data || []);
     } catch (error) {
       console.error('Error fetching tee times:', error);
-      Alert.alert('Error', 'Failed to load tee times. Please try again.');
+      Alert.alert(t('common.error'), t('courses.teeTimes.errorLoadTeeTimes'));
     } finally {
       setLoading(false);
     }
@@ -187,15 +189,19 @@ export default function CourseTeeTimesScreen() {
     if (!reservationDetails) return;
 
     Alert.alert(
-      'Cancel Existing Reservation',
-      `Are you sure you want to cancel your ${reservationDetails.status} reservation at ${reservationDetails.teeTime.slice(0, 5)} on Hole ${reservationDetails.hole}?`,
+      t('courses.teeTimes.cancelExisting'),
+      t('courses.teeTimes.cancelExistingMessage', {
+        status: reservationDetails.status,
+        time: reservationDetails.teeTime.slice(0, 5),
+        hole: reservationDetails.hole
+      }),
       [
         {
-          text: 'No',
+          text: t('courses.teeTimes.no'),
           style: 'cancel',
         },
         {
-          text: 'Yes, Cancel',
+          text: t('courses.teeTimes.yesCancel'),
           style: 'destructive',
           onPress: async () => {
             try {
@@ -206,14 +212,14 @@ export default function CourseTeeTimesScreen() {
 
               if (error) throw error;
 
-              Alert.alert('Success', 'Your reservation has been cancelled. You can now book a new tee time.');
+              Alert.alert(t('common.success'), t('courses.teeTimes.cancelSuccess'));
 
               // Refresh the data
               checkExistingReservation();
               fetchTeeTimes();
             } catch (error) {
               console.error('Error cancelling reservation:', error);
-              Alert.alert('Error', 'Failed to cancel reservation. Please try again.');
+              Alert.alert(t('common.error'), t('courses.teeTimes.cancelError'));
             }
           },
         },
@@ -275,7 +281,7 @@ export default function CourseTeeTimesScreen() {
             style={styles.cancelAlertButtonBehind}
             onPress={handleCancelExistingReservation}
           >
-            <Text style={styles.cancelAlertButtonText}>Cancel</Text>
+            <Text style={styles.cancelAlertButtonText}>{t('courses.teeTimes.cancel')}</Text>
           </TouchableOpacity>
           <Animated.View
             style={[
@@ -288,13 +294,18 @@ export default function CourseTeeTimesScreen() {
             {...panResponder.panHandlers}
           >
             <View style={styles.alertTextContainer}>
-              <Text style={[styles.alertTitle, isDark && styles.alertTitleDark]}>You have a reservation on this date</Text>
+              <Text style={[styles.alertTitle, isDark && styles.alertTitleDark]}>
+                {t('courses.teeTimes.youHaveReservation')}
+              </Text>
               <Text style={[styles.alertText, isDark && styles.alertTextDark]}>
-                {reservationDetails.teeTime.slice(0, 5)} - Hole {reservationDetails.hole} (
-                {reservationDetails.status})
+                {t('courses.teeTimes.reservationInfo', {
+                  time: reservationDetails.teeTime.slice(0, 5),
+                  hole: reservationDetails.hole,
+                  status: reservationDetails.status
+                })}
               </Text>
               <Text style={[styles.alertSubtext, isDark && styles.alertSubtextDark]}>
-                Swipe left to cancel and re-book
+                {t('courses.teeTimes.swipeLeftToCancel')}
               </Text>
             </View>
           </Animated.View>
@@ -355,7 +366,7 @@ export default function CourseTeeTimesScreen() {
           {item.tee_time ? item.tee_time.slice(0, 5) : ''}
         </Text>
         <Text style={[styles.holeText, isDark && styles.holeTextDark, hasReservationOnDate && styles.textDisabled]}>
-          Hole {item.hole}
+          {t('reservation.hole')} {item.hole}
         </Text>
       </View>
       <View style={styles.availabilityContainer}>
@@ -367,12 +378,12 @@ export default function CourseTeeTimesScreen() {
               : { color: getSpotsColor(item.available_players || 0) },
           ]}
         >
-          {item.available_players} spots left
+          {t('courses.teeTimes.spotsLeft', { count: item.available_players })}
         </Text>
         <View
           style={[styles.bookButton, hasReservationOnDate && styles.bookButtonDisabled]}
         >
-          <Text style={styles.bookButtonText}>Book</Text>
+          <Text style={styles.bookButtonText}>{t('courses.teeTimes.book')}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -411,7 +422,7 @@ export default function CourseTeeTimesScreen() {
             <Text
               style={[styles.holeTabText, isDark && styles.holeTabTextDark, selectedHole === 1 && styles.holeTabTextActive]}
             >
-              Hole 1
+              {t('courses.teeTimes.hole1')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -425,7 +436,7 @@ export default function CourseTeeTimesScreen() {
                 selectedHole === 10 && styles.holeTabTextActive,
               ]}
             >
-              Hole 10
+              {t('courses.teeTimes.hole10')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -453,7 +464,7 @@ export default function CourseTeeTimesScreen() {
                   selectedTimePeriod === period && styles.periodTabTextActive,
                 ]}
               >
-                {period.charAt(0).toUpperCase() + period.slice(1)}
+                {t(`courses.teeTimes.${period}`)}
               </Text>
             </TouchableOpacity>
           ))}
@@ -474,7 +485,7 @@ export default function CourseTeeTimesScreen() {
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Text style={[styles.emptyText, isDark && styles.emptyTextDark]}>
-                No tee times available for this selection.
+                {t('courses.teeTimes.noTeeTimesAvailable')}
               </Text>
             </View>
           }

@@ -15,6 +15,7 @@ import { RoundsStackParamList } from '@/types/personalRound';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { golfRoundsService } from '@/services/golfRounds';
 import {
@@ -46,6 +47,7 @@ interface HoleData {
 export default function PersonalScorecardScreen({ navigation, route }: Props) {
   const { user } = useAuth();
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const { isOnline } = useNetworkStatus();
   const { roundId, isEditing = false } = route.params;
 
@@ -319,7 +321,7 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
     const playedHoles = holes.filter((h) => h.score !== null);
 
     if (playedHoles.length === 0) {
-      alert('Please enter at least one hole score');
+      alert(t('rounds.scorecard.errorMinimumScore'));
       return;
     }
 
@@ -376,18 +378,18 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
           navigation.replace('RoundDetail', { roundId });
         } else {
           setSyncStatus('error');
-          alert('Some data will sync when connection improves');
+          alert(t('rounds.scorecard.syncWarning'));
           navigation.replace('RoundDetail', { roundId });
         }
       } else {
         // Offline - allow navigation, will sync later
         setSyncStatus('offline');
-        alert('Your round will sync when you\'re online');
+        alert(t('rounds.scorecard.offlineSync'));
         navigation.replace('RoundDetail', { roundId });
       }
     } catch (error) {
       console.error('Error finishing round:', error);
-      alert('Error completing round. Please try again.');
+      alert(t('rounds.scorecard.errorCompleting'));
     } finally {
       setSaving(false);
     }
@@ -419,7 +421,7 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
           <View className="flex-row justify-between mb-2">
             <View>
               <Text className="text-xs" style={{ color: secondaryColor }}>
-                Score
+                {t('rounds.scorecard.score')}
               </Text>
               <Text className="text-2xl font-bold" style={{ color: textColor }}>
                 {stats.grossScore}
@@ -427,7 +429,7 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
             </View>
             <View className="items-center">
               <Text className="text-xs" style={{ color: secondaryColor }}>
-                vs Par
+                {t('rounds.scorecard.vsPar')}
               </Text>
               <Text
                 className="text-2xl font-bold"
@@ -441,7 +443,7 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
             </View>
             <View className="items-center">
               <Text className="text-xs" style={{ color: secondaryColor }}>
-                GIR
+                {t('rounds.scorecard.gir')}
               </Text>
               <Text className="text-2xl font-bold" style={{ color: textColor }}>
                 {stats.girCount}
@@ -449,7 +451,7 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
             </View>
             <View className="items-center">
               <Text className="text-xs" style={{ color: secondaryColor }}>
-                Holes
+                {t('rounds.scorecard.holes')}
               </Text>
               <Text className="text-2xl font-bold" style={{ color: textColor }}>
                 {playedHoles.length}
@@ -458,13 +460,13 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
           </View>
           <View className="flex-row justify-between text-xs">
             <Text style={{ color: secondaryColor }}>
-              Out: <Text style={{ color: textColor, fontWeight: '600' }}>{stats.front9Score}</Text>
+              {t('rounds.scorecard.out')} <Text style={{ color: textColor, fontWeight: '600' }}>{stats.front9Score}</Text>
             </Text>
             <Text style={{ color: secondaryColor }}>
-              In: <Text style={{ color: textColor, fontWeight: '600' }}>{stats.back9Score}</Text>
+              {t('rounds.scorecard.in')} <Text style={{ color: textColor, fontWeight: '600' }}>{stats.back9Score}</Text>
             </Text>
             <Text style={{ color: secondaryColor }}>
-              Putts: <Text style={{ color: textColor, fontWeight: '600' }}>{stats.totalPutts}</Text>
+              {t('rounds.scorecard.putts')}: <Text style={{ color: textColor, fontWeight: '600' }}>{stats.totalPutts}</Text>
             </Text>
           </View>
 
@@ -473,25 +475,25 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
             {syncStatus === 'synced' && isOnline && (
               <View className="flex-row items-center gap-1">
                 <Wifi size={16} color="#22c55e" />
-                <Text className="text-xs" style={{ color: '#22c55e' }}>Synced</Text>
+                <Text className="text-xs" style={{ color: '#22c55e' }}>{t('rounds.scorecard.synced')}</Text>
               </View>
             )}
             {syncStatus === 'syncing' && (
               <View className="flex-row items-center gap-1">
                 <Loader size={16} color="#eab308" />
-                <Text className="text-xs" style={{ color: '#eab308' }}>Syncing</Text>
+                <Text className="text-xs" style={{ color: '#eab308' }}>{t('rounds.scorecard.syncing')}</Text>
               </View>
             )}
             {syncStatus === 'offline' && (
               <View className="flex-row items-center gap-1">
                 <WifiOff size={16} color={secondaryColor} />
-                <Text className="text-xs" style={{ color: secondaryColor }}>Offline</Text>
+                <Text className="text-xs" style={{ color: secondaryColor }}>{t('rounds.scorecard.offline')}</Text>
               </View>
             )}
             {syncStatus === 'error' && (
               <View className="flex-row items-center gap-1">
                 <AlertCircle size={16} color="#ef4444" />
-                <Text className="text-xs" style={{ color: '#ef4444' }}>Sync Error</Text>
+                <Text className="text-xs" style={{ color: '#ef4444' }}>{t('rounds.scorecard.syncError')}</Text>
               </View>
             )}
           </View>
@@ -505,7 +507,7 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
                 className="text-3xl font-bold mb-2"
                 style={{ color: textColor }}
               >
-                Hole {currentHoleData.number}
+                {t('rounds.scorecard.hole')} {currentHoleData.number}
               </Text>
               <View className="flex-row">
                 <Text className="text-sm" style={{ color: secondaryColor }}>
@@ -529,7 +531,7 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
                     className="text-xs"
                     style={{ color: secondaryColor }}
                   >
-                    Your Score
+                    {t('rounds.scorecard.yourScore')}
                   </Text>
                   <Text
                     className="text-5xl font-bold"
@@ -552,7 +554,7 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
                 </>
               ) : (
                 <Text className="text-lg" style={{ color: secondaryColor }}>
-                  Tap to enter score
+                  {t('rounds.scorecard.tapToEnterScore')}
                 </Text>
               )}
             </TouchableOpacity>
@@ -562,7 +564,7 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
               {/* Putts */}
               <View className="flex-row items-center px-4 py-3 rounded-lg" style={{ backgroundColor: cardBg }}>
                 <Text className="flex-1 font-semibold" style={{ color: textColor }}>
-                  Putts
+                  {t('rounds.scorecard.putts')}
                 </Text>
                 <TextInput
                   value={currentHoleData.putts?.toString() || ''}
@@ -586,7 +588,7 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
               {currentHoleData.par >= 4 && (
                 <View className="flex-row items-center px-4 py-3 rounded-lg" style={{ backgroundColor: cardBg }}>
                   <Text className="flex-1 font-semibold" style={{ color: textColor }}>
-                    Fairway Hit
+                    {t('rounds.scorecard.fairwayHit')}
                   </Text>
                   <Switch
                     value={currentHoleData.fairwayHit === true}
@@ -601,7 +603,7 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
               {/* Sand Save */}
               <View className="flex-row items-center px-4 py-3 rounded-lg" style={{ backgroundColor: cardBg }}>
                 <Text className="flex-1 font-semibold" style={{ color: textColor }}>
-                  Sand Save
+                  {t('rounds.scorecard.sandSave')}
                 </Text>
                 <View className="flex-row space-x-2">
                   <TouchableOpacity
@@ -656,7 +658,7 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
               {/* Penalties */}
               <View className="flex-row items-center px-4 py-3 rounded-lg" style={{ backgroundColor: cardBg }}>
                 <Text className="flex-1 font-semibold" style={{ color: textColor }}>
-                  Penalties
+                  {t('rounds.scorecard.penalties')}
                 </Text>
                 <TextInput
                   value={currentHoleData.penalties.toString()}
@@ -689,7 +691,7 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
           </TouchableOpacity>
 
           <Text className="text-sm font-semibold" style={{ color: textColor }}>
-            {currentHole + 1} of 18
+            {currentHole + 1} {t('rounds.scorecard.of18')}
           </Text>
 
           <TouchableOpacity
@@ -718,7 +720,7 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
               <>
                 <Flag size={20} color="#ffffff" strokeWidth={2.5} />
                 <Text className="text-white font-bold ml-2">
-                  Finish Round ({playedHoles.length} holes)
+                  {t('rounds.scorecard.finishRound', { count: playedHoles.length })}
                 </Text>
               </>
             )}
@@ -734,7 +736,7 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
               className="text-lg font-bold mb-4"
               style={{ color: textColor }}
             >
-              Enter Score for Hole {currentHoleData?.number}
+              {t('rounds.scorecard.enterScoreForHole', { number: currentHoleData?.number })}
             </Text>
 
             <View className="flex-row mb-4 space-x-2">
@@ -764,7 +766,7 @@ export default function PersonalScorecardScreen({ navigation, route }: Props) {
 
             <TextInput
               ref={scoreInputRef}
-              placeholder="Or type score (1-20)"
+              placeholder={t('rounds.scorecard.typeScore')}
               placeholderTextColor={secondaryColor}
               keyboardType="number-pad"
               onSubmitEditing={(e) => handleScoreInput(e.nativeEvent.text)}

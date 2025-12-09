@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/lib/supabaseClient';
 import { Database } from '@/types/supabase';
 import { formatDistanceToNow, parseISO } from 'date-fns';
@@ -23,6 +24,7 @@ const ITEMS_PER_PAGE = 20;
 export default function NotificationsScreen() {
   const { user } = useAuth();
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -117,7 +119,7 @@ export default function NotificationsScreen() {
   const renderNotification = ({ item }: { item: Notification }) => {
     const timeAgo = item.created_at
       ? formatDistanceToNow(parseISO(item.created_at), { addSuffix: true })
-      : 'Unknown time';
+      : t('notifications.unknownTime');
 
     return (
       <TouchableOpacity
@@ -161,10 +163,10 @@ export default function NotificationsScreen() {
       <Bell size={48} color={isDark ? '#868e96' : '#adb5bd'} strokeWidth={1.5} />
       <Text style={[styles.emptyText, isDark && styles.emptyTextDark]}>
         {filter === 'unread'
-          ? 'No unread notifications'
+          ? t('notifications.noUnreadNotifications')
           : filter === 'read'
-            ? 'No read notifications'
-            : 'No notifications yet'}
+            ? t('notifications.noReadNotifications')
+            : t('notifications.noNotificationsYet')}
       </Text>
     </View>
   );
@@ -204,7 +206,7 @@ export default function NotificationsScreen() {
               filter === 'all' && styles.filterTextActive,
             ]}
           >
-            All
+            {t('notifications.all')}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -222,7 +224,7 @@ export default function NotificationsScreen() {
               filter === 'unread' && styles.filterTextActive,
             ]}
           >
-            Unread
+            {t('notifications.unread')}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -240,7 +242,7 @@ export default function NotificationsScreen() {
               filter === 'read' && styles.filterTextActive,
             ]}
           >
-            Read
+            {t('notifications.read')}
           </Text>
         </TouchableOpacity>
       </View>

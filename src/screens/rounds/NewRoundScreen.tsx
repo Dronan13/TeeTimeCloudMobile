@@ -11,6 +11,7 @@ import { RoundsStackParamList } from '@/types/personalRound';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { golfRoundsService } from '@/services/golfRounds';
 import { coursesService } from '@/services/courses';
 import { Calendar } from 'lucide-react-native';
@@ -46,6 +47,7 @@ export default function NewRoundScreen({ navigation, route }: Props) {
   const { preselectedCourseId } = route.params || {};
   const { user, profile } = useAuth();
   const { isDark } = useTheme();
+  const { t } = useLanguage();
   const [selectedCourse, setSelectedCourse] = useState<CourseData | null>(null);
   const [teeBoxes, setTeeBoxes] = useState<TeeBoxData[]>([]);
   const [selectedTeeBox, setSelectedTeeBox] = useState<TeeBoxData | null>(null);
@@ -178,7 +180,7 @@ export default function NewRoundScreen({ navigation, route }: Props) {
           className="text-2xl font-bold mb-6"
           style={{ color: textColor }}
         >
-          Start a New Round
+          {t('rounds.startNewRound')}
         </Text>
 
         {/* Course Info */}
@@ -208,7 +210,7 @@ export default function NewRoundScreen({ navigation, route }: Props) {
               className="text-sm font-semibold mb-2"
               style={{ color: textColor }}
             >
-              Tee Box
+              {t('rounds.teeBox')}
             </Text>
             <View>
               {teeBoxes.map((box) => (
@@ -260,7 +262,7 @@ export default function NewRoundScreen({ navigation, route }: Props) {
             className="text-sm font-semibold mb-2"
             style={{ color: textColor }}
           >
-            Round Date
+            {t('rounds.roundDate')}
           </Text>
           <View
             className="rounded-lg border px-4 py-3 flex-row items-center"
@@ -273,7 +275,7 @@ export default function NewRoundScreen({ navigation, route }: Props) {
             <TextInput
               value={roundDate}
               onChangeText={setRoundDate}
-              placeholder="YYYY-MM-DD"
+              placeholder={t('rounds.datePlaceholder')}
               placeholderTextColor={secondaryColor}
               className="flex-1 ml-3 text-base"
               style={{ color: textColor }}
@@ -285,10 +287,10 @@ export default function NewRoundScreen({ navigation, route }: Props) {
         {selectedCourse && selectedTeeBox && (
           <View className="rounded-lg p-4 mb-6" style={{ backgroundColor: '#f0f8f4' }}>
             <Text className="text-sm font-semibold text-gray-800 mb-2">
-              Round Summary
+              {t('rounds.roundSummary')}
             </Text>
             <Text className="text-sm text-gray-700">
-              {selectedCourse.name} • {selectedTeeBox.name} {selectedTeeBox.gender && `(${selectedTeeBox.gender})`} 
+              {selectedCourse.name} • {selectedTeeBox.name} {selectedTeeBox.gender && `(${selectedTeeBox.gender})`}
             </Text>
             <Text className="text-sm text-gray-700">
               {new Date(roundDate).toLocaleDateString()}
@@ -311,7 +313,7 @@ export default function NewRoundScreen({ navigation, route }: Props) {
             <ActivityIndicator color="#ffffff" />
           ) : (
             <Text className="text-white font-semibold text-base">
-              Start Round
+              {t('rounds.startRound')}
             </Text>
           )}
         </TouchableOpacity>

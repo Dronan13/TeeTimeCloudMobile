@@ -74,7 +74,7 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
         });
 
         if (fetchError) {
-          setError('Failed to load nearby courses. Please try again.');
+          setError(t('courses.errorLoadNearby'));
           console.error('Error fetching nearby courses:', fetchError);
         } else if (data) {
           setCourses(data);
@@ -84,14 +84,14 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
         const { data, error: fetchError } = await coursesService.fetchCourses(searchQuery);
 
         if (fetchError) {
-          setError('Failed to load courses. Please try again.');
+          setError(t('courses.errorLoadFailed'));
           console.error('Error fetching courses:', fetchError);
         } else if (data) {
           setCourses(data);
         }
       }
     } catch (err) {
-      setError('An unexpected error occurred.');
+      setError(t('courses.errorUnexpected'));
       console.error('Unexpected error:', err);
     } finally {
       setLoading(false);
@@ -206,15 +206,15 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
           searchMode !== 'name'
             ? t('location.noCoursesNearby')
             : searchQuery
-            ? 'No courses found'
-            : 'No courses available'
+            ? t('courses.noCoursesFound')
+            : t('courses.noCourses')
         }
         description={
           searchMode !== 'name'
             ? t('location.adjustRadius')
             : searchQuery
-            ? 'Try adjusting your search query'
-            : 'Check back later for available courses'
+            ? t('courses.adjustSearch')
+            : t('courses.checkBackLater')
         }
       />
     );
@@ -280,7 +280,7 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
         <Text style={styles.errorIcon}>⚠️</Text>
         <Text style={[styles.errorText, isDark && styles.errorTextDark]}>{error}</Text>
         <TouchableOpacity style={globalStyles.button} onPress={() => fetchCourses()}>
-          <Text style={globalStyles.buttonText}>Retry</Text>
+          <Text style={globalStyles.buttonText}>{t('common.retry')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -293,7 +293,7 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
       <View style={[styles.searchContainer, isDark && styles.searchContainerDark]}>
         <TextInput
           style={[styles.searchInput, isDark && styles.searchInputDark]}
-          placeholder="Search courses by name..."
+          placeholder={t('courses.searchPlaceholder')}
           placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
           value={searchQuery}
           onChangeText={handleSearch}
