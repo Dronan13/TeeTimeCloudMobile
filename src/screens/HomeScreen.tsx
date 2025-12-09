@@ -399,7 +399,7 @@ export default function HomeScreen() {
       ) : null}
 
       {/* Quick Actions Row */}
-      <View style={[homeStyles.section, isDark && homeStyles.sectionDark]}>
+      {/* <View style={[homeStyles.section, isDark && homeStyles.sectionDark]}>
         <Text style={[homeStyles.sectionTitle, isDark && homeStyles.sectionTitleDark]}>{t('home.quickActions')}</Text>
         <View style={homeStyles.quickActionsRow}>
           <TouchableOpacity
@@ -436,7 +436,7 @@ export default function HomeScreen() {
             )}
           </TouchableOpacity>
         </View>
-      </View>
+      </View> */}
 
       {/* Recent Rounds */}
       {roundsLoading ? (

@@ -18,7 +18,7 @@ import { RouteProp } from '@react-navigation/native';
 import { CoursesStackParamList, CourseWithDetails, CourseEvent, CourseGallery } from '@/types';
 import { coursesService } from '@/services/courses';
 import { useTheme } from '@/contexts/ThemeContext';
-import { Phone, Mail, Globe, Clock, Flag, MapPin, Calendar, DollarSign, X, Star, Facebook, Instagram } from 'lucide-react-native';
+import { Phone, Mail, Globe, Clock, Flag, MapPin, Calendar, DollarSign, X, Star, Facebook, Instagram, Play } from 'lucide-react-native';
 import { DetailSkeleton } from '@/components/skeletons';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -86,6 +86,20 @@ export default function CourseDetailScreen({
         courseId: course.id,
         courseName: course.name,
       });
+    }
+  }, [course, navigation]);
+
+  const handleStartRound = useCallback(() => {
+    if (course) {
+      // Navigate to Rounds tab and then to NewRound screen
+      // @ts-ignore - navigation.getParent() is valid but TypeScript doesn't know about it
+      const tabNavigator = navigation.getParent();
+      if (tabNavigator) {
+        tabNavigator.navigate('Rounds', {
+          screen: 'NewRound',
+          params: { preselectedCourseId: course.id },
+        });
+      }
     }
   }, [course, navigation]);
 
@@ -303,7 +317,7 @@ export default function CourseDetailScreen({
           )}
         </View>
 
-        {/* Reserve Button */}
+        {/* Action Buttons */}
         <View style={[styles.reserveSection, isDark && styles.reserveSectionDark]}>
           <TouchableOpacity
             style={styles.reserveButton}
@@ -312,6 +326,15 @@ export default function CourseDetailScreen({
           >
             <Flag size={20} color="#fff" strokeWidth={2} />
             <Text style={styles.reserveButtonText}>Reserve Tee Time</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.startRoundButton, isDark && styles.startRoundButtonDark]}
+            onPress={handleStartRound}
+            activeOpacity={0.8}
+          >
+            <Play size={20} color="#2d7a4e" strokeWidth={2} fill="#2d7a4e" />
+            <Text style={[styles.startRoundButtonText, isDark && styles.startRoundButtonTextDark]}>Start Round</Text>
           </TouchableOpacity>
         </View>
 
@@ -334,50 +357,51 @@ export default function CourseDetailScreen({
         )}
 
         {/* Contact Information */}
-        <View style={[styles.section, isDark && styles.sectionDark]}>
-          <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Contact Information</Text>
+        {(course.phone || course.email || course.site_url) && course.phone && (
+          <View style={[styles.section, isDark && styles.sectionDark]}>
+            <Text style={[styles.sectionTitle, isDark && styles.sectionTitleDark]}>Contact Information</Text>
 
-          {course.phone && (
-            <TouchableOpacity
-              style={[styles.contactItem, isDark && styles.contactItemDark]}
-              onPress={() => handlePhonePress(course.phone!)}
-            >
-              <Phone size={20} color="#2d7a4e" strokeWidth={2} />
-              <Text style={[styles.contactText, isDark && styles.contactTextDark]}>{course.phone}</Text>
-            </TouchableOpacity>
-          )}
+            {course.phone && (
+              <TouchableOpacity
+                style={[styles.contactItem, isDark && styles.contactItemDark]}
+                onPress={() => handlePhonePress(course.phone!)}
+              >
+                <Phone size={20} color="#2d7a4e" strokeWidth={2} />
+                <Text style={[styles.contactText, isDark && styles.contactTextDark]}>{course.phone}</Text>
+              </TouchableOpacity>
+            )}
 
-          {course.email && (
-            <TouchableOpacity
-              style={[styles.contactItem, isDark && styles.contactItemDark]}
-              onPress={() => handleEmailPress(course.email!)}
-            >
-              <Mail size={20} color="#2d7a4e" strokeWidth={2} />
-              <Text style={[styles.contactText, isDark && styles.contactTextDark]}>{course.email}</Text>
-            </TouchableOpacity>
-          )}
+            {course.email && (
+              <TouchableOpacity
+                style={[styles.contactItem, isDark && styles.contactItemDark]}
+                onPress={() => handleEmailPress(course.email!)}
+              >
+                <Mail size={20} color="#2d7a4e" strokeWidth={2} />
+                <Text style={[styles.contactText, isDark && styles.contactTextDark]}>{course.email}</Text>
+              </TouchableOpacity>
+            )}
 
-          {course.site_url && (
-            <TouchableOpacity
-              style={[styles.contactItem, isDark && styles.contactItemDark]}
-              onPress={() => handleWebsitePress(course.site_url!)}
-            >
-              <Globe size={20} color="#2d7a4e" strokeWidth={2} />
-              <Text style={[styles.contactText, isDark && styles.contactTextDark]}>Visit Website</Text>
-            </TouchableOpacity>
-          )}
+            {course.site_url && (
+              <TouchableOpacity
+                style={[styles.contactItem, isDark && styles.contactItemDark]}
+                onPress={() => handleWebsitePress(course.site_url!)}
+              >
+                <Globe size={20} color="#2d7a4e" strokeWidth={2} />
+                <Text style={[styles.contactText, isDark && styles.contactTextDark]}>Visit Website</Text>
+              </TouchableOpacity>
+            )}
 
-          {/* Operating Hours */}
-          {course.operating_hours && (
-            <View style={[styles.contactItem, isDark && styles.contactItemDark]}>
-              <Clock size={20} color="#2d7a4e" strokeWidth={2} />
-              <Text style={[styles.contactText, isDark && styles.contactTextDark]}>
-                {getOperatingHoursText(course.operating_hours)}
-              </Text>
-            </View>
-          )}
-        </View>
-
+            {/* Operating Hours */}
+            {course.operating_hours && (
+              <View style={[styles.contactItem, isDark && styles.contactItemDark]}>
+                <Clock size={20} color="#2d7a4e" strokeWidth={2} />
+                <Text style={[styles.contactText, isDark && styles.contactTextDark]}>
+                  {getOperatingHoursText(course.operating_hours)}
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
         {/* Social Media */}
         {(course.facebook || course.instagram) && (
           <View style={[styles.section, isDark && styles.sectionDark]}>
@@ -556,6 +580,7 @@ const styles = StyleSheet.create({
   reserveSection: {
     padding: 16,
     backgroundColor: '#fff',
+    gap: 12,
   },
   reserveButton: {
     backgroundColor: '#2d7a4e',
@@ -573,6 +598,22 @@ const styles = StyleSheet.create({
   },
   reserveButtonText: {
     color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  startRoundButton: {
+    backgroundColor: '#f0f9f4',
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    borderWidth: 2,
+    borderColor: '#2d7a4e',
+  },
+  startRoundButtonText: {
+    color: '#2d7a4e',
     fontSize: 18,
     fontWeight: '600',
   },
@@ -766,6 +807,13 @@ const styles = StyleSheet.create({
   },
   reserveSectionDark: {
     backgroundColor: '#2b3137',
+  },
+  startRoundButtonDark: {
+    backgroundColor: '#133224',
+    borderColor: '#2d7a4e',
+  },
+  startRoundButtonTextDark: {
+    color: '#2d7a4e',
   },
   sectionDark: {
     backgroundColor: '#2b3137',

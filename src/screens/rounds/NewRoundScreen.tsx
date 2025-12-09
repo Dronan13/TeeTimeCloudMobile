@@ -5,9 +5,7 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-  FlatList,
   TextInput,
-  Modal,
 } from 'react-native';
 import { RoundsStackParamList } from '@/types/personalRound';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -15,7 +13,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/contexts/ThemeContext';
 import { golfRoundsService } from '@/services/golfRounds';
 import { coursesService } from '@/services/courses';
-import { Calendar, ChevronDown } from 'lucide-react-native';
+import { Calendar } from 'lucide-react-native';
 import { FormSkeleton } from '@/components/skeletons';
 
 type Props = NativeStackScreenProps<RoundsStackParamList, 'NewRound'>;
@@ -37,24 +35,23 @@ interface CourseData {
 interface TeeBoxData {
   id: string;
   name: string;
+  gender?: string;
   color?: string;
   course_rating?: number;
   slope_rating?: number;
   total_yards?: number;
 }
 
-export default function NewRoundScreen({ navigation }: Props) {
-  const { user } = useAuth();
+export default function NewRoundScreen({ navigation, route }: Props) {
+  const { preselectedCourseId } = route.params || {};
+  const { user, profile } = useAuth();
   const { isDark } = useTheme();
-  const [courses, setCourses] = useState<CourseData[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<CourseData | null>(null);
   const [teeBoxes, setTeeBoxes] = useState<TeeBoxData[]>([]);
   const [selectedTeeBox, setSelectedTeeBox] = useState<TeeBoxData | null>(null);
   const [roundDate, setRoundDate] = useState(new Date().toISOString().split('T')[0]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
-  const [courseSearch, setCourseSearch] = useState('');
-  const [showCourseModal, setShowCourseModal] = useState(false);
 
   const bgColor = isDark ? '#1e2226' : '#ffffff';
   const textColor = isDark ? '#ffffff' : '#1e2226';
@@ -63,49 +60,69 @@ export default function NewRoundScreen({ navigation }: Props) {
   const borderColor = isDark ? '#343a40' : '#dee2e6';
 
   useEffect(() => {
-    fetchCourses();
+    initializeCourse();
   }, []);
 
-  const fetchCourses = useCallback(async () => {
+  const capitalizeFirstLetter = (str?: string) => {
+    if (!str) return ''; // Handle empty or null strings
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
+  const initializeCourse = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await coursesService.fetchCourses(undefined, 1, 100);
-      if (response.data) {
-        const coursesList = (response.data as any[]).map((course) => ({
-          id: course.id,
-          name: course.name,
-          location: course.location,
-        }));
-        setCourses(coursesList);
+      let courseId: string | null = null;
+
+      // Priority 1: Use preselected course ID if provided
+      if (preselectedCourseId) {
+        courseId = preselectedCourseId;
+      }
+      // Priority 2: Use user's home course if available
+      else if (profile?.home_course_id) {
+        courseId = profile.home_course_id;
+      }
+
+      if (courseId) {
+        // Fetch the specific course
+        const courseResponse = await coursesService.fetchCourseById(courseId);
+        if (courseResponse.data) {
+          const course: CourseData = {
+            id: courseResponse.data.id,
+            name: courseResponse.data.name,
+            location: courseResponse.data.location as CourseLocation | null,
+          };
+          setSelectedCourse(course);
+
+          // Fetch tee boxes for the course
+          await loadTeeBoxes(courseId);
+        }
       }
     } catch (error) {
-      console.error('Error fetching courses:', error);
+      console.error('Error initializing course:', error);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [preselectedCourseId, profile]);
 
-  const handleCourseSelect = useCallback(async (course: CourseData) => {
-    setSelectedCourse(course);
-    setShowCourseModal(false);
-
+  const loadTeeBoxes = useCallback(async (courseId: string) => {
     try {
-      const response = await coursesService.fetchCourseTeeBoxes(course.id);
+      const response = await coursesService.fetchCourseTeeBoxes(courseId);
       if (response.data) {
-        console.log(response.data);
         const boxes = (response.data as any[]).map((box) => ({
           id: box.id,
           name: box.name,
           color: box.color,
+          gender: capitalizeFirstLetter(box.gender),
           course_rating: box.course_rating,
           slope_rating: box.slope_rating,
           total_yards: box.total_yards,
         }));
+
         setTeeBoxes(boxes);
         setSelectedTeeBox(boxes[0] || null);
       }
     } catch (error) {
-      console.error('Error fetching tee boxes:', error);
+      console.error('Error loading tee boxes:', error);
     }
   }, []);
 
@@ -139,10 +156,6 @@ export default function NewRoundScreen({ navigation }: Props) {
     }
   }, [user?.id, selectedCourse, selectedTeeBox, roundDate, navigation]);
 
-  const filteredCourses = courses.filter((course) =>
-    course.name.toLowerCase().includes(courseSearch.toLowerCase())
-  );
-
   if (loading) {
     return (
       <View
@@ -153,6 +166,7 @@ export default function NewRoundScreen({ navigation }: Props) {
       </View>
     );
   }
+  
 
   return (
     <View className="flex-1" style={{ backgroundColor: bgColor }}>
@@ -167,34 +181,25 @@ export default function NewRoundScreen({ navigation }: Props) {
           Start a New Round
         </Text>
 
-        {/* Course Selection */}
-        <View className="mb-6">
-          <Text
-            className="text-sm font-semibold mb-2"
-            style={{ color: textColor }}
-          >
-            Course
-          </Text>
-          <TouchableOpacity
-            onPress={() => setShowCourseModal(true)}
-            className="rounded-lg border px-4 py-3 flex-row justify-between items-center"
-            style={{
-              backgroundColor: inputBg,
-              borderColor: selectedCourse ? '#2d7a4e' : borderColor,
-              borderWidth: 1.5,
-            }}
-          >
+        {/* Course Info */}
+        {selectedCourse && (
+          <View className="mb-6">
             <Text
-              className={selectedCourse ? 'font-semibold' : ''}
-              style={{
-                color: selectedCourse ? textColor : secondaryColor,
-              }}
-            >
-              {selectedCourse?.name || 'Select a course'}
-            </Text>
-            <ChevronDown size={20} color={secondaryColor} />
-          </TouchableOpacity>
-        </View>
+                className="font-semibold text-base mb-1"
+                style={{ color: textColor }}
+              >
+                {selectedCourse.name}
+              </Text>
+            {selectedCourse.location && (
+                <Text
+                  className="text-sm"
+                  style={{ color: secondaryColor }}
+                >
+                  {selectedCourse.location.address}
+                </Text>
+              )}
+          </View>
+        )}
 
         {/* Tee Box Selection */}
         {selectedCourse && teeBoxes.length > 0 && (
@@ -229,7 +234,7 @@ export default function NewRoundScreen({ navigation }: Props) {
                         color: selectedTeeBox?.id === box.id ? '#ffffff' : textColor,
                       }}
                     >
-                      {box.name}
+                      {box.name} {box.gender && `(${box.gender})`} 
                     </Text>
                     {box.course_rating && box.slope_rating &&  (
                       <Text
@@ -283,7 +288,7 @@ export default function NewRoundScreen({ navigation }: Props) {
               Round Summary
             </Text>
             <Text className="text-sm text-gray-700">
-              {selectedCourse.name} • {selectedTeeBox.name}
+              {selectedCourse.name} • {selectedTeeBox.name} {selectedTeeBox.gender && `(${selectedTeeBox.gender})`} 
             </Text>
             <Text className="text-sm text-gray-700">
               {new Date(roundDate).toLocaleDateString()}
@@ -311,90 +316,6 @@ export default function NewRoundScreen({ navigation }: Props) {
           )}
         </TouchableOpacity>
       </ScrollView>
-
-      {/* Course Selection Modal */}
-      <Modal
-        visible={showCourseModal}
-        animationType="slide"
-        transparent={true}
-      >
-        <View className="flex-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <View
-            className="flex-1 mt-12 rounded-t-2xl"
-            style={{ backgroundColor: bgColor }}
-          >
-            <View className="px-4 py-4 border-b" style={{ borderColor: borderColor }}>
-              <Text
-                className="text-lg font-semibold mb-3"
-                style={{ color: textColor }}
-              >
-                Select a Course
-              </Text>
-              <TextInput
-                value={courseSearch}
-                onChangeText={setCourseSearch}
-                placeholder="Search courses..."
-                placeholderTextColor={secondaryColor}
-                className="rounded-lg px-4 py-2"
-                style={{
-                  backgroundColor: inputBg,
-                  color: textColor,
-                }}
-              />
-            </View>
-
-            <FlatList
-              data={filteredCourses}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  onPress={() => handleCourseSelect(item)}
-                  className="border-b px-4 py-3"
-                  style={{ borderColor: borderColor }}
-                >
-                  <Text
-                    className="font-semibold mb-1"
-                    style={{ color: textColor }}
-                  >
-                    {item.name}
-                  </Text>
-                  {item.location && (
-                    <Text
-                      className="text-sm"
-                      style={{ color: secondaryColor }}
-                    >
-                      {item.location?.address}
-                    </Text>
-                  )}
-                </TouchableOpacity>
-              )}
-              keyExtractor={(item) => item.id}
-              ListEmptyComponent={
-                <View className="py-8 items-center">
-                  <Text
-                    className="text-sm"
-                    style={{ color: secondaryColor }}
-                  >
-                    No courses found
-                  </Text>
-                </View>
-              }
-            />
-
-            <TouchableOpacity
-              onPress={() => setShowCourseModal(false)}
-              className="border-t px-4 py-4"
-              style={{ borderColor: borderColor }}
-            >
-              <Text
-                className="text-center font-semibold text-base"
-                style={{ color: '#2d7a4e' }}
-              >
-                Close
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 }

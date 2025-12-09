@@ -101,7 +101,7 @@ export type TournamentsStackParamList = {
 
 export type RoundsStackParamList = {
   RoundsList: undefined;
-  NewRound: undefined;
+  NewRound: { preselectedCourseId?: string };
   PersonalScorecard: { roundId: string; isEditing?: boolean };
   RoundDetail: { roundId: string };
 };
