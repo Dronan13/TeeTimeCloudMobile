@@ -1,5 +1,12 @@
 import { supabase } from '@/lib/supabaseClient';
-import { Course, CourseWithDetails, CourseEvent, ApiResponse } from '@/types';
+import {
+  Course,
+  CourseWithDetails,
+  CourseEvent,
+  ApiResponse,
+  CourseWithDistance,
+  Coordinates,
+} from '@/types';
 
 export const coursesService = {
   /**
@@ -133,6 +140,78 @@ export const coursesService = {
       return { data: data || [], error: null };
     } catch (error) {
       console.error('Error searching courses:', error);
+      return { data: null, error: error as Error };
+    }
+  },
+
+  /**
+   * Fetch courses near a location with distance calculation
+   */
+  async fetchCoursesNearLocation(params: {
+    latitude: number;
+    longitude: number;
+    maxDistanceMiles?: number;
+    searchTerm?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<ApiResponse<CourseWithDistance[]>> {
+    const {
+      latitude,
+      longitude,
+      maxDistanceMiles = 100,
+      searchTerm,
+      page = 1,
+      limit = 20,
+    } = params;
+
+    try {
+      const { data, error } = await supabase.rpc('get_courses_near_location', {
+        user_lat: latitude,
+        user_lon: longitude,
+        max_distance_miles: maxDistanceMiles,
+        search_term: searchTerm || null,
+        page_number: page,
+        page_limit: limit,
+      });
+
+      if (error) throw error;
+
+      return { data: data || [], error: null };
+    } catch (error) {
+      console.error('Error fetching nearby courses:', error);
+      return { data: null, error: error as Error };
+    }
+  },
+
+  /**
+   * Geocode a city name to coordinates using WeatherAPI
+   */
+  async geocodeCity(cityName: string): Promise<ApiResponse<Coordinates>> {
+    try {
+      const WEATHER_API_KEY = process.env.EXPO_PUBLIC_WEATHER_API_KEY;
+      const response = await fetch(
+        `https://api.weatherapi.com/v1/search.json?key=${WEATHER_API_KEY}&q=${encodeURIComponent(
+          cityName
+        )}`
+      );
+
+      if (!response.ok) throw new Error('Geocoding failed');
+
+      const data = await response.json();
+
+      if (data.length === 0) {
+        return { data: null, error: new Error('City not found') };
+      }
+
+      return {
+        data: {
+          latitude: data[0].lat,
+          longitude: data[0].lon,
+        },
+        error: null,
+      };
+    } catch (error) {
+      console.error('Error geocoding city:', error);
       return { data: null, error: error as Error };
     }
   },

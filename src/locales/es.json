@@ -555,5 +555,22 @@
       "deleteError": "Error al eliminar ronda",
       "inProgress": "En Progreso"
     }
+  },
+  "location": {
+    "promptTitle": "Encuentra Campos Cerca de Ti",
+    "promptDescription": "Habilita la ubicación para ver campos de golf ordenados por distancia.",
+    "deniedDescription": "Se denegó el acceso a la ubicación. Habilítalo en configuración para usar esta función.",
+    "enable": "Habilitar Ubicación",
+    "openSettings": "Abrir Configuración",
+    "nearMe": "Cerca de Mí",
+    "nearCity": "Cerca de Ciudad",
+    "searchByName": "Buscar por Nombre",
+    "enterCity": "Ingresa nombre de ciudad...",
+    "withinMiles": "Dentro de {{miles}} mi",
+    "noCoursesNearby": "No se encontraron campos cercanos",
+    "adjustRadius": "Intenta aumentar el radio de búsqueda",
+    "loading": "Buscando campos cerca de ti...",
+    "locationError": "No se pudo obtener tu ubicación",
+    "tryAgain": "Intentar de Nuevo"
   }
 }

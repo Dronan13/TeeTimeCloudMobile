@@ -555,5 +555,22 @@
       "deleteError": "Failed to delete round",
       "inProgress": "In Progress"
     }
+  },
+  "location": {
+    "promptTitle": "Find Courses Near You",
+    "promptDescription": "Enable location to see golf courses sorted by distance.",
+    "deniedDescription": "Location access was denied. Enable it in settings to use this feature.",
+    "enable": "Enable Location",
+    "openSettings": "Open Settings",
+    "nearMe": "Near Me",
+    "nearCity": "Near City",
+    "searchByName": "Search by Name",
+    "enterCity": "Enter city name...",
+    "withinMiles": "Within {{miles}} mi",
+    "noCoursesNearby": "No courses found nearby",
+    "adjustRadius": "Try increasing the search radius",
+    "loading": "Finding courses near you...",
+    "locationError": "Could not get your location",
+    "tryAgain": "Try Again"
   }
 }

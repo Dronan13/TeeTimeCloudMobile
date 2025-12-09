@@ -35,6 +35,18 @@ export interface CourseWithDetails extends Course {
   tee_boxes?: TeeBox[];
 }
 
+// Location types
+export interface Coordinates {
+  latitude: number;
+  longitude: number;
+}
+
+export interface CourseWithDistance extends Course {
+  distance_miles: number;
+}
+
+export type LocationSearchMode = 'name' | 'nearMe' | 'nearCity';
+
 // Auth types
 export interface AuthUser {
   id: string;

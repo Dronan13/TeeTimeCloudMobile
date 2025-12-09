@@ -105,6 +105,7 @@ export default function ReservationScreen() {
       const bookingStatus = isHomeCourse ? 'confirmed' : 'pending';
 
       const { error } = await supabase.from('tee_time_reservations').insert({
+        course_id: courseId,
         slot_id: slotId,
         user_id: user?.id,
         first_name: firstName,

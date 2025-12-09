@@ -72,6 +72,7 @@ export const teeTimesService = {
    * Reserve a tee time slot
    */
   async reserveSlot(
+    courseId: string,
     slotId: string,
     userId: string | undefined,
     reservationData: {
@@ -109,6 +110,7 @@ export const teeTimesService = {
       const { data, error } = await supabase
         .from('tee_time_reservations')
         .insert({
+          course_id: courseId,
           slot_id: slotId,
           user_id: userId || null,
           first_name: reservationData.firstName,

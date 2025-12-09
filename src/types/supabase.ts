@@ -92,7 +92,7 @@ export type Database = {
           category?: string | null
           contact_email?: string | null
           contact_phone?: string | null
-          course_id?: string
+          course_id: string
           created_at?: string | null
           currency?: string | null
           description?: string | null
@@ -215,6 +215,7 @@ export type Database = {
       }
       course_holes: {
         Row: {
+          course_id: string
           created_at: string | null
           handicap: number | null
           hole_number: number | null
@@ -227,6 +228,7 @@ export type Database = {
           yards: number | null
         }
         Insert: {
+          course_id: string
           created_at?: string | null
           handicap?: number | null
           hole_number?: number | null
@@ -239,6 +241,7 @@ export type Database = {
           yards?: number | null
         }
         Update: {
+          course_id?: string
           created_at?: string | null
           handicap?: number | null
           hole_number?: number | null
@@ -251,6 +254,13 @@ export type Database = {
           yards?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "course_holes_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "hole_tee_distances_tee_box_id_fkey"
             columns: ["tee_box_id"]
@@ -282,7 +292,7 @@ export type Database = {
         Insert: {
           category?: string | null
           content: string
-          course_id?: string
+          course_id: string
           cover_image_url?: string | null
           created_at?: string | null
           expire_at?: string | null
@@ -434,6 +444,7 @@ export type Database = {
       }
       event_attendances: {
         Row: {
+          course_id: string
           created_at: string
           event_id: string
           guests_count: number
@@ -445,6 +456,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          course_id: string
           created_at?: string
           event_id: string
           guests_count?: number
@@ -456,6 +468,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          course_id?: string
           created_at?: string
           event_id?: string
           guests_count?: number
@@ -467,6 +480,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "event_attendances_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "event_attendances_event_id_fkey"
             columns: ["event_id"]
@@ -570,13 +590,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "golf_rounds"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "golf_round_holes_round_id_fkey"
-            columns: ["round_id"]
-            isOneToOne: false
-            referencedRelation: "tournament_leaderboard"
-            referencedColumns: ["round_id"]
           },
           {
             foreignKeyName: "golf_round_holes_tee_box_id_fkey"
@@ -1078,6 +1091,7 @@ export type Database = {
           booking_status: string | null
           caddy_required: boolean | null
           clubs_required: boolean | null
+          course_id: string
           created_at: string | null
           email: string | null
           first_name: string | null
@@ -1098,6 +1112,7 @@ export type Database = {
           booking_status?: string | null
           caddy_required?: boolean | null
           clubs_required?: boolean | null
+          course_id: string
           created_at?: string | null
           email?: string | null
           first_name?: string | null
@@ -1118,6 +1133,7 @@ export type Database = {
           booking_status?: string | null
           caddy_required?: boolean | null
           clubs_required?: boolean | null
+          course_id?: string
           created_at?: string | null
           email?: string | null
           first_name?: string | null
@@ -1146,6 +1162,13 @@ export type Database = {
             columns: ["slot_id"]
             isOneToOne: false
             referencedRelation: "tee_time_slots_with_reservation_count"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tee_time_reservations_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
             referencedColumns: ["id"]
           },
           {
@@ -1289,20 +1312,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "tournament_disputes_round_id_fkey"
-            columns: ["round_id"]
-            isOneToOne: false
-            referencedRelation: "v_tournament_rounds_full"
-            referencedColumns: ["tr_id"]
-          },
-          {
-            foreignKeyName: "tournament_disputes_round_id_fkey"
-            columns: ["round_id"]
-            isOneToOne: false
-            referencedRelation: "v_tournament_rounds_with_groups_preview"
-            referencedColumns: ["tournament_round_id"]
-          },
-          {
             foreignKeyName: "tournament_disputes_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -1386,13 +1395,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tournaments"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tournament_groups_tournament_id_fkey"
-            columns: ["tournament_id"]
-            isOneToOne: false
-            referencedRelation: "v_tournament_rounds_full"
-            referencedColumns: ["t_id"]
           },
         ]
       }
@@ -1662,20 +1664,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "tournament_rounds_golf_round_group_id_fkey1"
-            columns: ["golf_round_group_id"]
-            isOneToOne: false
-            referencedRelation: "tournament_leaderboard"
-            referencedColumns: ["group_id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_golf_round_group_id_fkey1"
-            columns: ["golf_round_group_id"]
-            isOneToOne: false
-            referencedRelation: "v_tournament_rounds_full"
-            referencedColumns: ["tg_id"]
-          },
-          {
             foreignKeyName: "tournament_rounds_tee_box_id_fkey"
             columns: ["tee_box_id"]
             isOneToOne: false
@@ -1688,13 +1676,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tournaments"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_tournament_id_fkey"
-            columns: ["tournament_id"]
-            isOneToOne: false
-            referencedRelation: "v_tournament_rounds_full"
-            referencedColumns: ["t_id"]
           },
           {
             foreignKeyName: "tournament_rounds_user_id_fkey"
@@ -1833,6 +1814,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "user_course_flags_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "user_course_flags_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -1850,6 +1838,7 @@ export type Database = {
       }
       user_roles: {
         Row: {
+          course_id: string | null
           created_at: string
           is_admin: boolean | null
           is_course_manager: boolean | null
@@ -1858,6 +1847,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          course_id?: string | null
           created_at?: string
           is_admin?: boolean | null
           is_course_manager?: boolean | null
@@ -1866,6 +1856,7 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          course_id?: string | null
           created_at?: string
           is_admin?: boolean | null
           is_course_manager?: boolean | null
@@ -1874,6 +1865,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "user_roles_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "user_roles_user_id_fkey"
             columns: ["user_id"]
@@ -2108,13 +2106,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "golf_round_holes_round_id_fkey"
-            columns: ["round_id"]
-            isOneToOne: false
-            referencedRelation: "tournament_leaderboard"
-            referencedColumns: ["round_id"]
-          },
-          {
             foreignKeyName: "golf_round_holes_tee_box_id_fkey"
             columns: ["tee_box_id"]
             isOneToOne: false
@@ -2284,20 +2275,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "tournament_disputes_round_id_fkey"
-            columns: ["round_id"]
-            isOneToOne: false
-            referencedRelation: "v_tournament_rounds_full"
-            referencedColumns: ["tr_id"]
-          },
-          {
-            foreignKeyName: "tournament_disputes_round_id_fkey"
-            columns: ["round_id"]
-            isOneToOne: false
-            referencedRelation: "v_tournament_rounds_with_groups_preview"
-            referencedColumns: ["tournament_round_id"]
-          },
-          {
             foreignKeyName: "tournament_disputes_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -2317,71 +2294,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tournaments"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_tournament_id_fkey"
-            columns: ["tournament_id"]
-            isOneToOne: false
-            referencedRelation: "v_tournament_rounds_full"
-            referencedColumns: ["t_id"]
-          },
-        ]
-      }
-      tournament_leaderboard: {
-        Row: {
-          adjusted_score: number | null
-          course_id: string | null
-          differential: number | null
-          fairways_hit: number | null
-          first_name: string | null
-          golfer_profile_id: string | null
-          golfer_user_id: string | null
-          greens_in_regulation: number | null
-          group_id: string | null
-          last_name: string | null
-          position: number | null
-          recorded_at: string | null
-          round_date: string | null
-          round_id: string | null
-          tee_box_color: string | null
-          tee_box_course_rating: number | null
-          tee_box_id: string | null
-          tee_box_name: string | null
-          tee_box_par_total: number | null
-          tee_box_slope_rating: number | null
-          tier: string | null
-          total_penalties: number | null
-          total_putts: number | null
-          total_score: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "golf_rounds_course_id_fkey"
-            columns: ["course_id"]
-            isOneToOne: false
-            referencedRelation: "courses"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "golf_rounds_tee_box_id_fkey"
-            columns: ["tee_box_id"]
-            isOneToOne: false
-            referencedRelation: "tee_boxes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "golf_rounds_user_id_fkey"
-            columns: ["golfer_user_id"]
-            isOneToOne: false
-            referencedRelation: "golfer_profiles"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "golf_rounds_user_id_fkey"
-            columns: ["golfer_user_id"]
-            isOneToOne: false
-            referencedRelation: "user_profile_view"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -2434,20 +2346,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "tournament_rounds_golf_round_group_id_fkey1"
-            columns: ["golf_round_group_id"]
-            isOneToOne: false
-            referencedRelation: "tournament_leaderboard"
-            referencedColumns: ["group_id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_golf_round_group_id_fkey1"
-            columns: ["golf_round_group_id"]
-            isOneToOne: false
-            referencedRelation: "v_tournament_rounds_full"
-            referencedColumns: ["tg_id"]
-          },
-          {
             foreignKeyName: "tournament_rounds_tee_box_id_fkey"
             columns: ["tee_box_id"]
             isOneToOne: false
@@ -2460,13 +2358,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tournaments"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_tournament_id_fkey"
-            columns: ["tournament_id"]
-            isOneToOne: false
-            referencedRelation: "v_tournament_rounds_full"
-            referencedColumns: ["t_id"]
           },
           {
             foreignKeyName: "tournament_rounds_user_id_fkey"
@@ -2533,20 +2424,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "tournament_rounds_golf_round_group_id_fkey1"
-            columns: ["golf_round_group_id"]
-            isOneToOne: false
-            referencedRelation: "tournament_leaderboard"
-            referencedColumns: ["group_id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_golf_round_group_id_fkey1"
-            columns: ["golf_round_group_id"]
-            isOneToOne: false
-            referencedRelation: "v_tournament_rounds_full"
-            referencedColumns: ["tg_id"]
-          },
-          {
             foreignKeyName: "tournament_rounds_tee_box_id_fkey"
             columns: ["tee_box_id"]
             isOneToOne: false
@@ -2559,13 +2436,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tournaments"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_tournament_id_fkey"
-            columns: ["tournament_id"]
-            isOneToOne: false
-            referencedRelation: "v_tournament_rounds_full"
-            referencedColumns: ["t_id"]
           },
           {
             foreignKeyName: "tournament_rounds_user_id_fkey"
@@ -2611,339 +2481,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "courses"
             referencedColumns: ["id"]
-          },
-        ]
-      }
-      v_tournament_rounds_full: {
-        Row: {
-          t_course_id: string | null
-          t_created_at: string | null
-          t_description: string | null
-          t_end_at: string | null
-          t_format: string | null
-          t_handicap_percent: number | null
-          t_id: string | null
-          t_is_hidden: boolean | null
-          t_max_players: number | null
-          t_metadata: Json | null
-          t_name: string | null
-          t_organizer_id: string | null
-          t_registration_close_at: string | null
-          t_registration_open_at: string | null
-          t_slug: string | null
-          t_start_at: string | null
-          t_status: string | null
-          t_timezone: string | null
-          t_updated_at: string | null
-          tg_course_id: string | null
-          tg_created_at: string | null
-          tg_game_type: string | null
-          tg_id: string | null
-          tg_is_closed: boolean | null
-          tg_max_players: number | null
-          tg_name: string | null
-          tg_starting_hole: number | null
-          tg_total_holes: number | null
-          tg_tournament_id: string | null
-          tg_user_id: string | null
-          tr_back_9_score: number | null
-          tr_course_handicap: number | null
-          tr_course_id: string | null
-          tr_course_rating: number | null
-          tr_created_at: string | null
-          tr_dispute_requested: boolean | null
-          tr_end_datetime: string | null
-          tr_front_9_score: number | null
-          tr_golf_round_group_id: string | null
-          tr_gross_score: number | null
-          tr_handicap_index: number | null
-          tr_handicap_percent: number | null
-          tr_hole_1: number | null
-          tr_hole_1_par: number | null
-          tr_hole_1_yards: number | null
-          tr_hole_10: number | null
-          tr_hole_10_par: number | null
-          tr_hole_10_yards: number | null
-          tr_hole_11: number | null
-          tr_hole_11_par: number | null
-          tr_hole_11_yards: number | null
-          tr_hole_12: number | null
-          tr_hole_12_par: number | null
-          tr_hole_12_yards: number | null
-          tr_hole_13: number | null
-          tr_hole_13_par: number | null
-          tr_hole_13_yards: number | null
-          tr_hole_14: number | null
-          tr_hole_14_par: number | null
-          tr_hole_14_yards: number | null
-          tr_hole_15: number | null
-          tr_hole_15_par: number | null
-          tr_hole_15_yards: number | null
-          tr_hole_16: number | null
-          tr_hole_16_par: number | null
-          tr_hole_16_yards: number | null
-          tr_hole_17: number | null
-          tr_hole_17_par: number | null
-          tr_hole_17_yards: number | null
-          tr_hole_18: number | null
-          tr_hole_18_par: number | null
-          tr_hole_18_yards: number | null
-          tr_hole_2: number | null
-          tr_hole_2_par: number | null
-          tr_hole_2_yards: number | null
-          tr_hole_3: number | null
-          tr_hole_3_par: number | null
-          tr_hole_3_yards: number | null
-          tr_hole_4: number | null
-          tr_hole_4_par: number | null
-          tr_hole_4_yards: number | null
-          tr_hole_5: number | null
-          tr_hole_5_par: number | null
-          tr_hole_5_yards: number | null
-          tr_hole_6: number | null
-          tr_hole_6_par: number | null
-          tr_hole_6_yards: number | null
-          tr_hole_7: number | null
-          tr_hole_7_par: number | null
-          tr_hole_7_yards: number | null
-          tr_hole_8: number | null
-          tr_hole_8_par: number | null
-          tr_hole_8_yards: number | null
-          tr_hole_9: number | null
-          tr_hole_9_par: number | null
-          tr_hole_9_yards: number | null
-          tr_id: string | null
-          tr_is_complete: boolean | null
-          tr_net_score: number | null
-          tr_notes: string | null
-          tr_pace_of_play: number | null
-          tr_slope_rating: number | null
-          tr_start_datetime: string | null
-          tr_tee_box_id: string | null
-          tr_tee_color: string | null
-          tr_total_par: number | null
-          tr_total_yards: number | null
-          tr_tournament_handicap: number | null
-          tr_tournament_id: string | null
-          tr_updated_at: string | null
-          tr_user_id: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "golf_round_groups_course_id_fkey"
-            columns: ["tg_course_id"]
-            isOneToOne: false
-            referencedRelation: "courses"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "golf_round_groups_user_id_fkey"
-            columns: ["tg_user_id"]
-            isOneToOne: false
-            referencedRelation: "golfer_profiles"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "golf_round_groups_user_id_fkey"
-            columns: ["tg_user_id"]
-            isOneToOne: false
-            referencedRelation: "user_profile_view"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "tournament_groups_tournament_id_fkey"
-            columns: ["tg_tournament_id"]
-            isOneToOne: false
-            referencedRelation: "tournaments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tournament_groups_tournament_id_fkey"
-            columns: ["tg_tournament_id"]
-            isOneToOne: false
-            referencedRelation: "v_tournament_rounds_full"
-            referencedColumns: ["t_id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_course_id_fkey"
-            columns: ["tr_course_id"]
-            isOneToOne: false
-            referencedRelation: "courses"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_golf_round_group_id_fkey1"
-            columns: ["tr_golf_round_group_id"]
-            isOneToOne: false
-            referencedRelation: "tournament_groups"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_golf_round_group_id_fkey1"
-            columns: ["tr_golf_round_group_id"]
-            isOneToOne: false
-            referencedRelation: "tournament_leaderboard"
-            referencedColumns: ["group_id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_golf_round_group_id_fkey1"
-            columns: ["tr_golf_round_group_id"]
-            isOneToOne: false
-            referencedRelation: "v_tournament_rounds_full"
-            referencedColumns: ["tg_id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_tee_box_id_fkey"
-            columns: ["tr_tee_box_id"]
-            isOneToOne: false
-            referencedRelation: "tee_boxes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_tournament_id_fkey"
-            columns: ["tr_tournament_id"]
-            isOneToOne: false
-            referencedRelation: "tournaments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_tournament_id_fkey"
-            columns: ["tr_tournament_id"]
-            isOneToOne: false
-            referencedRelation: "v_tournament_rounds_full"
-            referencedColumns: ["t_id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_user_id_fkey"
-            columns: ["tr_user_id"]
-            isOneToOne: false
-            referencedRelation: "golfer_profiles"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_user_id_fkey"
-            columns: ["tr_user_id"]
-            isOneToOne: false
-            referencedRelation: "user_profile_view"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "tournaments_course_id_fkey"
-            columns: ["t_course_id"]
-            isOneToOne: false
-            referencedRelation: "courses"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tournaments_organizer_id_fkey1"
-            columns: ["t_organizer_id"]
-            isOneToOne: false
-            referencedRelation: "golfer_profiles"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "tournaments_organizer_id_fkey1"
-            columns: ["t_organizer_id"]
-            isOneToOne: false
-            referencedRelation: "user_profile_view"
-            referencedColumns: ["user_id"]
-          },
-        ]
-      }
-      v_tournament_rounds_with_groups_preview: {
-        Row: {
-          course_handicap: number | null
-          course_id: string | null
-          end_datetime: string | null
-          golf_round_group_id: string | null
-          gross_score: number | null
-          group_game_type: string | null
-          group_is_closed: boolean | null
-          group_name: string | null
-          handicap_index: number | null
-          handicap_percent: number | null
-          is_complete: boolean | null
-          net_score: number | null
-          pace_of_play: number | null
-          start_datetime: string | null
-          tee_box_id: string | null
-          tee_color: string | null
-          total_par: number | null
-          total_yards: number | null
-          tournament_end_at: string | null
-          tournament_handicap: number | null
-          tournament_id: string | null
-          tournament_is_hidden: boolean | null
-          tournament_name: string | null
-          tournament_round_id: string | null
-          tournament_start_at: string | null
-          tournament_status: string | null
-          tournament_timezone: string | null
-          user_id: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "tournament_rounds_course_id_fkey"
-            columns: ["course_id"]
-            isOneToOne: false
-            referencedRelation: "courses"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_golf_round_group_id_fkey1"
-            columns: ["golf_round_group_id"]
-            isOneToOne: false
-            referencedRelation: "tournament_groups"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_golf_round_group_id_fkey1"
-            columns: ["golf_round_group_id"]
-            isOneToOne: false
-            referencedRelation: "tournament_leaderboard"
-            referencedColumns: ["group_id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_golf_round_group_id_fkey1"
-            columns: ["golf_round_group_id"]
-            isOneToOne: false
-            referencedRelation: "v_tournament_rounds_full"
-            referencedColumns: ["tg_id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_tee_box_id_fkey"
-            columns: ["tee_box_id"]
-            isOneToOne: false
-            referencedRelation: "tee_boxes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_tournament_id_fkey"
-            columns: ["tournament_id"]
-            isOneToOne: false
-            referencedRelation: "tournaments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_tournament_id_fkey"
-            columns: ["tournament_id"]
-            isOneToOne: false
-            referencedRelation: "v_tournament_rounds_full"
-            referencedColumns: ["t_id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "golfer_profiles"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "tournament_rounds_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_profile_view"
-            referencedColumns: ["user_id"]
           },
         ]
       }

@@ -173,11 +173,11 @@ export default function CourseDetailScreen({
               {formattedDate} at {formattedTime}
             </Text>
           </View>
-          {item.location && (
+          {item.address && (
             <View style={styles.eventRow}>
               <MapPin size={12} color={isDark ? '#adb5bd' : '#868e96'} strokeWidth={2} />
               <Text style={[styles.eventLocation, isDark && styles.eventLocationDark]} numberOfLines={1}>
-                {item.location}
+                {item.address}
               </Text>
             </View>
           )}

@@ -17,7 +17,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.mycompany.teetimecloud",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSLocationWhenInUseUsageDescription": "TeeTime Cloud uses your location to find golf courses near you."
       }
     },
     "android": {
@@ -25,7 +26,11 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#22c55e"
       },
-      "package": "com.mycompany.teetimecloud"
+      "package": "com.mycompany.teetimecloud",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
     },
     "scheme": "teetimecloud",
     "plugins": [
@@ -36,6 +41,12 @@
           "url": "https://sentry.io/",
           "project": "react-native",
           "organization": "rxsoft-analytics-llc"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "TeeTime Cloud uses your location to find golf courses near you."
         }
       ]
     ],
