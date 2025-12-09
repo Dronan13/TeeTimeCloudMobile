@@ -11,7 +11,7 @@ import {
   Image,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { CoursesStackParamList, Course, CourseWithDistance, LocationSearchMode } from '@/types';
+import { CoursesStackParamList, Course, CourseWithDistance } from '@/types';
 import { coursesService } from '@/services/courses';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -37,8 +37,7 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
   const { t } = useLanguage();
   const [courses, setCourses] = useState<(Course | CourseWithDistance)[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchMode, setSearchMode] = useState<LocationSearchMode>('name');
-  const [citySearch, setCitySearch] = useState('');
+  const [searchMode, setSearchMode] = useState<'name' | 'nearMe'>('name');
   const [maxDistance, setMaxDistance] = useState<number>(50);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -80,35 +79,6 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
         } else if (data) {
           setCourses(data);
         }
-      } else if (searchMode === 'nearCity') {
-        if (!citySearch.trim()) {
-          setCourses([]);
-          setLoading(false);
-          return;
-        }
-
-        const geoResult = await coursesService.geocodeCity(citySearch);
-
-        if (geoResult.error || !geoResult.data) {
-          setError('City not found. Please try another location.');
-          setCourses([]);
-          setLoading(false);
-          return;
-        }
-
-        const { data, error: fetchError } = await coursesService.fetchCoursesNearLocation({
-          latitude: geoResult.data.latitude,
-          longitude: geoResult.data.longitude,
-          maxDistanceMiles: maxDistance,
-          searchTerm: searchQuery || undefined,
-        });
-
-        if (fetchError) {
-          setError('Failed to load courses near this city. Please try again.');
-          console.error('Error fetching courses near city:', fetchError);
-        } else if (data) {
-          setCourses(data);
-        }
       } else {
         // Name-based search (default)
         const { data, error: fetchError } = await coursesService.fetchCourses(searchQuery);
@@ -127,7 +97,7 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [searchMode, location, citySearch, maxDistance, searchQuery, permissionStatus]);
+  }, [searchMode, location, maxDistance, searchQuery, permissionStatus]);
 
   useEffect(() => {
     fetchCourses();
@@ -147,11 +117,6 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
     []
   );
 
-  const handleCitySearch = useCallback((text: string) => {
-    setCitySearch(text);
-    setLoading(true);
-  }, []);
-
   const handleRefresh = useCallback(() => {
     setRefreshing(true);
     if (searchMode === 'nearMe' && !location) {
@@ -167,7 +132,7 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
     [navigation]
   );
 
-  const handleModeChange = useCallback((mode: LocationSearchMode) => {
+  const handleModeChange = useCallback((mode: 'name' | 'nearMe') => {
     setSearchMode(mode);
     setLoading(true);
     setError(null);
@@ -306,26 +271,6 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
           {t('location.nearMe')}
         </Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={[
-          styles.modeButton,
-          searchMode === 'nearCity' && styles.modeButtonActive,
-          isDark && searchMode !== 'nearCity' && styles.modeButtonDark,
-        ]}
-        onPress={() => handleModeChange('nearCity')}
-        activeOpacity={0.7}
-      >
-        <MapPin size={14} color={searchMode === 'nearCity' ? '#fff' : isDark ? '#adb5bd' : '#868e96'} />
-        <Text
-          style={[
-            styles.modeButtonText,
-            searchMode === 'nearCity' && styles.modeButtonTextActive,
-            isDark && searchMode !== 'nearCity' && styles.modeButtonTextDark,
-          ]}
-        >
-          {t('location.nearCity')}
-        </Text>
-      </TouchableOpacity>
     </View>
   );
 
@@ -346,39 +291,20 @@ export default function CoursesScreen({ navigation }: CoursesScreenProps) {
       {renderSearchModeToggle()}
 
       <View style={[styles.searchContainer, isDark && styles.searchContainerDark]}>
-        {searchMode === 'nearCity' ? (
-          <TextInput
-            style={[styles.searchInput, isDark && styles.searchInputDark]}
-            placeholder={t('location.enterCity')}
-            placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
-            value={citySearch}
-            onChangeText={handleCitySearch}
-            autoCapitalize="words"
-            autoCorrect={false}
-            clearButtonMode="while-editing"
-          />
-        ) : (
-          <TextInput
-            style={[styles.searchInput, isDark && styles.searchInputDark]}
-            placeholder="Search courses by name..."
-            placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
-            value={searchQuery}
-            onChangeText={handleSearch}
-            autoCapitalize="none"
-            autoCorrect={false}
-            clearButtonMode="while-editing"
-          />
-        )}
-        {(searchQuery.length > 0 || citySearch.length > 0) && (
+        <TextInput
+          style={[styles.searchInput, isDark && styles.searchInputDark]}
+          placeholder="Search courses by name..."
+          placeholderTextColor={isDark ? '#adb5bd' : '#868e96'}
+          value={searchQuery}
+          onChangeText={handleSearch}
+          autoCapitalize="none"
+          autoCorrect={false}
+          clearButtonMode="while-editing"
+        />
+        {searchQuery.length > 0 && (
           <TouchableOpacity
             style={styles.clearButton}
-            onPress={() => {
-              if (searchMode === 'nearCity') {
-                handleCitySearch('');
-              } else {
-                handleSearch('');
-              }
-            }}
+            onPress={() => handleSearch('')}
           >
             <X size={16} color="#fff" strokeWidth={2} />
           </TouchableOpacity>
