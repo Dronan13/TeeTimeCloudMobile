@@ -34,7 +34,7 @@ interface LeaderboardEntry {
   user_id?: string;
 }
 
-export default function LeaderboardScreen({ route }: Props) {
+export default function LeaderboardScreen({ route, navigation }: Props) {
   const { tournamentId } = route.params;
   const { isDark } = useTheme();
   const { t } = useLanguage();
@@ -104,6 +104,18 @@ export default function LeaderboardScreen({ route }: Props) {
     const score = scoreType === 'net' ? item.net_score : item.gross_score;
     const isCurrentUser = user?.id === item.user_id;
 
+    const handlePress = () => {
+      navigation.navigate('GolferScorecardPreview', {
+        roundId: item.id,
+        golferInfo: {
+          firstName: item.first_name,
+          lastName: item.last_name,
+          avatarUrl: item.avatar_url,
+          groupName: item.group_name,
+        },
+      });
+    };
+
     return (
       <LeaderboardCard
         place={item.place}
@@ -115,6 +127,7 @@ export default function LeaderboardScreen({ route }: Props) {
         vsPar={item.score_vs_par ?? 0}
         holesComplete={score ? 18 : 0}
         isCurrentUser={isCurrentUser}
+        onPress={handlePress}
       />
     );
   };

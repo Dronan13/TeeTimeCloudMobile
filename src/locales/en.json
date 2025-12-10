@@ -543,7 +543,31 @@
       "yourPosition": "Your Position",
       "thru": "Thru {{holes}}",
       "scoreToPar": "{{score}} to par",
-      "emptyLeaderboard": "No scores posted yet"
+      "emptyLeaderboard": "No scores posted yet",
+      "viewScorecard": "View Scorecard"
+    },
+    "golferScorecard": {
+      "title": "Scorecard",
+      "golferDetails": "Golfer Details",
+      "club": "Club",
+      "handicapIndex": "Handicap Index",
+      "tournamentHandicap": "Tournament Handicap",
+      "teeBox": "Tee Box",
+      "front9": "Front 9",
+      "back9": "Back 9",
+      "out": "OUT",
+      "in": "IN",
+      "total": "Total",
+      "gross": "Gross",
+      "net": "Net",
+      "score": "Score",
+      "difference": "Difference",
+      "vsPar": "vs Par",
+      "hole": "Hole",
+      "par": "Par",
+      "yards": "Yards",
+      "noData": "No scorecard data available",
+      "loading": "Loading scorecard..."
     },
     "format": {
       "stroke_play": "Stroke Play",

@@ -11,6 +11,7 @@ import TournamentGroupListScreen from '@/screens/tournaments/TournamentGroupList
 import TournamentRegistrationScreen from '@/screens/tournaments/TournamentRegistrationScreen';
 import ScorecardScreen from '@/screens/tournaments/ScorecardScreen';
 import LeaderboardScreen from '@/screens/tournaments/LeaderboardScreen';
+import GolferScorecardPreviewScreen from '@/screens/tournaments/GolferScorecardPreviewScreen';
 
 const TournamentsStack = createStackNavigator<TournamentsStackParamList>();
 
@@ -61,6 +62,11 @@ export function TournamentsStackNavigator() {
         name="Leaderboard"
         component={LeaderboardScreen}
         options={{ title: t('tournament.leaderboard.title') }}
+      />
+      <TournamentsStack.Screen
+        name="GolferScorecardPreview"
+        component={GolferScorecardPreviewScreen}
+        options={{ title: t('tournaments.golferScorecard.title') }}
       />
     </TournamentsStack.Navigator>
   );

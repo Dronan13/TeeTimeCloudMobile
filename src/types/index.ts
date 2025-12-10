@@ -97,6 +97,15 @@ export type TournamentsStackParamList = {
   TournamentRegistration: { tournamentId: string };
   Scorecard: { roundId: string };
   Leaderboard: { tournamentId: string };
+  GolferScorecardPreview: {
+    roundId: string;
+    golferInfo: {
+      firstName: string;
+      lastName: string;
+      avatarUrl?: string;
+      groupName: string;
+    };
+  };
 };
 
 export type RoundsStackParamList = {

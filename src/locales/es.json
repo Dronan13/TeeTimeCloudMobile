@@ -543,7 +543,31 @@
       "yourPosition": "Tu Posición",
       "thru": "A Través de {{holes}}",
       "scoreToPar": "{{score}} vs par",
-      "emptyLeaderboard": "No hay puntuaciones aún"
+      "emptyLeaderboard": "No hay puntuaciones aún",
+      "viewScorecard": "Ver Tarjeta"
+    },
+    "golferScorecard": {
+      "title": "Tarjeta de Puntuación",
+      "golferDetails": "Detalles del Golfista",
+      "club": "Club",
+      "handicapIndex": "Índice de Handicap",
+      "tournamentHandicap": "Handicap del Torneo",
+      "teeBox": "Salida",
+      "front9": "Frente 9",
+      "back9": "Traseros 9",
+      "out": "IDA",
+      "in": "VUELTA",
+      "total": "Total",
+      "gross": "Bruto",
+      "net": "Neto",
+      "score": "Puntuación",
+      "difference": "Diferencia",
+      "vsPar": "vs Par",
+      "hole": "Hoyo",
+      "par": "Par",
+      "yards": "Yardas",
+      "noData": "No hay datos de tarjeta disponibles",
+      "loading": "Cargando tarjeta..."
     },
     "format": {
       "stroke_play": "Juego por Golpes",
