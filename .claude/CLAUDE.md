@@ -19,7 +19,7 @@ Follow all rules below when generating code or suggesting changes.
 - All components must support **English** and **Spanish**, so when you create text refference make sure it is in `locales/en.json` and `locales/es.json`.
 - Aplly created refferences for multi-language support
 - Always use accessible, responsive UI patterns suitable for mobile screens.
-- For endpoints that possibly can return over 300 rows add pagination (2o items per page) with virtual scrolling
+- For endpoints that possibly can return over 300 rows add pagination (20 items per page) with virtual scrolling
 
 ---
 
