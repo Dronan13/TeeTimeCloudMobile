@@ -3,7 +3,6 @@ import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { Bell } from 'lucide-react-native';
-import { useTheme } from '@/contexts/ThemeContext';
 import { useNotification } from '@/contexts/NotificationContext';
 import { AppTabParamList } from '@/types';
 
@@ -11,11 +10,10 @@ type NavigationProp = BottomTabNavigationProp<AppTabParamList>;
 
 export default function NotificationHeaderButton() {
   const navigation = useNavigation<NavigationProp>();
-  const { isDark } = useTheme();
   const { unreadCount } = useNotification();
 
   const handlePress = () => {
-    navigation.navigate('Profile', { screen: 'Notifications' });
+    navigation.navigate('Notifications');
   };
 
   return (

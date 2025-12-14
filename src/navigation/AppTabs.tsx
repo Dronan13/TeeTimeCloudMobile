@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { TouchableOpacity, View, StyleSheet, Text } from 'react-native';
-import { AppTabParamList, AppTab5ParamList, CoursesStackParamList, ProfileStackParamList } from '@/types';
+import { AppTabParamList, CoursesStackParamList, ProfileStackParamList, NotificationsStackParamList } from '@/types';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Home, Flag, Calendar, User, Newspaper, Trophy, RotateCcw, Menu } from 'lucide-react-native';
@@ -29,6 +29,33 @@ import { RoundsStackNavigator } from '@/navigation/RoundsStack';
 const Tab = createBottomTabNavigator<AppTabParamList>();
 const CoursesStack = createStackNavigator<CoursesStackParamList>();
 const ProfileStack = createStackNavigator<ProfileStackParamList>();
+const NotificationsStack = createStackNavigator<NotificationsStackParamList>();
+
+function NotificationsStackNavigator() {
+  const { isDark } = useTheme();
+  const { t } = useLanguage();
+
+  return (
+    <NotificationsStack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: isDark ? '#2b3137' : '#2d7a4e',
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+          fontWeight: '600',
+        },
+        headerRight: () => <NotificationHeaderButton />,
+      }}
+    >
+      <NotificationsStack.Screen
+        name="Notifications"
+        component={NotificationsScreen}
+        options={{ title: t('navigation.notifications') }}
+      />
+    </NotificationsStack.Navigator>
+  );
+}
 
 function CoursesStackNavigator() {
   const { isDark } = useTheme();
@@ -112,11 +139,6 @@ function ProfileStackNavigator() {
         name="TermsOfUse"
         component={TermsOfUseScreen}
         options={{ title: t('profile.termsOfUse.title') }}
-      />
-      <ProfileStack.Screen
-        name="Notifications"
-        component={NotificationsScreen}
-        options={{ title: t('navigation.notifications') }}
       />
     </ProfileStack.Navigator>
   );
@@ -256,6 +278,14 @@ export default function AppTabs() {
             />
           ),
           title: t('navigation.profile'),
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name="Notifications"
+        component={NotificationsStackNavigator}
+        options={{
+          tabBarButton: () => null,
           headerShown: false,
         }}
       />

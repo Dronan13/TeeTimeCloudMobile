@@ -71,15 +71,8 @@ export type AppTabParamList = {
   Rounds: NavigatorScreenParams<RoundsStackParamList> | undefined;
   RSSArticles: undefined;
   Profile: NavigatorScreenParams<ProfileStackParamList> | undefined;
+  Notifications: NavigatorScreenParams<NotificationsStackParamList> | undefined;
   Menu: undefined;
-};
-
-export type AppTab5ParamList = {
-  Home: undefined;
-  Courses: NavigatorScreenParams<CoursesStackParamList> | undefined;
-  Tournaments: NavigatorScreenParams<TournamentsStackParamList> | undefined;
-  RSSArticles: undefined;
-  Profile: NavigatorScreenParams<ProfileStackParamList> | undefined;
 };
 
 
@@ -112,6 +105,9 @@ export type ProfileStackParamList = {
   UpdatePassword: undefined;
   Support: undefined;
   TermsOfUse: undefined;
+};
+
+export type NotificationsStackParamList = {
   Notifications: undefined;
 };
 
