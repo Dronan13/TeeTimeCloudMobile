@@ -69,11 +69,11 @@ export default function HomeScreen() {
   }, [user?.id]);
 
   // Refresh data every time the screen comes into focus
-  useFocusEffect(
-    useCallback(() => {
-      loadHomeData();
-    }, [user?.id])
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     loadHomeData();
+  //   }, [user?.id])
+  // );
 
   const loadHomeData = async () => {
     if (!user?.id) return;
