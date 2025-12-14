@@ -9,6 +9,7 @@ import RoundsListScreen from '@/screens/rounds/RoundsListScreen';
 import NewRoundScreen from '@/screens/rounds/NewRoundScreen';
 import PersonalScorecardScreen from '@/screens/rounds/PersonalScorecardScreen';
 import RoundDetailScreen from '@/screens/rounds/RoundDetailScreen';
+import NotificationHeaderButton from '@/components/NotificationHeaderButton';
 
 const RoundsStack = createStackNavigator<RoundsStackParamList>();
 
@@ -26,6 +27,7 @@ export function RoundsStackNavigator() {
         headerTitleStyle: {
           fontWeight: '600',
         },
+        headerRight: () => <NotificationHeaderButton />,
       }}
     >
       <RoundsStack.Screen

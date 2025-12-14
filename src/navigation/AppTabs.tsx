@@ -44,6 +44,7 @@ function CoursesStackNavigator() {
         headerTitleStyle: {
           fontWeight: '600',
         },
+        headerRight: () => <NotificationHeaderButton />,
       }}
     >
       <CoursesStack.Screen
@@ -84,6 +85,7 @@ function ProfileStackNavigator() {
         headerTitleStyle: {
           fontWeight: '600',
         },
+        headerRight: () => <NotificationHeaderButton />,
       }}
     >
       <ProfileStack.Screen

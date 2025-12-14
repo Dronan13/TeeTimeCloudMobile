@@ -11,6 +11,7 @@ import TournamentGroupListScreen from '@/screens/tournaments/TournamentGroupList
 import TournamentRegistrationScreen from '@/screens/tournaments/TournamentRegistrationScreen';
 import ScorecardScreen from '@/screens/tournaments/ScorecardScreen';
 import LeaderboardScreen from '@/screens/tournaments/LeaderboardScreen';
+import NotificationHeaderButton from '@/components/NotificationHeaderButton';
 
 const TournamentsStack = createStackNavigator<TournamentsStackParamList>();
 
@@ -28,6 +29,7 @@ export function TournamentsStackNavigator() {
         headerTitleStyle: {
           fontWeight: '600',
         },
+        headerRight: () => <NotificationHeaderButton />,
       }}
     >
       <TournamentsStack.Screen
