@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
 import { TouchableOpacity, View, StyleSheet, Text } from 'react-native';
-import { AppTabParamList, CoursesStackParamList, ProfileStackParamList, NotificationsStackParamList } from '@/types';
+import { AppTabParamList } from '@/types';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Home, Flag, Calendar, User, Newspaper, Trophy, RotateCcw, Menu } from 'lucide-react-native';
@@ -11,138 +10,15 @@ import QuickActionsMenu from '@/components/QuickActionsMenu';
 
 // Import screens
 import HomeScreen from '@/screens/HomeScreen';
-import CoursesScreen from '@/screens/CoursesScreen';
-import CourseDetailScreen from '@/screens/CourseDetailScreen';
-import CourseTeeTimesScreen from '@/screens/CourseTeeTimesScreen';
-import ReservationScreen from '@/screens/ReservationScreen';
 import TeeTimesScreen from '@/screens/TeeTimesScreen';
-import NotificationsScreen from '@/screens/NotificationsScreen';
-import ProfileScreen from '@/screens/ProfileScreen';
-import ProfileEditScreen from '@/screens/ProfileEditScreen';
-import UpdatePasswordScreen from '@/screens/UpdatePasswordScreen';
-import SupportScreen from '@/screens/SupportScreen';
-import TermsOfUseScreen from '@/screens/TermsOfUseScreen';
 import RSSArticlesScreen from '@/screens/RSSArticlesScreen';
 import { TournamentsStackNavigator } from '@/navigation/TournamentsStack';
-import { RoundsStackNavigator } from '@/navigation/RoundsStack';
+import NotificationsStackNavigator from './NavigationStack';
+import ProfileStackNavigator from './ProfileStack';
+import CoursesStackNavigator from './CourseStack';
+import RoundsStackNavigator from './RoundsStack';
 
 const Tab = createBottomTabNavigator<AppTabParamList>();
-const CoursesStack = createStackNavigator<CoursesStackParamList>();
-const ProfileStack = createStackNavigator<ProfileStackParamList>();
-const NotificationsStack = createStackNavigator<NotificationsStackParamList>();
-
-function NotificationsStackNavigator() {
-  const { isDark } = useTheme();
-  const { t } = useLanguage();
-
-  return (
-    <NotificationsStack.Navigator
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: isDark ? '#2b3137' : '#2d7a4e',
-        },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: '600',
-        },
-        headerRight: () => <NotificationHeaderButton />,
-      }}
-    >
-      <NotificationsStack.Screen
-        name="Notifications"
-        component={NotificationsScreen}
-        options={{ title: t('navigation.notifications') }}
-      />
-    </NotificationsStack.Navigator>
-  );
-}
-
-function CoursesStackNavigator() {
-  const { isDark } = useTheme();
-  const { t } = useLanguage();
-
-  return (
-    <CoursesStack.Navigator
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: isDark ? '#2b3137' : '#2d7a4e',
-        },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: '600',
-        },
-        headerRight: () => <NotificationHeaderButton />,
-      }}
-    >
-      <CoursesStack.Screen
-        name="CoursesList"
-        component={CoursesScreen}
-        options={{ title: t('courses.title') }}
-      />
-      <CoursesStack.Screen
-        name="CourseDetail"
-        component={CourseDetailScreen}
-        options={{ title: t('courses.details.title') }}
-      />
-      <CoursesStack.Screen
-        name="CourseTeeTimesScreen"
-        component={CourseTeeTimesScreen}
-        options={{ title: t('courses.teeTimes.title') }}
-      />
-      <CoursesStack.Screen
-        name="ReservationScreen"
-        component={ReservationScreen}
-        options={{ title: t('reservation.title') }}
-      />
-    </CoursesStack.Navigator>
-  );
-}
-
-function ProfileStackNavigator() {
-  const { isDark } = useTheme();
-  const { t } = useLanguage();
-
-  return (
-    <ProfileStack.Navigator
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: isDark ? '#2b3137' : '#2d7a4e',
-        },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: '600',
-        },
-        headerRight: () => <NotificationHeaderButton />,
-      }}
-    >
-      <ProfileStack.Screen
-        name="ProfileMain"
-        component={ProfileScreen}
-        options={{ title: t('profile.title') }}
-      />
-      <ProfileStack.Screen
-        name="ProfileEdit"
-        component={ProfileEditScreen}
-        options={{ title: t('profile.edit.title') }}
-      />
-      <ProfileStack.Screen
-        name="UpdatePassword"
-        component={UpdatePasswordScreen}
-        options={{ title: t('auth.updatePassword.title') }}
-      />
-      <ProfileStack.Screen
-        name="Support"
-        component={SupportScreen}
-        options={{ title: t('profile.support.title') }}
-      />
-      <ProfileStack.Screen
-        name="TermsOfUse"
-        component={TermsOfUseScreen}
-        options={{ title: t('profile.termsOfUse.title') }}
-      />
-    </ProfileStack.Navigator>
-  );
-}
 
 export default function AppTabs() {
   const { isDark } = useTheme();

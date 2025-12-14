@@ -10,10 +10,11 @@ import NewRoundScreen from '@/screens/rounds/NewRoundScreen';
 import PersonalScorecardScreen from '@/screens/rounds/PersonalScorecardScreen';
 import RoundDetailScreen from '@/screens/rounds/RoundDetailScreen';
 import NotificationHeaderButton from '@/components/NotificationHeaderButton';
-
+import { Pressable, Text } from 'react-native';
+import { ChevronLeft } from 'lucide-react-native';
 const RoundsStack = createStackNavigator<RoundsStackParamList>();
 
-export function RoundsStackNavigator() {
+export default function RoundsStackNavigator() {
   const { isDark } = useTheme();
   const { t } = useLanguage();
 
@@ -33,12 +34,34 @@ export function RoundsStackNavigator() {
       <RoundsStack.Screen
         name="RoundsList"
         component={RoundsListScreen}
-        options={{ title: t('rounds.title') || 'My Rounds' }}
+        options={({ navigation }) => ({
+          title: t('rounds.title'),
+          headerLeft: () => (
+            <Pressable 
+              onPress={() => navigation.navigate('Courses')}
+              style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 8 }}
+            >
+              <ChevronLeft size={28} color='#fff' />
+              <Text style={{ color: '#fff', fontSize: 17, marginLeft: -4 }}>{t('courses.title')}</Text>
+            </Pressable>
+          ),
+        })}
       />
       <RoundsStack.Screen
         name="NewRound"
         component={NewRoundScreen}
-        options={{ title: t('rounds.newRound') || 'New Round' }}
+        options={({ navigation }) => ({
+          title: t('rounds.newRound'),
+          headerLeft: () => (
+            <Pressable 
+              onPress={() => navigation.navigate('RoundsList')}
+              style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 8 }}
+            >
+              <ChevronLeft size={28} color='#fff' />
+              <Text style={{ color: '#fff', fontSize: 17, marginLeft: -4 }}>{t('rounds.title')}</Text>
+            </Pressable>
+          ),
+        })}
       />
       <RoundsStack.Screen
         name="PersonalScorecard"
@@ -53,5 +76,3 @@ export function RoundsStackNavigator() {
     </RoundsStack.Navigator>
   );
 }
-
-export default RoundsStackNavigator;
