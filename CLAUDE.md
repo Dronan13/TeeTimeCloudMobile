@@ -114,7 +114,54 @@ The project uses TypeScript path aliases configured in `tsconfig.json`:
 
 ## Key Architectural Patterns
 
-### 1. Service Layer Pattern
+### 1. Component Composition & Organization
+
+**CRITICAL: Never create large monolithic screens or components.**
+
+#### Component Size Rules
+- Main screens should be **under 200 lines** of code
+- If a screen/component exceeds this limit, extract sections into smaller components
+- Create a dedicated directory for related components under `src/components/[feature-name]/`
+
+#### Styling Separation
+- **NEVER** use inline `StyleSheet.create()` in screen files
+- Extract all styles to a separate `styles.ts` file in the component directory
+- Export styles as a named constant (e.g., `export const featureStyles = StyleSheet.create({...})`)
+
+#### Recommended Structure
+```
+src/
+├── screens/
+│   └── FeatureScreen.tsx          # Main screen (< 200 lines, imports subcomponents)
+└── components/
+    └── feature-name/
+        ├── index.ts               # Export all components and styles
+        ├── styles.ts              # All StyleSheet definitions
+        ├── SubComponentA.tsx      # Focused subcomponent
+        ├── SubComponentB.tsx      # Focused subcomponent
+        └── SubComponentC.tsx      # Focused subcomponent
+```
+
+#### Refactoring Workflow
+When creating or updating a complex screen:
+1. **Identify** logical sections (header, gallery, content, actions, etc.)
+2. **Create** a component directory under `src/components/`
+3. **Extract** each section into its own component file
+4. **Move** all `StyleSheet` definitions to `styles.ts`
+5. **Create** `index.ts` to export all components and styles
+6. **Update** the main screen to import and compose components
+
+#### Example
+See `src/screens/CourseDetailScreen.tsx` and `src/components/course-detail/` for a reference implementation.
+
+**Benefits:**
+- ✅ Improved maintainability and readability
+- ✅ Better code reusability across the app
+- ✅ Easier testing of individual components
+- ✅ Clearer separation of concerns
+- ✅ Simplified code reviews
+
+### 2. Service Layer Pattern
 
 **All backend interactions must be in `src/services/`**. Services export typed functions that interact with Supabase.
 
@@ -143,7 +190,7 @@ export const tournamentsService = {
 
 **Never write Supabase queries directly in components or screens.**
 
-### 2. Supabase Type Safety
+### 3. Supabase Type Safety
 
 The project uses auto-generated Supabase types in `src/types/supabase.ts`.
 
@@ -151,7 +198,7 @@ The project uses auto-generated Supabase types in `src/types/supabase.ts`.
 - Never use `any` for database queries
 - The Supabase client is typed: `createClient<Database>(...)`
 
-### 3. Provider Architecture
+### 4. Provider Architecture
 
 The app wraps multiple providers in `App.tsx`:
 
@@ -169,7 +216,7 @@ Access these via custom hooks:
 - `useTheme()` - Dark/light mode
 - `useTranslation()` from react-i18next - Translations
 
-### 4. Navigation Structure
+### 5. Navigation Structure
 
 ```
 RootNavigator
@@ -187,7 +234,7 @@ RootNavigator
 
 Navigation is conditional based on authentication state (see `src/navigation/RootNavigator.tsx`).
 
-### 5. Internationalization (i18n)
+### 6. Internationalization (i18n)
 
 - All user-facing text must be in `src/locales/en.json` and `src/locales/es.json`
 - Use `t('key')` from `useTranslation()` hook
@@ -204,7 +251,7 @@ function MyScreen() {
 }
 ```
 
-### 6. Styling with NativeWind
+### 7. Styling with NativeWind
 
 - Use NativeWind classes via `className` prop
 - Avoid inline `style` prop unless for dynamic styles
@@ -223,7 +270,7 @@ Example:
 </View>
 ```
 
-### 7. React Query Patterns
+### 8. React Query Patterns
 
 - Use `@tanstack/react-query` for server state
 - Query client configured in `App.tsx` with:

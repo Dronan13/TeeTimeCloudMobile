@@ -1,0 +1,10 @@
+export { CourseGallery } from './CourseGallery';
+export { CourseHeader } from './CourseHeader';
+export { CourseActionButtons } from './CourseActionButtons';
+export { CourseDescription } from './CourseDescription';
+export { CourseAmenities } from './CourseAmenities';
+export { CourseContact } from './CourseContact';
+export { CourseSocial } from './CourseSocial';
+export { CourseEvents } from './CourseEvents';
+export { ImageModal } from './ImageModal';
+export { courseDetailStyles } from './styles';

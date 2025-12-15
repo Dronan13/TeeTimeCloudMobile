@@ -16,10 +16,53 @@ Follow all rules below when generating code or suggesting changes.
   - `PascalCase` for components.
 - All backend interactions must live in the `services/` directory.
 - Use **NativeWind** for styling. Avoid inline styling unless dynamic.
-- All components must support **English** and **Spanish**, so when you create text refference make sure it is in `locales/en.json` and `locales/es.json`.
-- Aplly created refferences for multi-language support
+- All components must support **English** and **Spanish**, so when you create text reference make sure it is in `locales/en.json` and `locales/es.json`.
+- Apply created references for multi-language support
 - Always use accessible, responsive UI patterns suitable for mobile screens.
 - For endpoints that possibly can return over 300 rows add pagination (20 items per page) with virtual scrolling
+
+### Component Organization
+**CRITICAL:** Never create large monolithic screens or components. Always follow the component composition pattern:
+
+1. **Split Large Components:**
+   - Screens should be **under 200 lines** of code
+   - If a screen/component exceeds this, extract sections into smaller components
+   - Create a dedicated directory for related components (e.g., `components/[feature-name]/`)
+
+2. **Separate Styling:**
+   - **NEVER** use inline `StyleSheet.create()` in screen files
+   - Extract all styles to a separate `styles.ts` file in the component directory
+   - Export styles as a named constant (e.g., `export const featureStyles = StyleSheet.create({...})`)
+
+3. **Component Structure Example:**
+   ```
+   src/
+   ├── screens/
+   │   └── FeatureScreen.tsx          # Main screen (imports all subcomponents)
+   └── components/
+       └── feature-name/
+           ├── index.ts               # Export all components
+           ├── styles.ts              # All StyleSheet definitions
+           ├── ComponentA.tsx         # Subcomponent A
+           ├── ComponentB.tsx         # Subcomponent B
+           └── ComponentC.tsx         # Subcomponent C
+   ```
+
+4. **Refactoring Workflow:**
+   - When creating/updating a complex screen:
+     1. Identify logical sections (header, content, actions, etc.)
+     2. Create a component directory under `src/components/`
+     3. Extract each section into its own component
+     4. Move all styles to `styles.ts`
+     5. Create `index.ts` to export all components and styles
+     6. Update the main screen to import and compose components
+
+5. **Benefits of This Approach:**
+   - ✅ Improved maintainability and readability
+   - ✅ Better code reusability across the app
+   - ✅ Easier testing of individual components
+   - ✅ Clearer separation of concerns
+   - ✅ Simplified code reviews
 
 ---
 
