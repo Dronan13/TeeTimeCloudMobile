@@ -459,6 +459,176 @@ Build configuration in `eas.json`.
 
 ---
 
+## Cross-Repository Dependencies
+
+This mobile application is part of the **TeeTime Cloud** monorepo with three interconnected components:
+- **TeeTimeCloudMobile** (this repository) - Golfer mobile app
+- **TeeTimeCloudWeb** - Manager web portal (React + Vite)
+- **TeeTimeCloudSupabase** - Backend (PostgreSQL + Edge Functions)
+
+### Shared Type Definitions
+
+The database types in `src/types/supabase.ts` are auto-generated from the Supabase schema and shared across all repositories.
+
+**When schema changes occur:**
+
+1. Navigate to `TeeTimeCloudSupabase` and regenerate types:
+   ```bash
+   cd ../TeeTimeCloudSupabase
+   make schema-types
+   ```
+
+2. Copy the updated types to this repository:
+   ```bash
+   cp supabase.ts ../TeeTimeCloudMobile/src/types/
+   ```
+
+3. Update affected code in this repository to match new schema
+
+4. Verify the web app also receives the updated types:
+   ```bash
+   cp supabase.ts ../TeeTimeCloudWeb/src/types/
+   ```
+
+**IMPORTANT:** Always sync types after backend schema changes to avoid runtime errors.
+
+### Backend Dependencies
+
+This application depends on:
+
+**Supabase Edge Functions:**
+- `create-user-with-profile` - User registration with auto-profile creation
+- `email-service` - Email notifications (tee time confirmations, reminders, etc.)
+- `golfcourseapi-*` - External golf course API integration
+- `import-golfers-from-csv` - Bulk golfer import
+
+**Database Tables:**
+- `golfer_profiles` - User profile data
+- `user_roles` - Role-based access control
+- `courses`, `tee_boxes`, `course_holes` - Golf course data
+- `tee_time_slots`, `tee_time_reservations` - Tee time bookings
+- `golf_rounds`, `golf_round_holes` - Scoring data
+- `tournaments`, `tournament_rounds` - Tournament data
+- `course_events`, `event_attendances` - Event management
+- Full schema: `TeeTimeCloudSupabase/schema.sql`
+
+**Environment Variables:**
+- `EXPO_PUBLIC_SUPABASE_URL` - Must match Supabase project URL
+- `EXPO_PUBLIC_SUPABASE_ANON_KEY` - Client-side anonymous key
+- See `.env.example` for full list
+
+### Relationship with Web Application
+
+The mobile app serves **golfers** while the web app serves **course managers**. They share data but have different UIs and feature sets:
+
+**Shared Features:**
+- Authentication (same Supabase Auth)
+- User profiles and roles
+- Tee time viewing and booking
+- Tournament participation
+- Score entry
+- Event RSVPs
+
+**Mobile-Specific Features:**
+- GPS course tracking
+- Weather integration
+- Offline mode
+- Push notifications
+- Camera integration for profile photos
+- Spanish language support (i18n)
+
+**Web-Specific Features:**
+- Course management (tee boxes, holes)
+- Manager dashboards and analytics
+- Tournament administration
+- Bulk golfer import
+- Event creation and management
+- Revenue reports
+
+### Impact of Your Changes
+
+**When you modify API calls or data structures:**
+- Check if the web app uses the same data
+- Web app API functions are in `TeeTimeCloudWeb/src/utils/supabase/api.tsx`
+- Coordinate with web team for consistent data shapes
+
+**When you add/modify screens:**
+- Consider if managers need similar views in the web portal
+- Use consistent terminology across platforms
+- Follow the same color palette and design language
+
+**When you change authentication flow:**
+- Both Mobile and Web share the same Supabase Auth
+- Changes to user roles affect both applications
+- JWT claims are set by `custom_access_token_hook()` in Supabase
+
+### Local Development with Backend
+
+To develop with the full stack locally:
+
+1. **Start Supabase backend:**
+   ```bash
+   cd ../TeeTimeCloudSupabase
+   make start
+   # Note the URLs and keys from `make status`
+   ```
+
+2. **Configure environment:**
+   ```bash
+   # In .env
+   EXPO_PUBLIC_SUPABASE_URL=http://localhost:54321
+   EXPO_PUBLIC_SUPABASE_ANON_KEY=<key from make status>
+   ```
+
+3. **Start this mobile app:**
+   ```bash
+   npm start
+   ```
+
+4. **Test emails:** View sent emails at http://localhost:54324 (Inbucket)
+
+**Note:** When connecting from a physical device, replace `localhost` with your computer's local IP address.
+
+### Cross-Repository Workflows
+
+**Adding a new database table:**
+1. In `TeeTimeCloudSupabase`: Create migration with `make db-diff NAME=table_name`
+2. Test locally: `make db-reset`
+3. Push to remote: `make db-push`
+4. Regenerate and sync types (see above)
+5. Create service function in `src/services/`
+6. Update affected screens
+7. Add translations to `locales/en.json` and `locales/es.json`
+
+**Adding a new user role:**
+1. Modify `user_roles` table in Supabase
+2. Update `custom_access_token_hook()` to include new claim
+3. Update `AuthContext` in both Mobile and Web
+4. Update navigation guards if role affects screen access
+5. Update authorization checks in services
+
+**Changing email notifications:**
+1. Modify `email-service` function in Supabase
+2. Update email templates in `TeeTimeCloudSupabase/supabase/functions/email-service/email-templates/`
+3. Test with Inbucket locally
+4. Deploy: `cd ../TeeTimeCloudSupabase && make functions-deploy`
+5. Update mobile UI if notification behavior changes
+
+**Adding internationalization:**
+1. Add keys to both `locales/en.json` and `locales/es.json`
+2. Use `t('key')` from `useTranslation()` hook
+3. Test language switching in app
+4. Consider if web app needs similar translations
+
+### Documentation References
+
+- **Main Documentation:** `../CLAUDE.md` - Monorepo overview and cross-repo workflows
+- **Backend Documentation:** `../TeeTimeCloudSupabase/CLAUDE.md` - Database schema, edge functions, analytics
+- **Web Documentation:** `../TeeTimeCloudWeb/CLAUDE.md` - Web app architecture and manager features
+- **Mobile System Prompt:** `.claude/CLAUDE.md` - Detailed coding guidelines
+
+---
+
 ## Existing Project Components
 
 The project already has many reusable components. **Always check for existing components before creating new ones.** Key components include:
